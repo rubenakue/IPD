@@ -4,6 +4,7 @@
   "private": true,
   "description": "Plataforma de gestión de proyectos de construcción con metodología IPD (prototipo).",
   "type": "module",
+  "packageManager": "pnpm@11.5.3",
   "scripts": {
     "typecheck": "tsc --noEmit"
   },

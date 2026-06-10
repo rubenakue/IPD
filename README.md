@@ -16,5 +16,7 @@ Prototipo de plataforma de gestión de proyectos de construcción con metodolog�
 
 ## Documentación
 
-- `Doc inicial/` — briefing y documentación de dominio
+- `Doc inicial/` — briefing y documentación de dominio (solo local, no está en git)
 - `docs/` — ADRs, diario de desarrollo y retrospectivas
+- `docs/plan-sdd-tdd.md` — cómo se trabaja aquí: SDD (Spec Kit) + TDD + roles especializados
+- `AGENTS.md` — contexto canónico para agentes de IA (Claude Code lo carga vía `CLAUDE.md`)
