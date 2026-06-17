@@ -25,9 +25,9 @@ Single project (briefing §7): `src/lib/calculations/`, `src/types/`, `tests/` e
 
 **Purpose**: harness de pruebas y linting listos; estructura de archivos creada.
 
-- [ ] T001 Instalar y configurar Vitest: `pnpm add -D vitest`; scripts `"test": "vitest run"` y `"test:watch": "vitest"` en `package.json` (proponer la dependencia antes de instalar, principio de la constitución).
-- [ ] T002 [P] Configurar ESLint + script `pnpm lint` (exigido por el briefing antes del primer código de negocio).
-- [ ] T003 [P] Crear los archivos esqueleto en `src/lib/calculations/`: `frc.ts`, `evm.ts`, `change.ts`, cada uno exportando su función y lanzando `throw new Error('Not implemented')`.
+- [x] T001 Instalar y configurar Vitest: `pnpm add -D vitest`; scripts `"test": "vitest run"` y `"test:watch": "vitest"` en `package.json` (proponer la dependencia antes de instalar, principio de la constitución).
+- [x] T002 [P] Configurar ESLint + script `pnpm lint` (exigido por el briefing antes del primer código de negocio).
+- [x] T003 [P] Crear los archivos esqueleto en `src/lib/calculations/`: `frc.ts`, `evm.ts`, `change.ts`, cada uno exportando su función y lanzando `throw new Error('Not implemented')`.
 
 **Checkpoint**: `pnpm lint` y `pnpm typecheck` pasan; `pnpm test` no encuentra errores de configuración.
 
@@ -39,7 +39,7 @@ Single project (briefing §7): `src/lib/calculations/`, `src/types/`, `tests/` e
 
 **⚠️ CRITICAL**: ninguna story puede empezar hasta tener estos tipos.
 
-- [ ] T004 Definir en `src/types/domain.ts` los tipos de entrada/salida mínimos: condiciones de `Agent` (porcentaje de reparto, honorarios base, honorarios en riesgo, rol), estado económico (presupuesto vigente total y por partida, coste real acumulado, previsión a cierre, contingencia), entrada/salida de FRC, entrada/salida de EVM (con métricas `number | null` para "sin datos"), y entrada (cambio aprobado) / salida (efectos) de `applyChange`. Importes en céntimos enteros (`number`). Sin `any`.
+- [x] T004 Definir en `src/types/domain.ts` los tipos de entrada/salida mínimos: condiciones de `Agent` (porcentaje de reparto, honorarios base, honorarios en riesgo, rol), estado económico (presupuesto vigente total y por partida, coste real acumulado, previsión a cierre, contingencia), entrada/salida de FRC, entrada/salida de EVM (con métricas `number | null` para "sin datos"), y entrada (cambio aprobado) / salida (efectos) de `applyChange`. Importes en céntimos enteros (`number`). Sin `any`.
 
 **Checkpoint**: `pnpm typecheck` pasa con los tipos definidos y los esqueletos compilando.
 
@@ -53,7 +53,7 @@ Single project (briefing §7): `src/lib/calculations/`, `src/types/`, `tests/` e
 
 ### Tests for User Story 1 (escribir PRIMERO, deben FALLAR)
 
-- [ ] T005 [P] [US1] Escribir `tests/frc.test.ts` cubriendo los 5 escenarios de aceptación US1: ahorro repartido, sobrecoste con agotamiento (exceso al promotor), equilibrio, agente al 0 %, y resultado total = garantizados + bonus/malus. Verificar que fallan (rojo).
+- [x] T005 [P] [US1] Escribir `tests/frc.test.ts` cubriendo los 5 escenarios de aceptación US1: ahorro repartido, sobrecoste con agotamiento (exceso al promotor), equilibrio, agente al 0 %, y resultado total = garantizados + bonus/malus. Verificar que fallan (rojo).
 
 ### Implementation for User Story 1
 
@@ -72,7 +72,7 @@ Single project (briefing §7): `src/lib/calculations/`, `src/types/`, `tests/` e
 
 ### Tests for User Story 2 (escribir PRIMERO, deben FALLAR)
 
-- [ ] T008 [P] [US2] Escribir `tests/evm.test.ts` cubriendo: cálculo completo, sin planificación (PV/SV/SPI = null), sin avance (EV y derivados = null), AC = 0 (CPI/EAC/ETC/VAC = null pero CV = EV), y AC neto de contra-asientos. Verificar que fallan (rojo).
+- [x] T008 [P] [US2] Escribir `tests/evm.test.ts` cubriendo: cálculo completo, sin planificación (PV/SV/SPI = null), sin avance (EV y derivados = null), AC = 0 (CPI/EAC/ETC/VAC = null pero CV = EV), y AC neto de contra-asientos. Verificar que fallan (rojo).
 
 ### Implementation for User Story 2
 
@@ -91,7 +91,7 @@ Single project (briefing §7): `src/lib/calculations/`, `src/types/`, `tests/` e
 
 ### Tests for User Story 3 (escribir PRIMERO, deben FALLAR)
 
-- [ ] T011 [P] [US3] Escribir `tests/change.test.ts` cubriendo: tipo 1 (efectos vacíos), tipo 2 contra contingencia, tipo 2 ajuste de presupuesto, tipo 2 negativo, tipo 3 (presupuesto + honorarios + reponderación opcional que suma 100 %). Verificar que fallan (rojo).
+- [x] T011 [P] [US3] Escribir `tests/change.test.ts` cubriendo: tipo 1 (efectos vacíos), tipo 2 contra contingencia, tipo 2 ajuste de presupuesto, tipo 2 negativo, tipo 3 (presupuesto + honorarios + reponderación opcional que suma 100 %). Verificar que fallan (rojo).
 
 ### Implementation for User Story 3
 
@@ -127,3 +127,5 @@ Single project (briefing §7): `src/lib/calculations/`, `src/types/`, `tests/` e
 - Verificar que cada test falla antes de implementar (un test que nace en verde es sospechoso — constitución, principio II).
 - Commit por cálculo (uno por unidad lógica): `feat(calculations): implement calculateFRC`, etc.
 - Estos cálculos son la base; la persistencia (S7) y la API (S16, S20) los consumirán después.
+- **S02 (tdd-harness):** T001–T004 hechos y los tres archivos de test (T005/T008/T011) escritos y **en rojo** (20 casos, todos `Not implemented`). Tras la revisión del PR #27: `ApprovedChange` lleva los ajustes **por partida** (`lineAdjustments`), no un total + IDs (concepto §7, tabla "datos almacenados"); añadidos los casos PV=0 (EVM) y reparto no divisible (FRC). S3–S5 arrancan directamente en la implementación (verde) + refactor.
+- **Hallazgo S02 para S4:** en `EAC = round(BAC × AC / EV)`, el producto `BAC × AC` (~1,3·10^18) supera `Number.MAX_SAFE_INTEGER` (~9·10^15). La implementación de `calculateEVM` debe evitar el desbordamiento (p. ej. `BigInt` intermedio o reordenar la operación). Anotado en `tests/evm.test.ts`.
