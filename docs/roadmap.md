@@ -94,7 +94,7 @@ El orden es estrictamente secuencial — cada sesión asume hechas las anteriore
 **Hecho cuando:** tests de FRC verdes; la función no importa nada de I/O.
 
 #### S4 — `calculateEVM()` en verde
-- [ ] Implementar con las fórmulas exactas de §9.6: EV desde avance, AC neto de contra-asientos, y TODOS los estados "sin datos" (sin avance, AC=0, PV=0) — son tan importantes como las fórmulas.
+- [x] Implementar con las fórmulas exactas de §9.6: EV desde avance, AC neto de contra-asientos, y TODOS los estados "sin datos" (sin avance, AC=0, PV=0) — son tan importantes como las fórmulas.
 
 **Hecho cuando:** tests de EVM verdes, incluidos los de "sin datos".
 

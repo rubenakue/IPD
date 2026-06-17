@@ -76,8 +76,8 @@ Single project (briefing §7): `src/lib/calculations/`, `src/types/`, `tests/` e
 
 ### Implementation for User Story 2
 
-- [ ] T009 [US2] Implementar `calculateEVM` en `src/lib/calculations/evm.ts`: fórmulas de §9.6; `EV = Σ (vigente × % avance)`; EAC = `round(BAC × AC / EV)`; cada métrica no calculable devuelve `null`. Iterar hasta verde.
-- [ ] T010 [US2] Refactor con tests en verde.
+- [x] T009 [US2] Implementar `calculateEVM` en `src/lib/calculations/evm.ts`: fórmulas de §9.6; `EV = Σ (vigente × % avance)`; EAC = `round(BAC × AC / EV)`; cada métrica no calculable devuelve `null`. Iterar hasta verde.
+- [x] T010 [US2] Refactor con tests en verde.
 
 **Checkpoint**: `tests/evm.test.ts` verde, incluidos todos los casos "sin datos".
 
