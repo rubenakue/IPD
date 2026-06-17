@@ -142,12 +142,16 @@ export interface BudgetAdjustment {
 export interface ApprovedChange {
   readonly changeId: string;
   readonly type: ChangeType;
-  /** Impacto económico (céntimos, con signo). Tipos 2 y 3. Tipo 1 no lo usa. */
-  readonly costImpact?: number;
-  /** Solo tipo 2: consumir contingencia o ajustar presupuesto objetivo. */
+  /** Solo tipo 2: a dónde aplica el importe (lo decide quien aprueba). */
   readonly target?: CostImpactTarget;
-  /** Partidas sobre las que se reparte el ajuste de presupuesto (tipo 2 "budget" y tipo 3). */
-  readonly affectedLineIds?: readonly string[];
+  /** Tipo 2 contra contingencia: importe total que mueve la bolsa (céntimos, con signo).
+   *  La contingencia es una bolsa única, no se reparte por partida. */
+  readonly contingencyImpact?: number;
+  /** Tipo 2 contra presupuesto y tipo 3: ajustes aprobados con el delta de CADA partida
+   *  (céntimos, con signo). El dominio almacena los ajustes por `BudgetLine` (concepto §7,
+   *  tabla "datos almacenados"), no un total a repartir; por eso el cambio ya llega con el
+   *  delta de cada partida y `applyChange` los propaga sin inventar ningún reparto. */
+  readonly lineAdjustments?: readonly BudgetAdjustment[];
   /** Solo tipo 3: cambios de honorarios negociados. */
   readonly feeAdjustments?: readonly FeeAdjustment[];
   /** Solo tipo 3 (opcional): nuevos porcentajes de reparto (deben sumar 100). */

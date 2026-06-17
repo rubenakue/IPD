@@ -127,5 +127,5 @@ Single project (briefing §7): `src/lib/calculations/`, `src/types/`, `tests/` e
 - Verificar que cada test falla antes de implementar (un test que nace en verde es sospechoso — constitución, principio II).
 - Commit por cálculo (uno por unidad lógica): `feat(calculations): implement calculateFRC`, etc.
 - Estos cálculos son la base; la persistencia (S7) y la API (S16, S20) los consumirán después.
-- **S02 (tdd-harness):** T001–T004 hechos y los tres archivos de test (T005/T008/T011) escritos y **en rojo** (17 casos, todos `Not implemented`). S3–S5 arrancan directamente en la implementación (verde) + refactor.
+- **S02 (tdd-harness):** T001–T004 hechos y los tres archivos de test (T005/T008/T011) escritos y **en rojo** (20 casos, todos `Not implemented`). Tras la revisión del PR #27: `ApprovedChange` lleva los ajustes **por partida** (`lineAdjustments`), no un total + IDs (concepto §7, tabla "datos almacenados"); añadidos los casos PV=0 (EVM) y reparto no divisible (FRC). S3–S5 arrancan directamente en la implementación (verde) + refactor.
 - **Hallazgo S02 para S4:** en `EAC = round(BAC × AC / EV)`, el producto `BAC × AC` (~1,3·10^18) supera `Number.MAX_SAFE_INTEGER` (~9·10^15). La implementación de `calculateEVM` debe evitar el desbordamiento (p. ej. `BigInt` intermedio o reordenar la operación). Anotado en `tests/evm.test.ts`.

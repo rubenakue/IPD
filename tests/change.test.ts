@@ -23,8 +23,8 @@ describe('applyChange', () => {
     const change: ApprovedChange = {
       changeId: 'C2',
       type: 'costImpact',
-      costImpact: eur(120_000),
       target: 'contingency',
+      contingencyImpact: eur(120_000),
     };
 
     const effects = applyChange(change);
@@ -35,13 +35,12 @@ describe('applyChange', () => {
     expect(effects.newShares).toBeNull();
   });
 
-  it('US3.3 — tipo 2 contra presupuesto: ajusta la partida afectada, sin tocar honorarios', () => {
+  it('US3.3 — tipo 2 contra presupuesto: propaga el ajuste de la partida afectada, sin tocar honorarios', () => {
     const change: ApprovedChange = {
       changeId: 'C3',
       type: 'costImpact',
-      costImpact: eur(120_000),
       target: 'budget',
-      affectedLineIds: ['L1'],
+      lineAdjustments: [{ lineId: 'L1', delta: eur(120_000) }],
     };
 
     const effects = applyChange(change);
@@ -52,13 +51,33 @@ describe('applyChange', () => {
     expect(effects.newShares).toBeNull();
   });
 
-  it('US3.4 — tipo 2 negativo contra presupuesto: el ajuste es negativo (abarata la partida)', () => {
+  it('US3.3b — tipo 2 sobre varias partidas: respeta el delta de CADA una (no inventa reparto)', () => {
+    // Un único total no bastaría: 80.000 y 40.000 € no son repartibles desde un agregado.
+    const change: ApprovedChange = {
+      changeId: 'C3b',
+      type: 'costImpact',
+      target: 'budget',
+      lineAdjustments: [
+        { lineId: 'L1', delta: eur(80_000) },
+        { lineId: 'L2', delta: eur(40_000) },
+      ],
+    };
+
+    const effects = applyChange(change);
+
+    expect(effects.budgetAdjustments).toEqual([
+      { lineId: 'L1', delta: eur(80_000) },
+      { lineId: 'L2', delta: eur(40_000) },
+    ]);
+    expect(effects.contingencyDelta).toBe(0);
+  });
+
+  it('US3.4 — tipo 2 negativo contra presupuesto: el ajuste de la partida es negativo (la abarata)', () => {
     const change: ApprovedChange = {
       changeId: 'C4',
       type: 'costImpact',
-      costImpact: -eur(50_000),
       target: 'budget',
-      affectedLineIds: ['L1'],
+      lineAdjustments: [{ lineId: 'L1', delta: -eur(50_000) }],
     };
 
     const effects = applyChange(change);
@@ -71,8 +90,8 @@ describe('applyChange', () => {
     const change: ApprovedChange = {
       changeId: 'C4b',
       type: 'costImpact',
-      costImpact: -eur(50_000),
       target: 'contingency',
+      contingencyImpact: -eur(50_000),
     };
 
     const effects = applyChange(change);
@@ -85,8 +104,7 @@ describe('applyChange', () => {
     const change: ApprovedChange = {
       changeId: 'C5',
       type: 'scope',
-      costImpact: eur(300_000),
-      affectedLineIds: ['L1'],
+      lineAdjustments: [{ lineId: 'L1', delta: eur(300_000) }],
       feeAdjustments: [
         { agentId: 'constructor', deltaFee: eur(20_000) },
         { agentId: 'designer', deltaFee: eur(15_000) },
@@ -114,8 +132,7 @@ describe('applyChange', () => {
     const change: ApprovedChange = {
       changeId: 'C5b',
       type: 'scope',
-      costImpact: eur(300_000),
-      affectedLineIds: ['L1'],
+      lineAdjustments: [{ lineId: 'L1', delta: eur(300_000) }],
       feeAdjustments: [{ agentId: 'constructor', deltaFee: eur(20_000) }],
     };
 

@@ -120,4 +120,27 @@ describe('calculateFRC', () => {
     expect(agentResult(result, 'observer').bonusMalus).toBe(0);
     expect(agentResult(result, 'observer').total).toBe(eur(120_000));
   });
+
+  it('US1.6 — reparto no divisible: la suma cuadra al céntimo y el residuo va al de mayor %', () => {
+    // Ahorro de 101 céntimos repartido 30/30/40 %. 30 % = 30,3 → 30; 40 % = 40,4 → 40.
+    // Faltan 1 céntimo para cuadrar los 101 → se asigna al agente de mayor % (constructor, 40 %).
+    // Un Math.round por agente no protege esta regla (FR-008, redondeo determinista).
+    const input: FrcInput = {
+      currentBudget: 101, // céntimos: caso mínimo para forzar un residuo de redondeo
+      forecastAtCompletion: 0,
+      agents: [
+        { agentId: 'promoter', role: 'promoter', sharePercent: 30, guaranteedFee: 0, feeAtRisk: 0 },
+        { agentId: 'designer', role: 'designer', sharePercent: 30, guaranteedFee: 0, feeAtRisk: 0 },
+        { agentId: 'constructor', role: 'constructor', sharePercent: 40, guaranteedFee: 0, feeAtRisk: 0 },
+      ],
+    };
+
+    const result = calculateFRC(input);
+
+    expect(agentResult(result, 'promoter').bonusMalus).toBe(30);
+    expect(agentResult(result, 'designer').bonusMalus).toBe(30);
+    expect(agentResult(result, 'constructor').bonusMalus).toBe(41); // 40 + el céntimo residual
+    const suma = result.agents.reduce((acc, a) => acc + a.bonusMalus, 0);
+    expect(suma).toBe(101); // cuadra exactamente con la desviación
+  });
 });

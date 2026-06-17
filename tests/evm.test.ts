@@ -50,6 +50,23 @@ describe('calculateEVM', () => {
     expect(r.cpi).toBeCloseTo(0.923, 3);
   });
 
+  it('US2.2b — PV = 0 también es "sin datos": PV/SV/SPI nulos, nunca un 0 ni un Infinity', () => {
+    // La spec trata PV = 0 igual que "sin planificación" (FR-005): no hay base de plazo válida.
+    const input: EvmInput = {
+      lines: [{ lineId: 'L1', currentBudget: eur(20_000_000), progressPercent: 30 }],
+      actualCostEntries: [{ amount: eur(6_500_000) }],
+      plannedValue: 0,
+    };
+
+    const r = calculateEVM(input);
+
+    expect(r.pv).toBeNull(); // NO el 0 de entrada
+    expect(r.sv).toBeNull();
+    expect(r.spi).toBeNull(); // NO Infinity por dividir EV / 0
+    expect(r.cv).toBe(-eur(500_000)); // CV no depende de PV
+    expect(r.cpi).toBeCloseTo(0.923, 3);
+  });
+
   it('US2.3 — sin avance (EV ausente): EV y todos sus derivados son "sin datos"', () => {
     const input: EvmInput = {
       lines: [{ lineId: 'L1', currentBudget: eur(20_000_000), progressPercent: null }],
