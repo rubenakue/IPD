@@ -39,6 +39,13 @@ Una entrada por sesión de trabajo. Breve y honesto.
 - **Cómo lo resolví / qué usé de Claude Code:** ciclo TDD con la red roja de S02 como guía; cada regla de "sin datos" verificada contra su caso. El paso *refactor* no necesitó cambios: un helper puro por agregación (BAC/EV/AC/PV) y cada métrica con su condición de `null` explícita.
 - **Estado del sprint:** Adelantado. Dos de los tres cálculos críticos en verde (13/21 tests); siguiente y último del trío: S05 (`applyChange`).
 
+## 2026-06-17 (sesión S05) — 🎉 Hito H2 cerrado
+
+- **Qué hice:** Sesión S05 del roadmap (rama `005-apply-change`, delegada). Implementado `applyChange` **en verde** (8/8): los tres tipos de cambio de §9.10 — tipo 1 (incidental, sin efectos), tipo 2 (impacto en coste con destino dual contingencia/presupuesto, honorarios intactos), tipo 3 (alcance: ajuste de presupuesto + honorarios + reponderación opcional). Devuelve **efectos** (deltas por partida, movimiento de contingencia, cambios de honorarios, nuevos %), sin tocar BD (ADR-006). **Con esto la suite entera queda VERDE: 22/22** (FRC 7 + EVM 7 + applyChange 8). 🎉 **Hito H2 "Corazón en verde" cerrado**: los tres cálculos críticos del briefing, completos, puros y testeados con TDD.
+- **Qué bloqueó:** Nada. El modelo de entrada (`lineAdjustments` por partida, ajustado en la revisión del PR #27) encajó directo: `applyChange` solo propaga los efectos del cambio aprobado, sin inventar repartos.
+- **Cómo lo resolví / qué usé de Claude Code:** ciclo TDD con la red roja de S02; un `switch` exhaustivo sobre el tipo de cambio y un helper por tipo. Refactor no necesario (la función nació declarativa). Pasada de coherencia (T014): tipos compartidos en `domain.ts`, céntimos enteros y "sin datos"=`null` consistentes en los tres cálculos, sin duplicar lógica de redondeo (cada uno tiene la suya, específica).
+- **Estado del sprint:** Adelantado. **H2 cerrado** (corazón económico en verde). Siguiente hito: H3 — Persistencia (S06 spec de persistencia → S07 Prisma/Postgres en Docker).
+
 ## AAAA-MM-DD
 
 - **Horas trabajadas:**
