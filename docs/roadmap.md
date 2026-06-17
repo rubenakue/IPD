@@ -83,8 +83,8 @@ El orden es estrictamente secuencial — cada sesión asume hechas las anteriore
 > **Por qué los cálculos van ANTES que la base de datos:** son funciones puras — no necesitan Docker, ni Express, ni React. Es TDD en su forma más limpia (ideal para aprender), resuelve pronto los tests innegociables del briefing, y si después algo se atasca en infraestructura, el activo más valioso para julio ya existe.
 
 #### S2 — Harness de tests y linting (`/tdd-harness`)
-- [ ] Ejecutar `/tdd-harness`: instala Vitest, scripts `pnpm test` / `pnpm test:watch`, esqueletos puros en `src/lib/calculations/` (lanzan `Not implemented`), tipos mínimos en `src/types/domain.ts`, y los tests de los 3 cálculos **en rojo**.
-- [ ] Configurar ESLint + script `pnpm lint` (el briefing lo exige antes del primer código de negocio, que llega en S3).
+- [x] Ejecutar `/tdd-harness`: instala Vitest, scripts `pnpm test` / `pnpm test:watch`, esqueletos puros en `src/lib/calculations/` (lanzan `Not implemented`), tipos mínimos en `src/types/domain.ts`, y los tests de los 3 cálculos **en rojo**.
+- [x] Configurar ESLint + script `pnpm lint` (el briefing lo exige antes del primer código de negocio, que llega en S3).
 
 **Hecho cuando:** `pnpm test` falla por asserts esperados (no por configuración rota); `pnpm lint` y `pnpm typecheck` pasan.
 
