@@ -108,9 +108,9 @@ El orden es estrictamente secuencial — cada sesión asume hechas las anteriore
 ### H3 — Persistencia
 
 #### S6 — Base de datos viva
-- [ ] Instalar Docker Desktop (la primera vez lleva un rato — es parte de la sesión, no un imprevisto).
-- [ ] Arrancar Postgres con el comando del ADR-001 (`docker run … postgres:17`).
-- [ ] `pnpm add -D prisma && pnpm add @prisma/client` + `npx prisma init`; `DATABASE_URL` en `.env` y `.env.example` actualizado.
+- [x] Instalar Docker Desktop (la primera vez lleva un rato — es parte de la sesión, no un imprevisto).
+- [x] Arrancar Postgres con el comando del ADR-001 (`docker run … postgres:17`).
+- [x] `pnpm add -D prisma && pnpm add @prisma/client` + `npx prisma init`; `DATABASE_URL` en `.env` y `.env.example` actualizado.
 
 **Hecho cuando:** `npx prisma migrate dev` conecta y crea la BD sin errores.
 

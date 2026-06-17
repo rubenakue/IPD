@@ -46,6 +46,14 @@ Una entrada por sesión de trabajo. Breve y honesto.
 - **Cómo lo resolví / qué usé de Claude Code:** ciclo TDD con la red roja de S02; un `switch` exhaustivo sobre el tipo de cambio y un helper por tipo. Refactor no necesario (la función nació declarativa). Pasada de coherencia (T014): tipos compartidos en `domain.ts`, céntimos enteros y "sin datos"=`null` consistentes en los tres cálculos, sin duplicar lógica de redondeo (cada uno tiene la suya, específica).
 - **Estado del sprint:** Adelantado. **H2 cerrado** (corazón económico en verde). Siguiente hito: H3 — Persistencia (S06 spec de persistencia → S07 Prisma/Postgres en Docker).
 
+## 2026-06-17 (sesión S06) — arranca el hito H3 (Persistencia)
+
+- **Qué hice:** Sesión S06 del roadmap (rama `006-db-prisma-setup`, delegada). Levantado **PostgreSQL 17 en Docker** (contenedor `ipd-postgres`, BD `ipd`, puerto 5432) e inicializado **Prisma 7.8.0** (`prisma` -D + `@prisma/client`). `npx prisma init` generó `prisma/schema.prisma` (datasource PostgreSQL) y `prisma.config.ts`. Conexión Prisma↔Postgres **verificada**: `prisma migrate dev` responde "Already in sync" (aún sin modelos → sin migración basura; el esquema es S07).
+- **Qué bloqueó:** Tres fricciones del stack moderno, todas resueltas. (1) pnpm 11 bloquea los build scripts de Prisma → aprobados en `pnpm-workspace.yaml` (`allowBuilds`), porque pnpm 11 ya no lee el campo `pnpm` de `package.json`. (2) Prisma 7 genera `prisma.config.ts` con `import "dotenv/config"`, pero evité añadir `dotenv` usando la carga nativa de `.env` de Node 22 (`process.loadEnvFile`). (3) Los archivos `.env*` están protegidos por permisos (no los puedo leer ni escribir): la credencial la pone Rubén (ver abajo).
+- **Cómo lo resolví / qué usé de Claude Code:** verifiqué la conexión pasando `DATABASE_URL` inline al comando (Node prioriza el entorno sobre el `.env`), demostrando que toda la tubería funciona sin que el agente toque el secreto. `pnpm typecheck` / `lint` / `test` (23/23) siguen verdes.
+- **Configuración local (credencial):** el `DATABASE_URL` vive en `.env` (gitignored); el formato y el placeholder están en `.env.example`. Las credenciales nunca se escriben en archivos versionados.
+- **Estado del sprint:** En camino. BD viva y Prisma conectado; siguiente: S07 (esquema núcleo + seed, guiado por la tabla "almacenado vs derivado" de §7).
+
 ## AAAA-MM-DD
 
 - **Horas trabajadas:**

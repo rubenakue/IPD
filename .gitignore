@@ -148,7 +148,12 @@ vite.config.ts.timestamp-*
 # Documentación inicial (solo local — contiene material real de cliente de Vivare)
 /Doc inicial/
 
+# Codex
+.codex/
+
 # Claude Code (personal, no compartir)
 .claude/settings.local.json
 .claude/tmp/
 CLAUDE.local.md
+
+/src/generated/prisma
