@@ -115,4 +115,19 @@ describe('calculateEVM', () => {
 
     expect(r.ac).toBe(eur(6_000_000)); // 6,5 M − 0,5 M
   });
+
+  it('US2.6 — EV redondea una vez sobre el total, no partida a partida', () => {
+    const input: EvmInput = {
+      lines: [
+        { lineId: 'L1', currentBudget: 1, progressPercent: 50 },
+        { lineId: 'L2', currentBudget: 1, progressPercent: 50 },
+      ],
+      actualCostEntries: [],
+      plannedValue: null,
+    };
+
+    const r = calculateEVM(input);
+
+    expect(r.ev).toBe(1); // round((0,5 + 0,5) céntimos), no round(0,5) + round(0,5)
+  });
 });

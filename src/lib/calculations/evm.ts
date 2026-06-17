@@ -35,15 +35,15 @@ function sumCurrentBudget(lines: readonly BudgetLineProgress[]): number {
 /** EV = Σ (presupuesto vigente × % avance). Devuelve `null` si NINGUNA partida tiene
  *  avance registrado (sin avance ≠ 0 % de avance), regla "sin datos" de §9.6. */
 function sumEarnedValue(lines: readonly BudgetLineProgress[]): number | null {
-  let earned = 0;
+  let earnedBeforeRounding = 0;
   let hasProgress = false;
   for (const line of lines) {
     if (line.progressPercent !== null) {
       hasProgress = true;
-      earned += Math.round((line.currentBudget * line.progressPercent) / 100);
+      earnedBeforeRounding += (line.currentBudget * line.progressPercent) / 100;
     }
   }
-  return hasProgress ? earned : null;
+  return hasProgress ? Math.round(earnedBeforeRounding) : null;
 }
 
 /** AC = coste real acumulado = Σ de los asientos; los contra-asientos (negativos) restan. */
