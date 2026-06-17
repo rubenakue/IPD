@@ -100,6 +100,15 @@ describe('applyChange', () => {
     expect(effects.budgetAdjustments).toEqual([]);
   });
 
+  it('US3.4c — tipo 2 sin destino económico falla en vez de devolver efectos vacíos', () => {
+    const change: ApprovedChange = {
+      changeId: 'C4c',
+      type: 'costImpact',
+    };
+
+    expect(() => applyChange(change)).toThrow('Cost impact changes require a target');
+  });
+
   it('US3.5 — tipo 3 (alcance): ajusta presupuesto, honorarios y repondera (los nuevos % suman 100)', () => {
     const change: ApprovedChange = {
       changeId: 'C5',

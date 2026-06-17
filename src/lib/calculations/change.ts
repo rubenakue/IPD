@@ -38,13 +38,16 @@ function costImpactEffects(change: ApprovedChange): ChangeEffects {
       newShares: null,
     };
   }
-  // Destino presupuesto: los ajustes por partida ya vienen detallados en el cambio.
-  return {
-    budgetAdjustments: [...(change.lineAdjustments ?? [])],
-    contingencyDelta: 0,
-    feeAdjustments: [],
-    newShares: null,
-  };
+  if (change.target === 'budget') {
+    // Destino presupuesto: los ajustes por partida ya vienen detallados en el cambio.
+    return {
+      budgetAdjustments: [...(change.lineAdjustments ?? [])],
+      contingencyDelta: 0,
+      feeAdjustments: [],
+      newShares: null,
+    };
+  }
+  throw new Error('Cost impact changes require a target');
 }
 
 /** Tipo 3 — cambio de alcance. Ajusta el presupuesto (por partida) y los honorarios; la
