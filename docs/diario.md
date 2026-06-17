@@ -32,6 +32,13 @@ Una entrada por sesión de trabajo. Breve y honesto.
 - **Cómo lo resolví / qué usé de Claude Code:** ciclo TDD con el rojo de S02 como red de seguridad; cada caso de §9.5 verificado al céntimo (incluido el de redondeo no divisible que añadió la revisión del PR #27). El paso *refactor* no necesitó cambios: la función nació con helpers puros y nombrados, sin duplicar la lógica de redondeo. La revisión del PR #28 (Codex) cazó un bug sutil: en sobrecoste **sin** agotamiento del fondo, el promotor absorbía el céntimo de redondeo en lugar de asignarlo al agente de mayor % (mezclaba la regla 7 con la 4). Lo arreglé separando el sobrecoste en dos fases —reparto proporcional con residuo al mayor %, y exceso de los topados al promotor— con un test que lo reproduce (US1.7, red→green).
 - **Estado del sprint:** Adelantado. Primer cálculo crítico en verde; siguiente: S04 (`calculateEVM`, atento al desbordamiento del EAC ya anotado en S02).
 
+## 2026-06-17 (sesión S04)
+
+- **Qué hice:** Sesión S04 del roadmap (rama `004-calculate-evm`, delegada). Implementado `calculateEVM` **en verde** (6/6): las fórmulas exactas de §9.6 (CV, SV, CPI, SPI, EAC, ETC, VAC) y TODOS los estados "sin datos" (sin avance → EV y derivados; AC=0 → CPI/EAC/ETC/VAC pero CV=EV; PV=0 o sin plan → PV/SV/SPI). El EV nace del avance físico por partida; el AC es neto de contra-asientos.
+- **Qué bloqueó:** El hallazgo de S02 se materializó: `EAC = BAC × AC / EV` desborda `Number.MAX_SAFE_INTEGER` en el producto intermedio (~1,3·10^18). Resuelto calculando **solo el EAC con `BigInt`** y redondeando al céntimo; el resto de métricas caben de sobra en `number` seguro. El test US2.1 (que ya esperaba el valor correcto) pasó con esta técnica.
+- **Cómo lo resolví / qué usé de Claude Code:** ciclo TDD con la red roja de S02 como guía; cada regla de "sin datos" verificada contra su caso. El paso *refactor* no necesitó cambios: un helper puro por agregación (BAC/EV/AC/PV) y cada métrica con su condición de `null` explícita.
+- **Estado del sprint:** Adelantado. Dos de los tres cálculos críticos en verde (13/21 tests); siguiente y último del trío: S05 (`applyChange`).
+
 ## AAAA-MM-DD
 
 - **Horas trabajadas:**
