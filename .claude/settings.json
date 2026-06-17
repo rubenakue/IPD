@@ -3,6 +3,12 @@
     "defaultMode": "acceptEdits",
     "allow": [
       "Read",
+      "Read(.env)",
+      "Read(.env.*)",
+      "Edit(.env)",
+      "Edit(.env.*)",
+      "Write(.env)",
+      "Write(.env.*)",
       "Edit(/src/**)",
       "Edit(/tests/**)",
       "Edit(/docs/**)",
@@ -40,10 +46,6 @@
       "Bash(rm *)"
     ],
     "deny": [
-      "Read(.env)",
-      "Read(.env.*)",
-      "Edit(.env)",
-      "Edit(.env.*)",
       "Read(**/*.pem)",
       "Read(**/*.key)",
       "Edit(**/*.pem)",
