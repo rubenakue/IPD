@@ -27,93 +27,94 @@ export function calculateFRC(input: FrcInput): FrcResult {
   return { deviation, agents };
 }
 
-/** Reparte la desviación en bonus (ahorro) o malus (sobrecoste) por agente. */
+/** Reparte la desviación en bonus (ahorro, positivo) o malus (sobrecoste, negativo). */
 function computeBonusMalus(
   deviation: number,
   agents: readonly AgentFrcTerms[],
 ): Map<string, number> {
-  if (deviation > 0) return distributeSaving(deviation, agents);
+  // Ahorro: reparto proporcional sin tope (regla 1). El residuo de redondeo va al
+  // agente de mayor % para cuadrar exactamente con el total (regla 7).
+  if (deviation > 0) return distributeProportional(deviation, agents);
   if (deviation < 0) return distributeOverrun(-deviation, agents);
   return new Map(); // equilibrio: nadie gana ni pierde
 }
 
-// ── Ahorro ──────────────────────────────────────────────────────────────────
-// Se reparte según el porcentaje de cada agente, sin tope (regla 1). El residuo
-// de redondeo se asigna al agente de mayor % para que la suma cuadre exactamente
-// con el ahorro total (regla 7).
-function distributeSaving(
-  saving: number,
+// ── Sobrecoste ────────────────────────────────────────────────────────────────
+// Dos fases que mantienen separadas dos reglas distintas de §9.5:
+//   Fase A — cada agente asume su % del sobrecoste; el residuo de redondeo va al de
+//            mayor % (regla 7). Es el reparto "ideal", aún sin topes.
+//   Fase B — constructor y proyectista topan su pérdida en sus honorarios en riesgo
+//            (regla 2); SOLO el exceso real sobre ese tope lo absorbe el promotor
+//            (reglas 3 y 4). El residuo de redondeo NO se mezcla con ese exceso.
+function distributeOverrun(
+  overrun: number,
+  agents: readonly AgentFrcTerms[],
+): Map<string, number> {
+  const idealLoss = distributeProportional(overrun, agents); // Fase A (montos positivos)
+
+  const result = new Map<string, number>();
+  let cappedExcess = 0;
+  for (const agent of agents) {
+    const share = idealLoss.get(agent.agentId) ?? 0;
+    if (agent.role === 'promoter') {
+      result.set(agent.agentId, -share); // su parte; el exceso de otros se suma luego
+    } else {
+      const loss = Math.min(share, agent.feeAtRisk); // tope = honorarios en riesgo
+      result.set(agent.agentId, -loss);
+      cappedExcess += share - loss; // lo que supera el tope (≥ 0)
+    }
+  }
+
+  // Fase B: el exceso de los topados lo absorben los promotores (reglas 3 y 4).
+  addLossToPromoters(cappedExcess, agents.filter((a) => a.role === 'promoter'), result);
+  return result;
+}
+
+/** Reparto proporcional al %, redondeado al céntimo, con el residuo asignado al agente
+ *  de mayor % para que la suma cuadre exactamente con el total (regla 7). Devuelve montos
+ *  positivos; el signo (bonus/malus) lo aplica quien llama. */
+function distributeProportional(
+  total: number,
   agents: readonly AgentFrcTerms[],
 ): Map<string, number> {
   const result = new Map<string, number>();
   let assigned = 0;
   for (const agent of agents) {
-    const share = Math.round((saving * agent.sharePercent) / 100);
+    const share = Math.round((total * agent.sharePercent) / 100);
     result.set(agent.agentId, share);
     assigned += share;
   }
-  addResidualToLargestShare(saving - assigned, agents, result);
-  return result;
-}
-
-// ── Sobrecoste ────────────────────────────────────────────────────────────────
-// Constructor y proyectista asumen su porcentaje hasta agotar sus honorarios en
-// riesgo: ese es su tope de pérdida (regla 2). El/los promotores asumen su parte
-// SIN tope y, además, absorben el exceso que supere el fondo en riesgo de los
-// demás (reglas 3 y 4). Se modela como "resto": primero las pérdidas topadas, y
-// el promotor absorbe todo lo que falta para cuadrar la desviación (regla 7).
-function distributeOverrun(
-  overrun: number,
-  agents: readonly AgentFrcTerms[],
-): Map<string, number> {
-  const result = new Map<string, number>();
-  const promoters = agents.filter((agent) => agent.role === 'promoter');
-  const capped = agents.filter((agent) => agent.role !== 'promoter');
-
-  let cappedLoss = 0;
-  for (const agent of capped) {
-    const theoretical = Math.round((overrun * agent.sharePercent) / 100);
-    const loss = Math.min(theoretical, agent.feeAtRisk); // tope = honorarios en riesgo
-    result.set(agent.agentId, -loss); // malus = negativo
-    cappedLoss += loss;
+  const residual = total - assigned;
+  if (residual !== 0) {
+    const top = largestShareAgent(agents);
+    if (top) result.set(top.agentId, (result.get(top.agentId) ?? 0) + residual);
   }
-
-  // El resto = parte del promotor + exceso de los demás + residuo de redondeo.
-  distributePromoterLoss(overrun - cappedLoss, promoters, result);
   return result;
 }
 
-/** Reparte la pérdida restante entre los promotores (proporcional al %, residuo al
- *  mayor). Con un único promotor —el caso normal en IPD— recibe todo el resto. */
-function distributePromoterLoss(
-  remainder: number,
+/** Suma una pérdida extra (el exceso de los topados) a los promotores, proporcional a su
+ *  %, con el residuo al de mayor %. Con un único promotor —el caso normal en IPD— recibe todo. */
+function addLossToPromoters(
+  excess: number,
   promoters: readonly AgentFrcTerms[],
   result: Map<string, number>,
 ): void {
-  if (promoters.length === 0) return; // entrada inválida (siempre hay promotor); no rompe
+  if (excess === 0 || promoters.length === 0) return;
   const totalPercent = promoters.reduce((sum, agent) => sum + agent.sharePercent, 0);
   let assigned = 0;
   for (const agent of promoters) {
-    const loss =
+    const extra =
       totalPercent > 0
-        ? Math.round((remainder * agent.sharePercent) / totalPercent)
-        : Math.round(remainder / promoters.length);
-    result.set(agent.agentId, -loss);
-    assigned += loss;
+        ? Math.round((excess * agent.sharePercent) / totalPercent)
+        : Math.round(excess / promoters.length);
+    result.set(agent.agentId, (result.get(agent.agentId) ?? 0) - extra);
+    assigned += extra;
   }
-  addResidualToLargestShare(-(remainder - assigned), promoters, result);
-}
-
-/** Suma el residuo de redondeo al agente de mayor % (>0), para que el reparto
- *  cuadre exactamente con el total (regla 7). `residual` ya trae el signo correcto. */
-function addResidualToLargestShare(
-  residual: number,
-  agents: readonly AgentFrcTerms[],
-  result: Map<string, number>,
-): void {
-  if (residual === 0) return;
-  const top = largestShareAgent(agents);
-  if (top) result.set(top.agentId, (result.get(top.agentId) ?? 0) + residual);
+  const residual = excess - assigned;
+  if (residual !== 0) {
+    const top = largestShareAgent(promoters);
+    if (top) result.set(top.agentId, (result.get(top.agentId) ?? 0) - residual);
+  }
 }
 
 /** Agente con mayor porcentaje de reparto (>0). Empate → el primero (determinista). */
