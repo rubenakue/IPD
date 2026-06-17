@@ -95,8 +95,8 @@ Single project (briefing §7): `src/lib/calculations/`, `src/types/`, `tests/` e
 
 ### Implementation for User Story 3
 
-- [ ] T012 [US3] Implementar `applyChange` en `src/lib/calculations/change.ts`: devuelve estructura de efectos según tipo; no ejecuta escrituras; ajustes admiten valores negativos. Iterar hasta verde.
-- [ ] T013 [US3] Refactor con tests en verde.
+- [x] T012 [US3] Implementar `applyChange` en `src/lib/calculations/change.ts`: devuelve estructura de efectos según tipo; no ejecuta escrituras; ajustes admiten valores negativos. Iterar hasta verde.
+- [x] T013 [US3] Refactor con tests en verde.
 
 **Checkpoint**: `tests/change.test.ts` verde. 🎉 Los tres cálculos en verde = hito H2 cerrado.
 
@@ -104,8 +104,8 @@ Single project (briefing §7): `src/lib/calculations/`, `src/types/`, `tests/` e
 
 ## Phase 6: Polish & Cross-Cutting — cierre de S5
 
-- [ ] T014 Pasada de coherencia: nombres y tipos compartidos en `domain.ts` consistentes entre los tres cálculos; sin duplicación de helpers (p. ej. redondeo).
-- [ ] T015 `/verify` (typecheck + lint + tests) y entrada en `docs/diario.md`.
+- [x] T014 Pasada de coherencia: nombres y tipos compartidos en `domain.ts` consistentes entre los tres cálculos; sin duplicación de helpers (p. ej. redondeo).
+- [x] T015 `/verify` (typecheck + lint + tests) y entrada en `docs/diario.md`.
 
 ---
 

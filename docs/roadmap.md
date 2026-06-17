@@ -99,7 +99,7 @@ El orden es estrictamente secuencial — cada sesión asume hechas las anteriore
 **Hecho cuando:** tests de EVM verdes, incluidos los de "sin datos".
 
 #### S5 — `applyChange()` en verde
-- [ ] Tipo 1 (solo registro) → tipo 2 con destino dual (contingencia / ajuste) → tipo 3 (honorarios + reponderación opcional). La función devuelve **efectos**, no toca ninguna BD (ADR-006).
+- [x] Tipo 1 (solo registro) → tipo 2 con destino dual (contingencia / ajuste) → tipo 3 (honorarios + reponderación opcional). La función devuelve **efectos**, no toca ninguna BD (ADR-006).
 
 **Hecho cuando:** `pnpm test` completamente verde. 🎉 El corazón del producto late — commit y entrada de diario destacada.
 
