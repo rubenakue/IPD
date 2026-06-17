@@ -56,10 +56,10 @@ El orden es estrictamente secuencial — cada sesión asume hechas las anteriore
 ### H0 — Organización
 
 #### S0 — Tablero GitHub `(sesión corta, ~1-2 h)`
-- [ ] Crear GitHub Project "IPD Platform" en el repo: vista Board (Backlog / En curso / Hecho) + campo `Hito`.
-- [ ] Crear milestones H1–H8 y una issue por sesión (título: `S07 — Esquema Prisma núcleo`), cada una con su checklist copiado de aquí. *(Claude Code puede generarlas con `gh` en un minuto — pídeselo.)*
-- [ ] Labels por área: `calculations`, `auth`, `budget`, `frc`, `dashboard`, `changes`, `infra`, `docs`.
-- [ ] Commit de este roadmap.
+- [x] Crear GitHub Project "IPD Platform" en el repo: vista Board (Backlog / En curso / Hecho) + campo `Hito`.
+- [x] Crear milestones H1–H8 y una issue por sesión (título: `S07 — Esquema Prisma núcleo`), cada una con su checklist copiado de aquí. *(Claude Code puede generarlas con `gh` en un minuto — pídeselo.)*
+- [x] Labels por área: `calculations`, `auth`, `budget`, `frc`, `dashboard`, `changes`, `infra`, `docs`.
+- [x] Commit de este roadmap.
 
 **Hecho cuando:** el tablero muestra las sesiones en orden y la primera está en "Backlog".
 
@@ -70,9 +70,9 @@ El orden es estrictamente secuencial — cada sesión asume hechas las anteriore
 ### H1 — Método
 
 #### S1 — Constitución y primera spec (`/sdd-speckit`)
-- [ ] Ejecutar `/sdd-speckit`: instala la CLI `specify`, crea `.specify/` y redacta la constitución contigo. Material de entrada: §8 (principios) y §18 (criterios de éxito) de [concepto-global.md](concepto-global.md) — están escritos para esto.
-- [ ] Primera spec con `/speckit.specify`: **"cálculos críticos"** (calculateFRC, calculateEVM, applyChange). Material: §9.5, §9.6 (fórmulas exactas) y §9.10 del concepto + ADR-005/006.
-- [ ] `/speckit.clarify` hasta que no queden ambigüedades; luego `/speckit.plan` y `/speckit.tasks`.
+- [x] Ejecutar `/sdd-speckit`: instala la CLI `specify`, crea `.specify/` y redacta la constitución contigo. Material de entrada: §8 (principios) y §18 (criterios de éxito) de [concepto-global.md](concepto-global.md) — están escritos para esto.
+- [x] Primera spec con `/speckit.specify`: **"cálculos críticos"** (calculateFRC, calculateEVM, applyChange). Material: §9.5, §9.6 (fórmulas exactas) y §9.10 del concepto + ADR-005/006.
+- [x] `/speckit.clarify` hasta que no queden ambigüedades; luego `/speckit.plan` y `/speckit.tasks`.
 
 **Hecho cuando:** existe `.specify/memory/constitution.md` aprobada por ti y la spec de cálculos con sus tareas.
 
