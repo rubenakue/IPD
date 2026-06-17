@@ -1,0 +1,5 @@
+# Ajustes de pnpm. Prisma necesita ejecutar sus build scripts (postinstall) para
+# preparar los query/migration engines; pnpm los bloquea por defecto y aquí se aprueban.
+allowBuilds:
+  '@prisma/engines': true
+  prisma: true
