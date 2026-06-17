@@ -17,6 +17,14 @@ Una entrada por sesión de trabajo. Breve y honesto.
 - **Cómo lo resolví / qué usé de Claude Code:** Al ser sesión delegada, las preguntas de `/speckit.clarify` las resolvió el propio agente citando `docs/concepto-global.md` (§9.5/§9.6/§9.10) y quedaron registradas en la sección Clarifications de la spec para mi revisión. La spec incluye casos numéricos exactos al céntimo que guiarán los tests de S2.
 - **Estado del sprint:** Adelantado. SDD montado; siguiente: S02 (`/tdd-harness`, tests en rojo).
 
+## 2026-06-17
+
+- **Qué hice:** Sesión S02 del roadmap (`/tdd-harness`, rama `002-tdd-harness`, delegada). Montado el harness de tests: **Vitest 4** + **ESLint 10** (flat config, cero `any`), con scripts `test`/`test:watch`/`lint`. Definidos los tipos de entrada/salida de los tres cálculos en `src/types/domain.ts` (céntimos enteros, "sin datos" = `null`), creados los esqueletos puros (`frc.ts`/`evm.ts`/`change.ts` con `throw new Error('Not implemented')`) y escritos los tres archivos de test (17 casos) cubriendo todos los escenarios de aceptación de la spec. Los tres cálculos quedan **en rojo**: ese es el estado correcto antes de implementar (S3–S5).
+- **Qué bloqueó:** (1) ESLint linteaba los hooks `.cjs` de `.claude/` y `.codex/` (90 errores ajenos al producto) → resuelto excluyéndolos en `ignores` (el lint solo vigila el código de negocio). (2) Duda de si el hook de Stop o un git hook bloquearían el cierre con tests en rojo → verificado que el Stop solo hace `tsc --noEmit` (no tests) y que no hay pre-commit real: TDD y los hooks conviven sin fricción.
+- **Hallazgo:** escribir el test del EVM destapó que `EAC = round(BAC × AC / EV)` desborda `Number.MAX_SAFE_INTEGER` en el producto intermedio (~1,3·10^18). Anotado en el test y en `tasks.md` para implementarlo sin pérdida de precisión en S4. Es justo lo que el TDD debe revelar pronto.
+- **Cómo lo resolví / qué usé de Claude Code:** el rol `tdd-harness` en modo profesor (red-green-refactor explicado, rojo mostrado de verdad en terminal). El harness es agnóstico: las implementaciones llegarán de test en test, spec en mano.
+- **Estado del sprint:** En camino. Harness listo y los 3 cálculos en rojo; siguiente: S03 (`calculateFRC` hasta verde).
+
 ## AAAA-MM-DD
 
 - **Horas trabajadas:**
