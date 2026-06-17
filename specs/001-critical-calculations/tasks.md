@@ -57,8 +57,8 @@ Single project (briefing §7): `src/lib/calculations/`, `src/types/`, `tests/` e
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] Implementar `calculateFRC` en `src/lib/calculations/frc.ts`: desviación = vigente − previsión; reparto por porcentaje; límite de pérdida = honorarios en riesgo (constructor/proyectista); promotor sin límite y absorbe el exceso; redondeo determinista que cuadra la suma. Iterar caso a caso hasta verde.
-- [ ] T007 [US1] Refactor con los tests en verde (claridad, nombres, sin duplicación). Sin cambiar comportamiento.
+- [x] T006 [US1] Implementar `calculateFRC` en `src/lib/calculations/frc.ts`: desviación = vigente − previsión; reparto por porcentaje; límite de pérdida = honorarios en riesgo (constructor/proyectista); promotor sin límite y absorbe el exceso; redondeo determinista que cuadra la suma. Iterar caso a caso hasta verde.
+- [x] T007 [US1] Refactor con los tests en verde (claridad, nombres, sin duplicación). Sin cambiar comportamiento.
 
 **Checkpoint**: `tests/frc.test.ts` verde; `frc.ts` sin I/O.
 

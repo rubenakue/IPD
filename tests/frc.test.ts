@@ -143,4 +143,27 @@ describe('calculateFRC', () => {
     const suma = result.agents.reduce((acc, a) => acc + a.bonusMalus, 0);
     expect(suma).toBe(101); // cuadra exactamente con la desviación
   });
+
+  it('US1.7 — sobrecoste no divisible SIN agotamiento: el residuo va al de mayor %, no al promotor', () => {
+    // Sobrecoste de 101 céntimos, 30/40/30, con honorarios en riesgo altos (nadie topa).
+    // 30 % = 30,3 → 30; 40 % = 40,4 → 40. El céntimo que falta va al de mayor % (constructor),
+    // NO al promotor: aquí no hay exceso de tope que el promotor deba absorber (§9.5 regla 7 vs 4).
+    const input: FrcInput = {
+      currentBudget: 0,
+      forecastAtCompletion: 101, // sobrecoste de 101 céntimos
+      agents: [
+        { agentId: 'promoter', role: 'promoter', sharePercent: 30, guaranteedFee: 0, feeAtRisk: 0 },
+        { agentId: 'constructor', role: 'constructor', sharePercent: 40, guaranteedFee: 0, feeAtRisk: eur(1_000_000) },
+        { agentId: 'designer', role: 'designer', sharePercent: 30, guaranteedFee: 0, feeAtRisk: eur(1_000_000) },
+      ],
+    };
+
+    const result = calculateFRC(input);
+
+    expect(agentResult(result, 'promoter').bonusMalus).toBe(-30);
+    expect(agentResult(result, 'constructor').bonusMalus).toBe(-41); // mayor % absorbe el céntimo
+    expect(agentResult(result, 'designer').bonusMalus).toBe(-30);
+    const suma = result.agents.reduce((acc, a) => acc + a.bonusMalus, 0);
+    expect(suma).toBe(-101);
+  });
 });

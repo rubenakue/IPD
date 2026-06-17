@@ -89,7 +89,7 @@ El orden es estrictamente secuencial — cada sesión asume hechas las anteriore
 **Hecho cuando:** `pnpm test` falla por asserts esperados (no por configuración rota); `pnpm lint` y `pnpm typecheck` pasan.
 
 #### S3 — `calculateFRC()` en verde
-- [ ] Ciclo red→green→refactor caso a caso, en este orden: ahorro repartido → sobrecoste repartido → límite de honorarios en riesgo → **exceso absorbido por el promotor** → agente al 0% → redondeos que cuadran → reponderación. (Los casos están enumerados en §9.5.)
+- [x] Ciclo red→green→refactor caso a caso, en este orden: ahorro repartido → sobrecoste repartido → límite de honorarios en riesgo → **exceso absorbido por el promotor** → agente al 0% → redondeos que cuadran → reponderación. (Los casos están enumerados en §9.5.)
 
 **Hecho cuando:** tests de FRC verdes; la función no importa nada de I/O.
 
