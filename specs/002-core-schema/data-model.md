@@ -40,7 +40,7 @@ No tiene rol global (FR-001/FR-002).
 | code | String @unique | código interno |
 | clientName | String | cliente/promotor |
 | status | ProjectStatus @default(ACTIVE) | active/archived (§7) |
-| activePhaseId | String? @unique | puntero a la fase activa |
+| activePhaseId | String? @unique | puntero a la fase activa; la migración SQL exige que pertenezca al mismo `Project` |
 | plannedStartDate / plannedEndDate | DateTime? | |
 | actualStartDate / actualEndDate | DateTime? | |
 | deviationAlertThresholdBp | Int? | umbral de alerta en puntos básicos (p. ej. 500 = 5 %) |
@@ -107,7 +107,7 @@ No tiene rol global (FR-001/FR-002).
 | amount | BigInt | céntimos, con signo |
 | type | RealCostType @default(NORMAL) | normal / reversal |
 | reversalOfId | String? | self-relation al original (solo reversal) |
-| reason | String? | obligatorio si reversal (validación de app/seed) |
+| reason | String? | obligatorio si reversal por `CHECK` SQL; nulo si normal |
 | recordedById | String | User que imputó |
 | createdAt | DateTime | **sin `updatedAt`: inmutable** |
 | _rel_ | budgetLine, recordedBy `User`, reversalOf `RealCost?` @relation("Reversals"), reversals `RealCost[]` @relation("Reversals") | |
@@ -154,7 +154,7 @@ Presupuesto vigente de partida = `baseAmount` + Σ `delta` de ajustes aprobados 
 
 - `Project.phases` → `Phase[]` (relación `ProjectPhases`, FK `Phase.projectId`).
 - `Project.activePhaseId` (`@unique`) → `Phase` (relación `ActivePhase`); su inverso es `Phase.activeFor Project?`.
-- Para evitar ciclos de borrado, las FKs usan `onDelete: Cascade` desde el lado del proyecto en `phases` y `NoAction`/`SetNull` en `activePhase` (se ajusta al implementar si Prisma exige resolver el ciclo).
+- La migración añade una `CONSTRAINT TRIGGER` para impedir que la fase activa apunte a una fase de otro proyecto. Se usa trigger porque un `CHECK` no puede consultar `Phase` y Prisma no puede representar la variante compuesta manteniendo el `ON DELETE SET NULL` parcial.
 
 ## Datos del seed (estado demostrable, FR-013)
 
@@ -166,6 +166,6 @@ Presupuesto vigente de partida = `baseAmount` + Σ `delta` de ajustes aprobados 
 ## Reglas de validación (de los requisitos)
 
 - Importes siempre enteros (céntimos); sin decimales.
-- `RealCost` nunca se actualiza ni borra; corrección = nuevo apunte `REVERSAL` con `reason` y `reversalOfId`.
+- `RealCost` nunca se actualiza ni borra; corrección = nuevo apunte `REVERSAL` con `reason` y `reversalOfId`, reforzado por constraints SQL.
 - `AuditEvent` nunca se actualiza ni borra.
 - Magnitudes derivadas (§7): ausentes del esquema por diseño (SC-004).

@@ -176,6 +176,16 @@ CREATE UNIQUE INDEX "Agent_userId_projectId_key" ON "Agent"("userId", "projectId
 -- CreateIndex
 CREATE UNIQUE INDEX "Budget_projectId_key" ON "Budget"("projectId");
 
+-- AddCheckConstraint
+ALTER TABLE "RealCost" ADD CONSTRAINT "RealCost_reversal_fields_check" CHECK (
+    ("type" = 'NORMAL' AND "reversalOfId" IS NULL AND "reason" IS NULL)
+    OR
+    ("type" = 'REVERSAL' AND "reversalOfId" IS NOT NULL AND "reason" IS NOT NULL AND btrim("reason") <> '')
+);
+
+-- AddCheckConstraint
+ALTER TABLE "RealCost" ADD CONSTRAINT "RealCost_reversal_not_self_check" CHECK ("reversalOfId" IS NULL OR "reversalOfId" <> "id");
+
 -- AddForeignKey
 ALTER TABLE "Project" ADD CONSTRAINT "Project_activePhaseId_fkey" FOREIGN KEY ("activePhaseId") REFERENCES "Phase"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
 
@@ -220,3 +230,61 @@ ALTER TABLE "AuditEvent" ADD CONSTRAINT "AuditEvent_projectId_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "AuditEvent" ADD CONSTRAINT "AuditEvent_actorUserId_fkey" FOREIGN KEY ("actorUserId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddConstraintTrigger
+-- PostgreSQL CHECK constraints cannot query Phase, and Prisma cannot model a partial
+-- ON DELETE SET NULL composite FK. This constraint trigger keeps the invariant in SQL
+-- while preserving Prisma's simple activePhase relation.
+CREATE FUNCTION "enforce_project_active_phase_same_project"()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF NEW."activePhaseId" IS NULL THEN
+        RETURN NEW;
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM "Phase"
+        WHERE "id" = NEW."activePhaseId"
+          AND "projectId" = NEW."id"
+    ) THEN
+        RAISE EXCEPTION 'Project.activePhaseId must reference a Phase from the same Project'
+            USING ERRCODE = '23514';
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+CREATE CONSTRAINT TRIGGER "Project_activePhase_same_project_check"
+AFTER INSERT OR UPDATE OF "id", "activePhaseId" ON "Project"
+DEFERRABLE INITIALLY IMMEDIATE
+FOR EACH ROW
+EXECUTE FUNCTION "enforce_project_active_phase_same_project"();
+
+CREATE FUNCTION "enforce_phase_active_project_same_project"()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM "Project"
+        WHERE "activePhaseId" = NEW."id"
+          AND "id" <> NEW."projectId"
+    ) THEN
+        RAISE EXCEPTION 'Active Phase cannot be moved to a different Project'
+            USING ERRCODE = '23514';
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+CREATE CONSTRAINT TRIGGER "Phase_active_project_same_project_check"
+AFTER UPDATE OF "id", "projectId" ON "Phase"
+DEFERRABLE INITIALLY IMMEDIATE
+FOR EACH ROW
+EXECUTE FUNCTION "enforce_phase_active_project_same_project"();

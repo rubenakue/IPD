@@ -86,7 +86,7 @@ model Project {
   code                      String        @unique
   clientName                String
   status                    ProjectStatus @default(ACTIVE)
-  activePhaseId             String?       @unique
+  activePhaseId             String?       @unique // SQL constraint trigger enforces that the phase belongs to this project.
   plannedStartDate          DateTime?
   plannedEndDate            DateTime?
   actualStartDate           DateTime?
@@ -174,7 +174,7 @@ model RealCost {
   amount       BigInt // céntimos, con signo
   type         RealCostType @default(NORMAL)
   reversalOfId String?
-  reason       String? // obligatorio para reversal (validación de aplicación)
+  reason       String? // SQL CHECK: required for REVERSAL, null for NORMAL
   recordedById String
   createdAt    DateTime     @default(now())
 
