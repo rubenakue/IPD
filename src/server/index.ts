@@ -11,7 +11,7 @@ function main(): void {
     process.exit(1);
   }
 
-  const app = createApp();
+  const app = createApp({ config });
   app.listen(config.PORT, () => {
     console.log(`[api] escuchando en http://localhost:${config.PORT}`);
   });

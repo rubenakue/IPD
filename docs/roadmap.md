@@ -131,9 +131,9 @@ El orden es estrictamente secuencial — cada sesión asume hechas las anteriore
 **Hecho cuando:** `curl localhost:3000/api/health` responde y un error devuelve el JSON estándar.
 
 #### S9 — Login y sesiones
-- [ ] `express-session` + `connect-pg-simple` (sesiones en Postgres) + `argon2` para contraseñas (cierra el pendiente del ADR-004).
-- [ ] `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/me`. Cookie `httpOnly`.
-- [ ] Helper de `AuditEvent` (nace aquí, §8.9): primer evento registrado en el login… no — en acciones de negocio; déjalo listo para S10+.
+- [x] `express-session` + `connect-pg-simple` (sesiones en Postgres) + `argon2` para contraseñas (cerrado en ADR-010).
+- [x] `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/me`. Cookie `httpOnly`.
+- [x] Helper de `AuditEvent` (§8.9): registra `auth.login` y `auth.logout` sin datos sensibles; queda listo para S10+.
 
 **Hecho cuando:** con `curl`: login → recibe cookie → `/api/me` devuelve el usuario; las contraseñas en BD están hasheadas.
 

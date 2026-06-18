@@ -14,7 +14,7 @@ export interface ValidationSchemas {
  * `VALIDATION_ERROR` (§14.3). Si todo cumple, sigue al handler.
  *
  * Pieza reutilizable: en S08 no hay endpoints con entrada (solo `/health`), pero
- * S09 la usará en `POST /api/login`. `req.query` es de solo lectura en Express 5,
+ * S09 la usará en `POST /api/auth/login`. `req.query` es de solo lectura en Express 5,
  * así que aquí solo se valida; cada handler usará luego los datos ya validados.
  */
 export function validate(schemas: ValidationSchemas): RequestHandler {
