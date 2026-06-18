@@ -125,8 +125,8 @@ El orden es estrictamente secuencial — cada sesión asume hechas las anteriore
 ### H4 — API y autenticación
 
 #### S8 — Spec de auth + esqueleto Express
-- [ ] Spec Kit `specify` **"autenticación y roles por proyecto"** (módulo 9.1 + matriz §15 del concepto) → clarify → plan → tasks.
-- [ ] Express en `src/server/`: `/api/health`, formato de error estándar (§14.3), y Zod para validación (mini-ADR de la dependencia, está como pendiente en §20.2).
+- [x] Spec Kit `specify` **"autenticación y roles por proyecto"** (módulo 9.1 + matriz §15 del concepto) → clarify → plan → tasks.
+- [x] Express en `src/server/`: `/api/health`, formato de error estándar (§14.3), y Zod para validación (mini-ADR de la dependencia, está como pendiente en §20.2).
 
 **Hecho cuando:** `curl localhost:3000/api/health` responde y un error devuelve el JSON estándar.
 

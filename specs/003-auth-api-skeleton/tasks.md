@@ -25,11 +25,11 @@ description: "Task list for feature: Autenticación y roles por proyecto"
 
 ## Phase 1: Setup (S08) — infraestructura compartida
 
-- [ ] T001 Proponer (gate) e instalar dependencias: `express` y `zod` (prod), `@types/express` y `@types/node` (dev). `express-session`/`connect-pg-simple` NO (son de S09). En `package.json`.
-- [ ] T002 [P] Añadir script `"dev:server": "node --env-file=.env --experimental-strip-types --watch src/server/index.ts"` en `package.json`.
-- [ ] T003 [P] Documentar `PORT=3000` en `.env.example` (sin secretos) y reflejarlo en `.env` local.
-- [ ] T004 [P] Añadir `"prisma"` al `include` de `tsconfig.json` para que `pnpm typecheck` cubra `prisma/seed.ts` (habilitado por `@types/node`).
-- [ ] T005 Crear el árbol de carpetas de `src/server/` (`routes/`, `middlewares/`, `errors/`).
+- [x] T001 Proponer (gate) e instalar dependencias: `express` y `zod` (prod), `@types/express` y `@types/node` (dev). `express-session`/`connect-pg-simple` NO (son de S09). En `package.json`.
+- [x] T002 [P] Añadir script `"dev:server": "node --env-file=.env --experimental-strip-types --watch src/server/index.ts"` en `package.json`.
+- [ ] T003 [P] Documentar `PORT=3000` en `.env.example` (sin secretos) y reflejarlo en `.env` local. ⚠️ **Pendiente**: en esta sesión `.env*` está bloqueado por permisos (lectura y escritura); lo añade Rubén. No bloquea S08: `config.ts` usa `PORT=3000` por defecto.
+- [x] T004 [P] Añadir `"prisma"` al `include` de `tsconfig.json` para que `pnpm typecheck` cubra `prisma/seed.ts` (habilitado por `@types/node`).
+- [x] T005 Crear el árbol de carpetas de `src/server/` (`routes/`, `middlewares/`, `errors/`).
 
 **Checkpoint**: dependencias listas, `pnpm typecheck` sigue verde (incl. `seed.ts`), estructura creada.
 
@@ -41,16 +41,16 @@ description: "Task list for feature: Autenticación y roles por proyecto"
 
 **Independent Test**: `curl /api/health` → `{status:"ok"}`; ruta inexistente → `NOT_FOUND`; entrada inválida (test) → `VALIDATION_ERROR`; toda respuesta de error con la forma `{error:{code,message,details}}`.
 
-- [ ] T006 [P] [US4] `src/types/api.ts`: tipo `ErrorCode` (unión cerrada §14.3) y forma `ApiErrorResponse = { error: { code, message, details? } }`. Contrato compartido con el frontend (no en `domain.ts`).
-- [ ] T007 [P] [US4] `src/server/errors/api-error.ts`: clase `ApiError` (`code`, `httpStatus`, `message`, `details?`), mapa `ERROR_STATUS` (code→HTTP) y helpers (`ApiError.notFound`, `.unauthenticated`, `.forbidden`, …).
-- [ ] T008 [US4] `src/server/config.ts`: leer y validar `process.env` con Zod (`PORT` entero, default 3000; `NODE_ENV`). Falla clara si la config es inválida.
-- [ ] T009 [US4] `src/server/middlewares/error-handler.ts`: middleware final que traduce `ApiError` / `ZodError` / error desconocido al formato §14.3; `INTERNAL_ERROR` genérico sin filtrar trazas (FR-020); log del error real en servidor.
-- [ ] T010 [P] [US4] `src/server/middlewares/not-found.ts`: 404 de `/api/*` no resuelto → `ApiError.notFound()`.
-- [ ] T011 [P] [US4] `src/server/middlewares/validate.ts`: `validate(schema)` que valida `params`/`query`/`body` con Zod y lanza `VALIDATION_ERROR` (pieza reutilizable para S09).
-- [ ] T012 [P] [US4] `src/server/routes/health.ts`: `GET /health` → `200 { status: 'ok' }` (sin envoltorio, sin auth, sin BD).
-- [ ] T013 [US4] `src/server/app.ts`: `createApp()` que monta el JSON parser, el router `/api` (con `/health`), el `not-found` y el `error-handler` en orden; devuelve la app sin escuchar. (Depende de T007–T012.)
-- [ ] T014 [US4] `src/server/index.ts`: importa `createApp()` y `config`, hace `app.listen(PORT)` con log de arranque. (Depende de T008, T013.)
-- [ ] T015 [TEST] [US4] `tests/server/contract.test.ts`: con `fetch` nativo y `app.listen(0)` (puerto efímero), verifica health, `NOT_FOUND`, `VALIDATION_ERROR` (montando `validate` en una app de prueba) y la forma del error. Sin `supertest`.
+- [x] T006 [P] [US4] `src/types/api.ts`: tipo `ErrorCode` (unión cerrada §14.3) y forma `ApiErrorResponse = { error: { code, message, details } }`. Contrato compartido con el frontend (no en `domain.ts`).
+- [x] T007 [P] [US4] `src/server/errors/api-error.ts`: clase `ApiError` (`code`, `httpStatus`, `message`, `details`), mapa `ERROR_STATUS` (code→HTTP) y helpers (`ApiError.notFound`, `.unauthenticated`, `.forbidden`, `.validation`).
+- [x] T008 [US4] `src/server/config.ts`: leer y validar `process.env` con Zod (`PORT` entero, default 3000; `NODE_ENV`). Falla clara si la config es inválida.
+- [x] T009 [US4] `src/server/middlewares/error-handler.ts`: middleware final que traduce `ApiError` / `ZodError` / error desconocido al formato §14.3; `INTERNAL_ERROR` genérico sin filtrar trazas (FR-020); log del error real en servidor.
+- [x] T010 [P] [US4] `src/server/middlewares/not-found.ts`: 404 de ruta no resuelta → `ApiError.notFound()`.
+- [x] T011 [P] [US4] `src/server/middlewares/validate.ts`: `validate(schema)` que valida `params`/`query`/`body` con Zod y delega el `ZodError` al error handler como `VALIDATION_ERROR` (pieza reutilizable para S09).
+- [x] T012 [P] [US4] `src/server/routes/health.ts`: `GET /health` → `200 { status: 'ok' }` (sin envoltorio, sin auth, sin BD).
+- [x] T013 [US4] `src/server/app.ts`: `createApp()` que monta el JSON parser, el router `/api` (con `/health`), el `not-found` y el `error-handler` en orden; devuelve la app sin escuchar. (Depende de T007–T012.)
+- [x] T014 [US4] `src/server/index.ts`: importa `createApp()` y `loadConfig()`, hace `app.listen(PORT)` con log de arranque. (Depende de T008, T013.)
+- [x] T015 [TEST] [US4] `tests/server/contract.test.ts`: con `fetch` nativo y `app.listen(0)` (puerto efímero), verifica health, `NOT_FOUND`, `VALIDATION_ERROR` (montando `validate` en una app de prueba) y la forma del error. Sin `supertest`.
 
 **Checkpoint (Hecho de S08)**: `curl localhost:3000/api/health` responde; un error devuelve el JSON estándar; `pnpm typecheck`, `pnpm lint` y `pnpm test` pasan.
 
@@ -102,9 +102,9 @@ description: "Task list for feature: Autenticación y roles por proyecto"
 
 ## Phase 6: Polish & Cross-Cutting (S08 lo que aplica)
 
-- [ ] T033 [S08] Mini-**ADR-009** `docs/adr/009-input-validation.md`: elección de Zod (cierra §20.2.1).
-- [ ] T034 [S08] Entrada en `docs/diario.md`; marcar checkboxes (este `tasks.md` y `docs/roadmap.md` S8).
-- [ ] T035 [S08] `pnpm typecheck` + `pnpm lint` + `pnpm test` verdes; sin `console.log` ni código muerto.
+- [x] T033 [S08] Mini-**ADR-009** `docs/adr/009-input-validation.md`: elección de Zod (cierra §20.2.1).
+- [x] T034 [S08] Entrada en `docs/diario.md`; marcar checkboxes (este `tasks.md` y `docs/roadmap.md` S8).
+- [x] T035 [S08] `pnpm typecheck` + `pnpm lint` + `pnpm test` (27/27) verdes. Único `console` añadido: log de arranque (`index.ts`) y log servidor del `INTERNAL_ERROR` (`error-handler.ts`, FR-020), ambos intencionales; sin código muerto.
 
 ---
 
