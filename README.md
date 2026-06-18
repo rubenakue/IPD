@@ -6,7 +6,7 @@ Prototipo de plataforma de gestión de proyectos de construcción con metodolog�
 
 ## Requisitos
 
-- Node.js 20+ (probado en 22)
+- Node.js 22+ (el seed usa el runner nativo de TypeScript, `--experimental-strip-types`, disponible desde Node 22)
 - pnpm
 - Docker (para PostgreSQL en desarrollo)
 
