@@ -1,5 +1,6 @@
-# Ajustes de pnpm. Prisma necesita ejecutar sus build scripts (postinstall) para
-# preparar los query/migration engines; pnpm los bloquea por defecto y aquí se aprueban.
+# Ajustes de pnpm. Prisma y argon2 tienen build scripts (postinstall / build nativo) que
+# pnpm bloquea por defecto; aquí se aprueban explícitamente.
 allowBuilds:
   '@prisma/engines': true
+  argon2: true
   prisma: true

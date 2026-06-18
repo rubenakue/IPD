@@ -1,13 +1,225 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// Esquema núcleo del dominio IPD (feature 002-core-schema, S07).
+// Reglas: dinero en céntimos (BigInt); NADA derivado se persiste (§7 del concepto);
+// RealCost inmutable con contra-asiento; User ≠ Agent. Ver specs/002-core-schema/data-model.md.
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  importFileExtension = "ts"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+// ───────────────────────────── Enums ─────────────────────────────
+
+enum AgentRole {
+  PROMOTER
+  DESIGNER
+  CONSTRUCTOR
+  PROJECT_MANAGER
+  OBSERVER
+}
+
+enum ProjectStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum PhaseName {
+  VALIDATION
+  PRE_CONSTRUCTION
+  CONSTRUCTION
+  CLOSURE
+}
+
+enum BudgetStatus {
+  DRAFT
+  APPROVED
+}
+
+enum AgentStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum RealCostType {
+  NORMAL
+  REVERSAL
+}
+
+enum ChangeType {
+  INCIDENTAL
+  COST_IMPACT
+  SCOPE
+}
+
+enum ChangeStatus {
+  PROPOSED
+  EVALUATED
+  APPROVED
+  REJECTED
+}
+
+// ──────────────────────────── Modelos ────────────────────────────
+
+/// Cuenta de acceso (login). No tiene rol global: el rol es por proyecto (Agent).
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  displayName  String
+  createdAt    DateTime @default(now())
+
+  agents          Agent[]
+  recordedCosts   RealCost[]   @relation("RecordedCosts")
+  progressUpdates BudgetLine[] @relation("ProgressAuthor")
+  auditEvents     AuditEvent[] @relation("AuditActor")
+}
+
+/// Contenedor principal. "Estado del proyecto" = fase activa (puntero) + archivado.
+model Project {
+  id                        String        @id @default(cuid())
+  name                      String
+  description               String?
+  code                      String        @unique
+  clientName                String
+  status                    ProjectStatus @default(ACTIVE)
+  activePhaseId             String?       @unique
+  plannedStartDate          DateTime?
+  plannedEndDate            DateTime?
+  actualStartDate           DateTime?
+  actualEndDate             DateTime?
+  deviationAlertThresholdBp Int? // umbral de alerta en puntos básicos (500 = 5 %)
+  createdAt                 DateTime      @default(now())
+
+  phases      Phase[]      @relation("ProjectPhases")
+  activePhase Phase?       @relation("ActivePhase", fields: [activePhaseId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  agents      Agent[]
+  budget      Budget?
+  changes     Change[]
+  auditEvents AuditEvent[]
+}
+
+/// Una de las 4 fases fijas. Su estado (planned/active/closed) es DERIVADO, no se almacena.
+model Phase {
+  id               String    @id @default(cuid())
+  projectId        String
+  name             PhaseName
+  order            Int
+  plannedStartDate DateTime?
+  plannedEndDate   DateTime?
+  actualStartDate  DateTime?
+  actualEndDate    DateTime?
+
+  project   Project  @relation("ProjectPhases", fields: [projectId], references: [id], onDelete: Cascade)
+  activeFor Project? @relation("ActivePhase")
+
+  @@unique([projectId, name])
+}
+
+/// Participación de una cuenta en un proyecto, con rol y condiciones económicas de FRC.
+model Agent {
+  id            String      @id @default(cuid())
+  userId        String
+  projectId     String
+  role          AgentRole
+  sharePercent  Int // % de reparto FRC (entero, 0–100, en el MVP)
+  guaranteedFee BigInt      @default(0) // céntimos
+  feeAtRisk     BigInt      @default(0) // céntimos
+  status        AgentStatus @default(ACTIVE)
+  createdAt     DateTime    @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+}
+
+/// Presupuesto objetivo (1:1 con Project). Aprobado = base inmutable.
+model Budget {
+  id         String       @id @default(cuid())
+  projectId  String       @unique
+  status     BudgetStatus @default(DRAFT)
+  approvedAt DateTime?
+  createdAt  DateTime     @default(now())
+
+  project Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  lines   BudgetLine[]
+}
+
+/// Partida. Guarda base, avance físico y previsión manual; el vigente se DERIVA (base + ajustes).
+model BudgetLine {
+  id                  String    @id @default(cuid())
+  budgetId            String
+  code                String
+  name                String
+  baseAmount          BigInt // céntimos
+  progressPercent     Int? // 0–100; null = sin avance (≠ 0 %)
+  progressUpdatedById String?
+  progressUpdatedAt   DateTime?
+  manualForecast      BigInt? // céntimos
+
+  budget            Budget             @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  progressUpdatedBy User?              @relation("ProgressAuthor", fields: [progressUpdatedById], references: [id])
+  realCosts         RealCost[]
+  adjustments       ChangeAdjustment[]
+}
+
+/// Apunte de coste real. Inmutable: una corrección es un contra-asiento (reversal) vinculado.
+model RealCost {
+  id           String       @id @default(cuid())
+  budgetLineId String
+  amount       BigInt // céntimos, con signo
+  type         RealCostType @default(NORMAL)
+  reversalOfId String?
+  reason       String? // obligatorio para reversal (validación de aplicación)
+  recordedById String
+  createdAt    DateTime     @default(now())
+
+  budgetLine BudgetLine @relation(fields: [budgetLineId], references: [id], onDelete: Cascade)
+  recordedBy User       @relation("RecordedCosts", fields: [recordedById], references: [id])
+  reversalOf RealCost?  @relation("Reversals", fields: [reversalOfId], references: [id])
+  reversals  RealCost[] @relation("Reversals")
+}
+
+/// Cambio (esqueleto mínimo). Sostiene los ChangeAdjustment; el flujo completo es de otra feature.
+model Change {
+  id        String       @id @default(cuid())
+  projectId String
+  type      ChangeType
+  status    ChangeStatus @default(PROPOSED)
+  title     String
+  createdAt DateTime     @default(now())
+
+  project     Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  adjustments ChangeAdjustment[]
+}
+
+/// Ajuste de presupuesto por partida originado por un cambio. Vigente = base + Σ delta.
+model ChangeAdjustment {
+  id           String   @id @default(cuid())
+  changeId     String
+  budgetLineId String
+  delta        BigInt // céntimos, con signo
+  createdAt    DateTime @default(now())
+
+  change     Change     @relation(fields: [changeId], references: [id], onDelete: Cascade)
+  budgetLine BudgetLine @relation(fields: [budgetLineId], references: [id], onDelete: Cascade)
+}
+
+/// Registro append-only de acciones relevantes (trazabilidad / libros abiertos).
+model AuditEvent {
+  id          String   @id @default(cuid())
+  projectId   String?
+  actorUserId String?
+  action      String
+  entityType  String
+  entityId    String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  actorUser User?    @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
 }
