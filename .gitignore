@@ -142,18 +142,14 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 
-# Codex
-.codex/
-
 # Documentación inicial (solo local — contiene material real de cliente de Vivare)
 /Doc inicial/
 
-# Codex
+# Configuración personal de agentes IA (no subir)
+.agents/
 .codex/
-
-# Claude Code (personal, no compartir)
-.claude/settings.local.json
-.claude/tmp/
+.claude/
+docs/agents/
 CLAUDE.local.md
 
 /src/generated/prisma
