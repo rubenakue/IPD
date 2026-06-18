@@ -35,11 +35,11 @@ Contraste:
   - **Plan** — `specs/NNN-nombre/plan.md`: el CÓMO técnico (ya con tu stack).
   - **Tasks** — `specs/NNN-nombre/tasks.md`: lista de tareas accionables.
 
-## 4. Prerrequisitos (estado en tu máquina, 10-jun-2026)
+## 4. Prerrequisitos
 
 - `uv` — ✓ 0.11.19 (instalado).
-- Claude Code — ✓ 2.1.123 (instalado): es donde usarás los comandos `/speckit.*`.
-- CLI `specify` — pendiente (lo instala el rol `/sdd-speckit`). Ver cheatsheet.
+- CLI `specify` — verificar con `specify check`.
+- Agente IA — usa el adaptador local que tengas: Claude (`.claude/commands`) o Codex (`.agents/skills`).
 
 ## 5. Instalación (resumen; detalle en el cheatsheet)
 
@@ -47,21 +47,20 @@ Contraste:
 2. Comprueba el entorno: `specify check`
 3. Inicializa Spec Kit en este repo (Windows → scripts PowerShell): `specify init . --script ps`
    (confirma el flag de integración de agente con `specify init --help`).
-   - Crea `.specify/` y añade los comandos `/speckit.*` a Claude Code (en `.claude/commands/`).
-     No pisa tus comandos actuales (`stack-architect`, etc.).
+   - Crea `.specify/` y puede añadir comandos al agente elegido. Esos adaptadores son locales e ignorados por git.
 
 ## 6. El flujo SDD completo
 
 Cada paso produce un artefacto que alimenta al siguiente:
 
-1. **`/speckit.constitution`** — crea/actualiza la constitución (principios del proyecto).
-2. **`/speckit.specify`** — describe la feature: QUÉ y POR QUÉ. Cero tecnología.
-3. **`/speckit.clarify`** — el agente te pregunta las ambigüedades; tú las resuelves.
-4. **`/speckit.checklist`** — valida que los requisitos están completos y sin ambigüedad.
-5. **`/speckit.plan`** — el CÓMO técnico, ya con tu stack (respeta ADRs y constitución).
-6. **`/speckit.tasks`** — desglosa el plan en tareas pequeñas y ordenadas.
-7. **`/speckit.analyze`** — comprueba coherencia entre spec, plan y tasks ANTES de implementar.
-8. **`/speckit.implement`** — ejecuta las tareas y construye la feature.
+1. **constitution** — crea/actualiza la constitución (principios del proyecto).
+2. **specify** — describe la feature: QUÉ y POR QUÉ. Cero tecnología.
+3. **clarify** — el agente te pregunta las ambigüedades; tú las resuelves.
+4. **checklist** — valida que los requisitos están completos y sin ambigüedad.
+5. **plan** — el CÓMO técnico, ya con tu stack (respeta ADRs y constitución).
+6. **tasks** — desglosa el plan en tareas pequeñas y ordenadas.
+7. **analyze** — comprueba coherencia entre spec, plan y tasks ANTES de implementar.
+8. **implement** — ejecuta las tareas y construye la feature.
 
 Ruta rápida (experimentos): specify → plan → tasks → implement.
 Ruta completa (features de negocio IPD): añade clarify, checklist y analyze como puertas de calidad.
@@ -76,17 +75,16 @@ Cambiar de feature = cambiar de rama. Trabaja una feature por rama.
   nombres de entidades en inglés (`Project`, `Budget`, `FRC`...); "libros abiertos" como
   principio de producto; seguridad y filtrado por rol en servidor; toda decisión técnica →
   ADR; sin secretos; explicaciones en lenguaje simple.
-- **GATE con el stack**: `/speckit.plan` NO se ejecuta hasta que el stack esté decidido en
-  `docs/adr/` (lo produce `/stack-architect`). La constitución y la spec sí pueden ir antes
-  (son agnósticas de tecnología).
+- **GATE con el stack**: el plan técnico usa `docs/adr/001..008`, que ya fijan el stack.
+  Si falta una decisión nueva, pasa por `stack-architect` / `$ipd-stack-architect`.
 - **Primera spec de ejemplo**: el **FRC** (estado del Fondo de Riesgo Compartido por agente:
   honorarios garantizados + bonus/malus + resultado proyectado "si el proyecto cerrara hoy").
 - **Las tres capas — SDD ↔ ADR ↔ TDD**:
   - SDD/spec = QUÉ y POR QUÉ (negocio).
   - ADR = CON QUÉ (tecnología elegida y por qué).
   - TDD/tests = la spec traducida a comprobaciones ejecutables; el código existe para ponerlas en verde.
-- **Dónde encaja con tus roles de Claude Code**: `/sdd-speckit` instala y configura todo esto
-  y te enseña el flujo; luego, por cada feature, usas los `/speckit.*` directamente.
+- **Dónde encaja con tus roles**: `sdd-speckit` / `$ipd-sdd-speckit` enseña y guía el flujo;
+  luego cada feature sigue los pasos de Spec Kit con el adaptador disponible.
 
 ## 8. Errores comunes a evitar
 
@@ -99,4 +97,4 @@ Cambiar de feature = cambiar de rama. Trabaja una feature por rama.
 
 - Repo: https://github.com/github/spec-kit
 - Docs: https://github.github.io/spec-kit/
-- Tu plan de trabajo: `docs/plan-sdd-tdd.md` · Roles: `docs/agents/`
+- Tu plan de trabajo: `docs/plan-sdd-tdd.md` · Roles locales: `.agents/roles/`

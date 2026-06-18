@@ -69,10 +69,10 @@ El orden es estrictamente secuencial — cada sesión asume hechas las anteriore
 
 ### H1 — Método
 
-#### S1 — Constitución y primera spec (`/sdd-speckit`)
-- [x] Ejecutar `/sdd-speckit`: instala la CLI `specify`, crea `.specify/` y redacta la constitución contigo. Material de entrada: §8 (principios) y §18 (criterios de éxito) de [concepto-global.md](concepto-global.md) — están escritos para esto.
-- [x] Primera spec con `/speckit.specify`: **"cálculos críticos"** (calculateFRC, calculateEVM, applyChange). Material: §9.5, §9.6 (fórmulas exactas) y §9.10 del concepto + ADR-005/006.
-- [x] `/speckit.clarify` hasta que no queden ambigüedades; luego `/speckit.plan` y `/speckit.tasks`.
+#### S1 — Constitución y primera spec (`sdd-speckit` / `$ipd-sdd-speckit`)
+- [x] Ejecutar `sdd-speckit` / `$ipd-sdd-speckit`: instala la CLI `specify`, crea `.specify/` y redacta la constitución contigo. Material de entrada: §8 (principios) y §18 (criterios de éxito) de [concepto-global.md](concepto-global.md) — están escritos para esto.
+- [x] Primera spec con Spec Kit `specify`: **"cálculos críticos"** (calculateFRC, calculateEVM, applyChange). Material: §9.5, §9.6 (fórmulas exactas) y §9.10 del concepto + ADR-005/006.
+- [x] Spec Kit `clarify` hasta que no queden ambigüedades; luego `plan` y `tasks`.
 
 **Hecho cuando:** existe `.specify/memory/constitution.md` aprobada por ti y la spec de cálculos con sus tareas.
 
@@ -82,8 +82,8 @@ El orden es estrictamente secuencial — cada sesión asume hechas las anteriore
 
 > **Por qué los cálculos van ANTES que la base de datos:** son funciones puras — no necesitan Docker, ni Express, ni React. Es TDD en su forma más limpia (ideal para aprender), resuelve pronto los tests innegociables del briefing, y si después algo se atasca en infraestructura, el activo más valioso para julio ya existe.
 
-#### S2 — Harness de tests y linting (`/tdd-harness`)
-- [x] Ejecutar `/tdd-harness`: instala Vitest, scripts `pnpm test` / `pnpm test:watch`, esqueletos puros en `src/lib/calculations/` (lanzan `Not implemented`), tipos mínimos en `src/types/domain.ts`, y los tests de los 3 cálculos **en rojo**.
+#### S2 — Harness de tests y linting (`tdd-harness` / `$ipd-tdd-harness`)
+- [x] Ejecutar `tdd-harness` / `$ipd-tdd-harness`: instala Vitest, scripts `pnpm test` / `pnpm test:watch`, esqueletos puros en `src/lib/calculations/` (lanzan `Not implemented`), tipos mínimos en `src/types/domain.ts`, y los tests de los 3 cálculos **en rojo**.
 - [x] Configurar ESLint + script `pnpm lint` (el briefing lo exige antes del primer código de negocio, que llega en S3).
 
 **Hecho cuando:** `pnpm test` falla por asserts esperados (no por configuración rota); `pnpm lint` y `pnpm typecheck` pasan.
@@ -125,7 +125,7 @@ El orden es estrictamente secuencial — cada sesión asume hechas las anteriore
 ### H4 — API y autenticación
 
 #### S8 — Spec de auth + esqueleto Express
-- [ ] `/speckit.specify` **"autenticación y roles por proyecto"** (módulo 9.1 + matriz §15 del concepto) → clarify → plan → tasks.
+- [ ] Spec Kit `specify` **"autenticación y roles por proyecto"** (módulo 9.1 + matriz §15 del concepto) → clarify → plan → tasks.
 - [ ] Express en `src/server/`: `/api/health`, formato de error estándar (§14.3), y Zod para validación (mini-ADR de la dependencia, está como pendiente en §20.2).
 
 **Hecho cuando:** `curl localhost:3000/api/health` responde y un error devuelve el JSON estándar.
@@ -169,7 +169,7 @@ El orden es estrictamente secuencial — cada sesión asume hechas las anteriore
 ### H6 — Núcleo económico
 
 #### S13 — Presupuesto objetivo
-- [ ] `/speckit.specify` **"presupuesto y costes"** (cubre S13–S15; material: §9.4 + flujos B y C).
+- [ ] Spec Kit `specify` **"presupuesto y costes"** (cubre S13–S15; material: §9.4 + flujos B y C).
 - [ ] Carga manual de presupuesto (capítulos y partidas) + transición `draft → approved` (base inmutable desde ahí).
 - [ ] Tabla agrupada por capítulos — decidir aquí `mantine-datatable` vs TanStack Table (pendiente de ADR-002; mini-ADR con la elección).
 
@@ -228,7 +228,7 @@ El orden es estrictamente secuencial — cada sesión asume hechas las anteriore
 
 ## 4. Reglas transversales (de AGENTS.md y los ADRs, recordadas aquí)
 
-- **Ninguna feature sin spec** (desde H4, cada hito nuevo arranca con `/speckit.specify`). Los cálculos de H2 ya tienen la suya de S1.
+- **Ninguna feature sin spec** (desde H4, cada hito nuevo arranca con Spec Kit `specify`). Los cálculos de H2 ya tienen la suya de S1.
 - **Dependencia nueva = propuesta + justificación** antes de instalar (aunque esté en un TODO de ADR, confirma cuál y por qué).
 - **Nada derivado se persiste** (tabla §7). Si te descubres guardando "presupuesto vigente" en una columna, para.
 - **La seguridad se verifica en servidor**: cada pantalla nueva con datos sensibles necesita su test de permisos, no solo ocultar el componente.

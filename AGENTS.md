@@ -13,10 +13,11 @@ de dominio están en `Doc inicial/` (solo local, ignorado por git: contiene mate
 
 ## Stack
 
-- **DECIDIDO**: Node 20+, TypeScript strict (prohibido `any` y `@ts-ignore` nuevos), pnpm, React.
-- **ABIERTO** (pendiente de ADR — se decide con la entrevista `/stack-architect`): backend/BD,
-  librería UI, gestión de estado, routing, framework de tests, auth, gráficos, despliegue.
-- Toda decisión de stack/arquitectura queda documentada en `docs/adr/`.
+- **DECIDIDO por ADR-001..008**: Node 20+, TypeScript strict (prohibido `any` y
+  `@ts-ignore` nuevos), pnpm, React, Vite, Express REST, PostgreSQL, Prisma,
+  sesiones con cookies `httpOnly`, RLS en PostgreSQL, Mantine, TanStack Query,
+  React Router v7 y Vitest.
+- Toda decisión nueva de stack/arquitectura queda documentada en `docs/adr/`.
 
 ## Layout
 
@@ -26,13 +27,13 @@ de dominio están en `Doc inicial/` (solo local, ignorado por git: contiene mate
 - `src/components/ui` y `src/components/domain`, `src/pages`, `src/hooks` — frontend React
 - `tests/` — tests · `docs/adr/` — ADRs · `docs/diario.md` — diario de desarrollo
 - `specs/` y `.specify/` — Spec-Driven Development (GitHub Spec Kit)
-- `docs/agents/` — roles canónicos de los agentes especializados (stack, SDD, TDD)
+- `.agents/roles` y `.agents/skills` — roles/skills personales locales para agentes IA (ignorados por git)
 
 ## Comandos (los únicos válidos)
 
 - Typecheck: `pnpm typecheck`
-- Tests: `pnpm test` (cuando exista; lo define el ADR de testing)
-- Lint: `pnpm lint` (cuando exista)
+- Tests: `pnpm test`
+- Lint: `pnpm lint`
 
 ## Reglas de dominio (innegociables del briefing)
 

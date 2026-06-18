@@ -1,8 +1,10 @@
 # Plan de trabajo: SDD + TDD + stack-architect
 
-> Cómo se trabaja en este proyecto desde el minuto cero. Los tres roles especializados
-> viven en `docs/agents/` y se invocan en Claude Code con `/stack-architect`,
-> `/sdd-speckit` y `/tdd-harness` (en Codex/Hermes: "adopta el rol de docs/agents/X.md").
+> Cómo se trabaja en este proyecto desde el minuto cero. El contexto común vive en
+> `AGENTS.md`. Los roles personales viven en `.agents/roles/` y se invocan mediante
+> adaptadores locales: Claude Code (`.claude/commands` y `.claude/agents`) y Codex
+> (`.agents/skills` y `.codex/agents`). `.agents`, `.claude` y `.codex` son locales
+> e ignorados por git.
 
 ## Los dos conceptos, en una frase cada uno
 
@@ -22,19 +24,18 @@ misma filosofía a dos alturas distintas.
 ## Orden de arranque (los roles y sus dependencias)
 
 ```
-1. /stack-architect  ──────────────►  ADRs 001..00N (gate: decide framework de tests)
-2. /sdd-speckit (constitución+spec)   en paralelo o después — su /speckit.plan ESPERA al stack
-3. /tdd-harness  ─────────────────►  solo cuando exista el ADR de testing
+1. stack-architect / $ipd-stack-architect  ─► ADR nuevo solo si falta una decision
+2. sdd-speckit / $ipd-sdd-speckit          ─► constitucion + specs + plan/tasks
+3. tdd-harness / $ipd-tdd-harness          ─► TDD incremental sobre Vitest
 ```
 
-1. **`/stack-architect`** (primero, es el cimiento). Entrevista en lenguaje llano:
+1. **`stack-architect` / `$ipd-stack-architect`** (primero, es el cimiento). Entrevista en lenguaje llano:
    te explica cada concepto, te da opciones con pros/contras y recomendación, y lo
    documenta todo en `docs/adr/`. Salida clave: el framework de tests, que desbloquea TDD.
-2. **`/sdd-speckit`**. Instala Spec Kit (`uv` ya está instalado ✓), redacta la
-   constitución contigo y crea la primera spec de ejemplo (el FRC). Puede arrancar
-   en paralelo con el stack — la constitución es agnóstica de tecnología — pero
-   NO pasa de `/speckit.plan` hasta que el stack esté cerrado.
-3. **`/tdd-harness`**. Con el framework decidido: configura los tests, crea los
+2. **`sdd-speckit` / `$ipd-sdd-speckit`**. Instala Spec Kit (`uv` ya está instalado ✓), redacta la
+   constitución contigo y crea specs. Puede arrancar sin tocar código; el plan técnico
+   usa los ADRs ya aceptados.
+3. **`tdd-harness` / `$ipd-tdd-harness`**. Con el framework decidido: configura los tests, crea los
    esqueletos puros en `src/lib/calculations/` y deja los tests de los 3 cálculos
    EN ROJO, listos para el ciclo red-green-refactor.
 
@@ -46,14 +47,14 @@ merge que ahora no compensa.
 
 ## El ciclo de cada feature (una vez hecho el arranque)
 
-1. **Spec** — `/speckit.specify <feature>`: qué y por qué, cero tecnología.
-2. **Clarify** — `/speckit.clarify`: el agente te pregunta las ambigüedades; respóndelas.
-3. **Plan** — `/speckit.plan`: cómo se implementa con NUESTRO stack (respeta ADRs y constitución).
-4. **Tasks** — `/speckit.tasks`: lista de tareas pequeñas y ordenadas.
+1. **Spec** — Spec Kit `specify`: qué y por qué, cero tecnología.
+2. **Clarify** — Spec Kit `clarify`: el agente te pregunta las ambigüedades; respóndelas.
+3. **Plan** — Spec Kit `plan`: cómo se implementa con NUESTRO stack (respeta ADRs y constitución).
+4. **Tasks** — Spec Kit `tasks`: lista de tareas pequeñas y ordenadas.
 5. **Red** — tests primero para la lógica de la feature (si toca cálculo, obligatorio).
-6. **Green** — `/speckit.implement` o implementación manual: código mínimo hasta verde.
+6. **Green** — Spec Kit `implement` o implementación manual: código mínimo hasta verde.
 7. **Refactor** — limpiar con la red de seguridad en verde.
-8. **Verificar** — `/verify` + agente `code-reviewer` antes de commitear.
+8. **Verificar** — `pnpm typecheck`, `pnpm lint`, `pnpm test` + agente `code-reviewer` antes de commitear.
 9. **Commit** (Conventional Commits) y entrada en `docs/diario.md` si la sesión fue significativa.
 
 ## Reglas de oro mientras aprendes
@@ -73,13 +74,10 @@ merge que ahora no compensa.
 | Node 22 / git / pnpm | ✓ instalados |
 | `uv` (requisito de Spec Kit) | ✓ 0.11.14 |
 | `gh` CLI | ✓ 2.93.0 |
-| CLI `specify` | pendiente — la instala `/sdd-speckit` |
-| ADRs de stack | pendientes — los produce `/stack-architect` |
-| Harness de tests | pendiente — lo monta `/tdd-harness` (tras el stack) |
+| CLI `specify` | verificar en la sesión SDD |
+| ADRs de stack | aceptados en `docs/adr/001..008` |
+| Harness de tests | Vitest configurado; mantener con TDD incremental |
 
 ## Primer hito sugerido
 
-Sesión 1: `/stack-architect` completo (1-2 h de entrevista tranquila).
-Sesión 2: `/sdd-speckit` (constitución + spec FRC).
-Sesión 3: `/tdd-harness` (tests en rojo).
-Sesión 4: empezar `src/types/domain.ts` + módulo 1 (auth/roles) ya con el flujo completo.
+Sesión siguiente: usa `delivery-planner` / `$ipd-delivery-planner` para escoger el siguiente bloque de 3-4 h con gate de validación.

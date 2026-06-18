@@ -2,14 +2,14 @@
 
 > Comandos para tener a mano. Windows + PowerShell. Explicación conceptual en
 > `docs/spec-driven-development.md`.
-> Los comandos `/speckit.*` se escriben **dentro de Claude Code**; los `specify ...` y
-> `uv ...`, en la **terminal**.
+> Los comandos de agente dependen del adaptador local disponible; `specify ...` y
+> `uv ...` se ejecutan en la terminal.
 
 ## Prerrequisitos (verificar)
 
 ```powershell
 uv --version       # requerido (gestiona la CLI specify)
-claude --version   # donde se usan los /speckit.*
+specify check      # comprueba CLI y entorno
 ```
 
 ## Instalar / actualizar la CLI `specify`
@@ -41,21 +41,21 @@ specify init --help
 #   Segun version:  --ai claude  (antiguas)  |  --integration claude  (recientes)
 ```
 
-Crea `.specify/` y añade los comandos `/speckit.*` a Claude Code (en `.claude/commands/`,
-sin pisar los tuyos).
+Crea `.specify/` y puede añadir comandos al agente elegido. Los adaptadores de agente
+(`.claude`, `.codex`, `.agents`) son locales e ignorados por git.
 
-## El flujo, paso a paso (en Claude Code)
+## El flujo, paso a paso
 
 | Orden | Comando | Qué hace |
 |------|---------|----------|
-| 1 | `/speckit.constitution <principios>` | Crea/actualiza la constitución (`.specify/memory/constitution.md`) |
-| 2 | `/speckit.specify <feature>` | Escribe la spec: QUÉ y POR QUÉ (sin tecnología) |
-| 3 | `/speckit.clarify` | Resuelve ambigüedades de la spec preguntándote |
-| 4 | `/speckit.checklist` | Valida calidad/completitud de los requisitos |
-| 5 | `/speckit.plan <stack>` | Plan técnico con tu stack (respeta ADRs) |
-| 6 | `/speckit.tasks` | Desglosa en tareas accionables |
-| 7 | `/speckit.analyze` | Coherencia spec ↔ plan ↔ tasks (antes de implementar) |
-| 8 | `/speckit.implement` | Implementa según el plan |
+| 1 | `constitution` | Crea/actualiza la constitución (`.specify/memory/constitution.md`) |
+| 2 | `specify <feature>` | Escribe la spec: QUÉ y POR QUÉ (sin tecnología) |
+| 3 | `clarify` | Resuelve ambigüedades de la spec preguntándote |
+| 4 | `checklist` | Valida calidad/completitud de los requisitos |
+| 5 | `plan <stack>` | Plan técnico con tu stack (respeta ADRs) |
+| 6 | `tasks` | Desglosa en tareas accionables |
+| 7 | `analyze` | Coherencia spec ↔ plan ↔ tasks (antes de implementar) |
+| 8 | `implement` | Implementa según el plan |
 
 - Ruta rápida (experimentos): `specify` → `plan` → `tasks` → `implement`.
 - Ruta completa (features de negocio IPD): incluye `clarify`, `checklist`, `analyze`.
@@ -63,11 +63,11 @@ sin pisar los tuyos).
 ## El ciclo por feature en IPD
 
 1. Rama de feature (spec-kit detecta la feature por la rama): `git checkout -b 001-frc`
-2. `/speckit.specify` → `/speckit.clarify` → `/speckit.checklist`
-3. GATE: el stack debe estar en `docs/adr/` antes de `/speckit.plan`
-4. `/speckit.plan` → `/speckit.tasks` → `/speckit.analyze`
-5. TDD: tests en rojo → `/speckit.implement` (o manual) hasta verde → refactor
-6. `/verify` + agente `code-reviewer` → commit (Conventional Commits)
+2. `specify` → `clarify` → `checklist`
+3. GATE: el stack debe estar en `docs/adr/` antes de `plan`
+4. `plan` → `tasks` → `analyze`
+5. TDD: tests en rojo → `implement` (o manual) hasta verde → refactor
+6. `pnpm typecheck` + `pnpm lint` + `pnpm test` + agente `code-reviewer` → commit (Conventional Commits)
 
 ## Workflows (opcional, avanzado)
 
@@ -78,6 +78,6 @@ specify workflow status                       # estado de ejecuciones
 
 ## Recordatorios IPD
 
-- `/speckit.plan` espera a los ADRs del stack (rol `/stack-architect`).
+- `plan` usa los ADRs del stack; si falta una decisión, usa `stack-architect` / `$ipd-stack-architect`.
 - Una feature por rama; la constitución y los ADRs mandan.
 - La spec no lleva tecnología; el plan sí.
