@@ -36,8 +36,30 @@ function toApiError(err: unknown): ApiError {
   if (err instanceof ZodError) {
     return ApiError.validation('Datos de entrada no válidos.', { issues: formatZodIssues(err) });
   }
+  // express.json() lanza errores de body-parser (p. ej. JSON mal formado) ANTES de
+  // las rutas y de validate(). Son errores de ENTRADA del cliente (4xx), no fallos
+  // del servidor: se mapean a VALIDATION_ERROR, nunca a INTERNAL_ERROR (§14.3).
+  if (isClientBodyError(err)) {
+    return ApiError.validation('Cuerpo de la petición mal formado.', { type: err.type });
+  }
   // Cualquier otra cosa es un fallo no previsto: se devuelve genérico.
   return new ApiError('INTERNAL_ERROR', 'Ha ocurrido un error interno.');
+}
+
+/**
+ * Detecta errores de body-parser / http-errors de entrada del cliente (status 4xx):
+ * p. ej. JSON mal formado (`entity.parse.failed`) o cuerpo demasiado grande. Se
+ * estrecha el tipo sin usar `any`, comprobando las propiedades que añade http-errors.
+ */
+function isClientBodyError(err: unknown): err is Error & { type: string; status: number } {
+  if (!(err instanceof Error)) return false;
+  const candidate = err as Error & { type?: unknown; status?: unknown };
+  return (
+    typeof candidate.type === 'string' &&
+    typeof candidate.status === 'number' &&
+    candidate.status >= 400 &&
+    candidate.status < 500
+  );
 }
 
 /** Resume los problemas de validación de Zod para el campo `details`. */

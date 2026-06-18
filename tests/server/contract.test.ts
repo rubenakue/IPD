@@ -72,6 +72,17 @@ describe('contrato HTTP base (§14.3)', () => {
     expect(Array.isArray(body.error.details.issues)).toBe(true);
   });
 
+  it('un cuerpo JSON mal formado responde 400 VALIDATION_ERROR (no 500)', async () => {
+    const res = await fetch(`${probe.url}/echo`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{ "name": ', // JSON sintácticamente inválido → error de body-parser
+    });
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error.code).toBe('VALIDATION_ERROR');
+  });
+
   it('toda respuesta de error tiene la forma { error: { code, message, details } }', async () => {
     const res = await fetch(`${real.url}/algo/que/no/existe`);
     const body = await res.json();
