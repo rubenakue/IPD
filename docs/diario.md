@@ -54,6 +54,14 @@ Una entrada por sesión de trabajo. Breve y honesto.
 - **Configuración local (credencial):** el `DATABASE_URL` vive en `.env` (gitignored); el formato y el placeholder están en `.env.example`. Las credenciales nunca se escriben en archivos versionados.
 - **Estado del sprint:** En camino. BD viva y Prisma conectado; siguiente: S07 (esquema núcleo + seed, guiado por la tabla "almacenado vs derivado" de §7).
 
+## 2026-06-18 (sesión S07)
+
+- **Qué hice:** Sesión S07 del roadmap (rama `002-core-schema`, **flujo SDD completo** con Spec Kit: specify → clarify → plan → tasks → implement). Modelado el núcleo de persistencia en Prisma: `schema.prisma` con 10 modelos (`User`, `Project`, `Phase`, `Agent`, `Budget`, `BudgetLine`, `RealCost`, `Change` mínimo, `ChangeAdjustment`, `AuditEvent`) y 8 enums, migración inicial `core_schema`, y `prisma/seed.ts` que deja un estado demostrable: 5 usuarios (uno por rol), proyecto demo `DEMO-001` con sus 4 fases y 5 agentes. Contraseñas hasheadas con **argon2** (cierra el pendiente de ADR-004). Regla de oro respetada: **ninguna magnitud derivada se persiste** (§7).
+- **Clarify (decisiones de Rubén):** (1) incluir `Change` mínimo para sostener `ChangeAdjustment`; (2) el seed crea proyecto demo + agentes, no solo usuarios; (3) hashear ya con argon2.
+- **Qué bloqueó:** (1) Prisma 7 (generador `prisma-client`) genera el cliente como **TypeScript con imports sin extensión**, incompatible con el runner ESM nativo de Node → resuelto con `importFileExtension = "ts"` en el generador + `node --experimental-strip-types` (cero dependencias, sin `tsx`). (2) el cliente generado (`src/generated/`) no debe lintarse → añadido a `ignores` de ESLint. (3) `argon2` tiene build nativo → aprobado en `pnpm-workspace.yaml`.
+- **Cómo lo resolví / qué usé de Claude Code:** flujo SDD guiado con los comandos `/speckit.*`; las 3 dudas de modelo las decidió Rubén en `clarify`. Validación: migración aplicada, seed idempotente (re-ejecutado sin duplicar), `pnpm typecheck`/`lint`/`test` (23/23) verdes.
+- **Estado del sprint:** En camino. H3 (Persistencia) con BD modelada y sembrada; siguiente: S08 (spec de auth + esqueleto Express).
+
 ## AAAA-MM-DD
 
 - **Horas trabajadas:**

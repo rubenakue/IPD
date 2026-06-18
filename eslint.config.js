@@ -14,6 +14,7 @@ export default tseslint.config(
       '.specify/**',
       '.claude/**',
       '.codex/**',
+      'src/generated/**',
     ],
   },
   js.configs.recommended,

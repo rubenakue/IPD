@@ -115,8 +115,8 @@ El orden es estrictamente secuencial — cada sesión asume hechas las anteriore
 **Hecho cuando:** `npx prisma migrate dev` conecta y crea la BD sin errores.
 
 #### S7 — Esquema núcleo + seed de usuarios
-- [ ] Modelar en `schema.prisma`: `User`, `Project`, `Phase`, `Agent`, `Budget`, `BudgetLine`, `RealCost`, `ChangeAdjustment`, `AuditEvent`. **Guía obligatoria:** la tabla "almacenado vs derivado" de §7 del concepto — nada derivado se persiste.
-- [ ] Migración inicial + script de seed con los 5 usuarios de demo (uno por rol).
+- [x] Modelar en `schema.prisma`: `User`, `Project`, `Phase`, `Agent`, `Budget`, `BudgetLine`, `RealCost`, `ChangeAdjustment`, `AuditEvent`. **Guía obligatoria:** la tabla "almacenado vs derivado" de §7 del concepto — nada derivado se persiste.
+- [x] Migración inicial + script de seed con los 5 usuarios de demo (uno por rol).
 
 **Hecho cuando:** migración aplicada y Prisma Studio muestra los usuarios; `pnpm typecheck` pasa.
 
