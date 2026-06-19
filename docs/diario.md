@@ -77,6 +77,13 @@ Una entrada por sesión de trabajo. Breve y honesto.
 - **Cómo lo resolví / qué usé de Claude Code:** mantuve la frontera S09/S10: auth e identidad sí, matriz de permisos y RLS no. La auditoría ya registra `auth.login` y `auth.logout` sin datos sensibles. Verificación: `npx prisma migrate status`, `pnpm typecheck`, `pnpm lint`, `pnpm test` (35/35) y gate real con `curl` (health → login cookie → `/api/me` → logout → `UNAUTHENTICATED`) verdes.
 - **Estado del sprint:** En camino. S09 deja lista la base para S10: sesión, usuario actual, proyectos por participación y `requireAuth`.
 
+## 2026-06-19 (review + merge S09, PR #34)
+
+- **Qué hice:** Review a fondo de la PR #34 (revisión adversarial: 7 dimensiones + verificación escéptica por hallazgo). De 29 hallazgos, 21 falsos positivos; **6 confirmados** corregidos en `6f81821`. **P2 (seguridad, = Codex): enumeración de usuarios por timing** en login — el `||` saltaba `argon2.verify` si el email no existía; ahora se verifica **siempre** contra un hash señuelo precomputado (tiempos iguales) + test de regresión. **5 P3:** auditoría best-effort en login/logout (un fallo de audit ya no devuelve 500 sobre una sesión consumada); apagado limpio SIGTERM/SIGINT que cierra los dos pools de Postgres (Prisma + connect-pg-simple); cierre del store de sesiones en tests + tests de regresión para timing, regeneración de `sid` (anti session-fixation) y logout idempotente sin sesión.
+- **Qué bloqueó:** La rama local estaba **divergida** del remoto (el commit se había amendado en local solo para añadir el newline final, sin empujar) y el force-push está bloqueado por hook. Lo resolví reaplicando el fix sobre el commit que estaba en el remoto (`rebase --onto`) y empujando en fast-forward; único conflicto trivial en `auth.test.ts` (zona del EOF). Tras mergear, `main` local también divergía (commit huérfano `24339dc`, ya superseguido por `origin/main`): resuelto con `reset --hard origin/main`.
+- **Cómo lo resolví / qué usé de Claude Code:** workflow de revisión en segundo plano (subagentes por dimensión + verificación adversarial que descartó los 21 falsos positivos: p. ej. Express 5 sí captura los `throw` async, `AgentRole` ≡ `ProjectRoleCode`, `/api/me` no filtra datos económicos). Verificación: `pnpm typecheck`/`lint`/`test` **38/38** verdes (35 → 38). Mergeada PR #34 (merge commit `dacc85a`), issue #10 cerrada, rama remota borrada.
+- **Estado del sprint:** En camino. **H4 a falta de S10** (permisos por rol en servidor + RLS, criterio más literal del briefing). Siguiente: S10 (issue #11).
+
 ## AAAA-MM-DD
 
 - **Horas trabajadas:**
