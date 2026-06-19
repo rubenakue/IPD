@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import type { DbClient } from '../../lib/db/client.ts';
 import type { LogoutResponse } from '../../types/api.ts';
-import { recordAuditEvent } from '../audit/record-audit-event.ts';
+import { recordAuditEvent, type AuditEventInput } from '../audit/record-audit-event.ts';
 import { getCurrentUserResponse } from '../auth/current-user.ts';
 import { destroySession, regenerateSession, saveSession } from '../auth/session-promises.ts';
 import { ApiError } from '../errors/api-error.ts';
@@ -16,6 +16,26 @@ const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
 });
+
+// Hash argon2 "señuelo" para igualar el coste temporal cuando el email no existe.
+// Sin él, `||` cortocircuitaría y se saltaría argon2.verify en la rama de usuario
+// inexistente: la respuesta sería medibles más rápida y permitiría enumerar cuentas
+// (oráculo de timing). Se calcula una vez y se reutiliza.
+let dummyPasswordHash: Promise<string> | null = null;
+function getDummyPasswordHash(): Promise<string> {
+  dummyPasswordHash ??= argon2.hash('invalid-credentials-placeholder');
+  return dummyPasswordHash;
+}
+
+// La auditoría es un efecto secundario: su fallo NO debe tumbar un login/logout ya
+// consumado (la sesión ya quedó creada o destruida). Se registra best-effort.
+async function safeRecordAuditEvent(prisma: DbClient, input: AuditEventInput): Promise<void> {
+  try {
+    await recordAuditEvent(prisma, input);
+  } catch (auditErr) {
+    console.error('[api] auditoría fallida:', auditErr);
+  }
+}
 
 export function createAuthRouter(prisma: DbClient): Router {
   const router = Router();
@@ -34,7 +54,11 @@ export function createAuthRouter(prisma: DbClient): Router {
       },
     });
 
-    if (!user || !(await argon2.verify(user.passwordHash, password))) {
+    // Se verifica SIEMPRE contra un hash (el real o el señuelo) para que el tiempo
+    // de respuesta no delate si el email existe.
+    const passwordHash = user?.passwordHash ?? (await getDummyPasswordHash());
+    const passwordValid = await argon2.verify(passwordHash, password);
+    if (!user || !passwordValid) {
       throw ApiError.unauthenticated(INVALID_CREDENTIALS_MESSAGE);
     }
 
@@ -42,7 +66,7 @@ export function createAuthRouter(prisma: DbClient): Router {
     req.session.userId = user.id;
     await saveSession(req);
 
-    await recordAuditEvent(prisma, {
+    await safeRecordAuditEvent(prisma, {
       action: 'auth.login',
       actorUserId: user.id,
       entityType: 'User',
@@ -57,7 +81,7 @@ export function createAuthRouter(prisma: DbClient): Router {
     const userId = typeof req.session.userId === 'string' ? req.session.userId : null;
 
     if (userId) {
-      await recordAuditEvent(prisma, {
+      await safeRecordAuditEvent(prisma, {
         action: 'auth.logout',
         actorUserId: userId,
         entityType: 'User',

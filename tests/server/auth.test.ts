@@ -1,10 +1,10 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Server } from 'node:http';
 import argon2 from 'argon2';
 import { AgentRole } from '../../src/generated/prisma/client.ts';
 import type { CurrentUserResponse } from '../../src/types/api.ts';
-import { createApp } from '../../src/server/app.ts';
-import { createTestPrisma, getSessionCookie, listen, testConfig } from './helpers.ts';
+import type { SessionStore } from '../../src/server/middlewares/session.ts';
+import { createTestApp, createTestPrisma, getSessionCookie, listen } from './helpers.ts';
 
 const AUTH_TEST_PASSWORD = 's09-auth-test-password';
 const runId = Date.now();
@@ -14,6 +14,7 @@ const testProjectCode = `S09-${runId}`;
 describe('auth sessions (S09)', () => {
   const prisma = createTestPrisma();
   let server: Server;
+  let sessionStore: SessionStore;
   let url: string;
   let testUserId: string;
   let testProjectId: string;
@@ -77,7 +78,8 @@ describe('auth sessions (S09)', () => {
     testProjectId = project.id;
     testAgentId = agent.id;
 
-    const app = createApp({ config: testConfig, prisma });
+    const { app, store } = createTestApp(prisma);
+    sessionStore = store;
     const listener = await listen(app);
     url = listener.url;
     server = listener.server;
@@ -96,6 +98,7 @@ describe('auth sessions (S09)', () => {
   afterAll(async () => {
     server.close();
     await cleanupTestData();
+    sessionStore.close();
     await prisma.$disconnect();
   });
 
@@ -209,5 +212,47 @@ describe('auth sessions (S09)', () => {
     expect(events.map((event) => event.action)).toEqual(['auth.login', 'auth.logout']);
     expect(serialized).not.toContain(AUTH_TEST_PASSWORD);
     expect(serialized).not.toContain('passwordHash');
+  });
+
+  it('un email inexistente igualmente ejecuta argon2.verify (anti-enumeración por timing)', async () => {
+    const verifySpy = vi.spyOn(argon2, 'verify');
+    try {
+      const res = await login(`missing-${testEmail}`, 'cualquier-password');
+
+      expect(res.status).toBe(401);
+      // Si la guarda volviera a cortocircuitar con `||`, argon2.verify NO se llamaría
+      // para un email inexistente y este test fallaría.
+      expect(verifySpy).toHaveBeenCalled();
+    } finally {
+      verifySpy.mockRestore();
+    }
+  });
+
+  it('login regenera el sid (defensa anti session-fixation)', async () => {
+    const first = await login(testEmail, AUTH_TEST_PASSWORD);
+    const sid1 = getSessionCookie(first);
+
+    // Reenviar la cookie anterior NO debe conservar el sid: regenerate lo rota.
+    const second = await fetch(`${url}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Cookie: sid1 },
+      body: JSON.stringify({ email: testEmail, password: AUTH_TEST_PASSWORD }),
+    });
+    const sid2 = getSessionCookie(second);
+
+    expect(second.status).toBe(200);
+    expect(sid2).not.toEqual(sid1);
+  });
+
+  it('logout sin sesión activa es idempotente y no audita', async () => {
+    const res = await fetch(`${url}/api/auth/logout`, { method: 'POST' });
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ ok: true });
+
+    const events = await prisma.auditEvent.findMany({
+      where: { actorUserId: testUserId, action: 'auth.logout' },
+    });
+    expect(events).toEqual([]);
   });
 });

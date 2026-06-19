@@ -3,6 +3,12 @@ import type { Server } from 'node:http';
 import type express from 'express';
 import type { Config } from '../../src/server/config.ts';
 import { createPrismaClient, type DbClient } from '../../src/lib/db/client.ts';
+import { createApp } from '../../src/server/app.ts';
+import {
+  createSessionMiddleware,
+  createSessionStore,
+  type SessionStore,
+} from '../../src/server/middlewares/session.ts';
 
 try {
   process.loadEnvFile('.env');
@@ -24,6 +30,17 @@ export const testConfig: Config = {
 
 export function createTestPrisma(): DbClient {
   return createPrismaClient(testConfig.DATABASE_URL);
+}
+
+/**
+ * Construye la app real con un store de sesiones cuyo pool podemos cerrar al acabar
+ * (en `afterAll`, `store.close()`), evitando dejar conexiones a PostgreSQL abiertas.
+ */
+export function createTestApp(prisma: DbClient): { app: express.Express; store: SessionStore } {
+  const store = createSessionStore(testConfig);
+  const sessionMiddleware = createSessionMiddleware(testConfig, store);
+  const app = createApp({ config: testConfig, prisma, sessionMiddleware });
+  return { app, store };
 }
 
 export function listen(app: express.Express): Promise<{ url: string; server: Server }> {
