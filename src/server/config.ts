@@ -5,9 +5,11 @@ import { z } from 'zod';
 // en vez de fallar a medias. Es también el primer uso de Zod (mini-ADR-009).
 
 const envSchema = z.object({
+  DATABASE_URL: z.string().url(),
   /** Puerto HTTP. Por defecto 3000 (decisión de clarify). */
   PORT: z.coerce.number().int().positive().default(3000),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  SESSION_SECRET: z.string().min(32),
 });
 
 export type Config = z.infer<typeof envSchema>;

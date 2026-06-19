@@ -3,31 +3,25 @@
 // forma del error §14.3. Usa `fetch` nativo (Node 22) contra un listener en puerto
 // efímero (app.listen(0)); sin `supertest` (el proyecto evita deps con alternativa nativa).
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import type { AddressInfo } from 'node:net';
 import type { Server } from 'node:http';
 import express from 'express';
 import { z } from 'zod';
-import { createApp } from '../../src/server/app';
+import type { SessionStore } from '../../src/server/middlewares/session';
 import { validate } from '../../src/server/middlewares/validate';
 import { errorHandler } from '../../src/server/middlewares/error-handler';
-
-/** Levanta una app en un puerto libre y devuelve su URL base y el server (para cerrarlo). */
-function listen(app: express.Express): Promise<{ url: string; server: Server }> {
-  return new Promise((resolve) => {
-    const server = app.listen(0, () => {
-      const { port } = server.address() as AddressInfo;
-      resolve({ url: `http://localhost:${port}`, server });
-    });
-  });
-}
+import { createTestApp, createTestPrisma, listen } from './helpers';
 
 describe('contrato HTTP base (§14.3)', () => {
   let real: { url: string; server: Server };
   let probe: { url: string; server: Server };
+  let realStore: SessionStore;
+  const prisma = createTestPrisma();
 
   beforeAll(async () => {
     // App real del servidor: health + not-found + error handler.
-    real = await listen(createApp());
+    const { app: realApp, store } = createTestApp(prisma);
+    realStore = store;
+    real = await listen(realApp);
 
     // App de prueba SOLO para ejercitar validate() (en S08 no hay endpoints con
     // entrada en producción). Reusa el mismo middleware de errores.
@@ -43,6 +37,8 @@ describe('contrato HTTP base (§14.3)', () => {
   afterAll(() => {
     real.server.close();
     probe.server.close();
+    realStore.close();
+    void prisma.$disconnect();
   });
 
   it('GET /api/health responde 200 { status: "ok" } sin envoltorio', async () => {

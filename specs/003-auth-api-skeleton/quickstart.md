@@ -1,61 +1,97 @@
-# Quickstart: API skeleton (S08)
+# Quickstart: API auth + sessions (S08-S09)
 
-Cómo arrancar la API y verificar el contrato HTTP base (SC-001 y SC-002 de la spec). Requiere Node 22 y un `.env` con `PORT` (ver `.env.example`; por defecto `3000`).
+Cómo arrancar la API y verificar el contrato HTTP base (S08) y el login real con sesión en PostgreSQL (S09). Requiere Node 22, PostgreSQL levantado y `.env` creado desde `.env.example`.
+
+## Preparar entorno
+
+```bash
+pnpm install
+npx prisma migrate deploy
+pnpm db:seed
+```
+
+El `.env` local debe tener:
+
+```bash
+DATABASE_URL="postgresql://postgres:...@localhost:5432/ipd?schema=public"
+PORT=3000
+NODE_ENV=development
+SESSION_SECRET="un-secreto-local-de-al-menos-32-caracteres"
+```
 
 ## Arrancar el servidor
 
 ```bash
 pnpm dev:server
 # Equivale a: node --env-file=.env --experimental-strip-types --watch src/server/index.ts
-# Log esperado: "API escuchando en http://localhost:3000"
+# Log esperado: "[api] escuchando en http://localhost:3000"
 ```
 
-## Verificar (en otra terminal)
-
-### 1. Salud — `GET /api/health` (SC-001)
+## Verificar API base
 
 ```bash
 curl -s http://localhost:3000/api/health
-# → {"status":"ok"}        (200, sin envoltorio)
+# -> {"status":"ok"}
 ```
-
-### 2. Ruta inexistente → `NOT_FOUND` (SC-002)
 
 ```bash
 curl -s -i http://localhost:3000/api/no-existe
-# → HTTP/1.1 404 ...
-# → {"error":{"code":"NOT_FOUND","message":"...","details":{}}}
+# -> HTTP/1.1 404 ...
+# -> {"error":{"code":"NOT_FOUND","message":"...","details":{}}}
 ```
 
-### 3. Entrada inválida → `VALIDATION_ERROR` (SC-002)
+## Verificar login, sesión y logout
 
-> En S08 no hay endpoints con entrada en producción (solo `/health`). Este caso se
-> cubre con el **test de integración** (`tests/server/`), que monta el middleware
-> `validate()` en una app de prueba y envía un body que no cumple el esquema Zod.
-> A partir de S09 (`POST /api/login`) se podrá reproducir con `curl`.
+### 1. Login correcto crea cookie
 
 ```bash
-# Desde S09, ejemplo:
-# curl -s -i -X POST http://localhost:3000/api/login -H 'Content-Type: application/json' -d '{}'
-# → HTTP/1.1 400 ...
-# → {"error":{"code":"VALIDATION_ERROR","message":"...","details":{ ... campos ... }}}
+curl -s -i -c cookies.txt -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d "{\"email\":\"pm@ipd.demo\",\"password\":\"ipd-demo-2026\"}"
 ```
 
-### 4. Forma del error (SC-002)
+Resultado esperado:
 
-Todo error de la API tiene exactamente esta forma (la garantiza el middleware de errores):
+- HTTP 200.
+- Cabecera `Set-Cookie` con `ipd.sid` y `HttpOnly`.
+- JSON con `user` y `projects`.
 
-```json
-{ "error": { "code": "<UNO DE §14.3>", "message": "<texto>", "details": { } } }
+### 2. La cookie autentica `/api/me`
+
+```bash
+curl -s -b cookies.txt http://localhost:3000/api/me
+# -> {"user":{"id":"...","email":"pm@ipd.demo","displayName":"..."},"projects":[...]}
 ```
 
-Códigos posibles (§14.3): `UNAUTHENTICATED` (401), `FORBIDDEN` (403), `NOT_FOUND` (404),
-`VALIDATION_ERROR` (400), `DOMAIN_ERROR` (422), `CONFLICT` (409), `INTERNAL_ERROR` (500).
+### 3. Credenciales inválidas no filtran si el email existe
+
+```bash
+curl -s -i -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d "{\"email\":\"pm@ipd.demo\",\"password\":\"mal\"}"
+# -> HTTP/1.1 401 ...
+# -> {"error":{"code":"UNAUTHENTICATED","message":"Email o contraseña incorrectos.","details":{}}}
+```
+
+### 4. Logout invalida la sesión
+
+```bash
+curl -s -i -b cookies.txt -c cookies.txt -X POST http://localhost:3000/api/auth/logout
+# -> HTTP/1.1 200 ...
+# -> {"ok":true}
+```
+
+```bash
+curl -s -i -b cookies.txt http://localhost:3000/api/me
+# -> HTTP/1.1 401 ...
+# -> {"error":{"code":"UNAUTHENTICATED","message":"No has iniciado sesión.","details":{}}}
+```
 
 ## Verificación automatizada
 
 ```bash
-pnpm test        # incluye tests/server/: health, NOT_FOUND y VALIDATION_ERROR + forma del error
-pnpm typecheck   # cubre ahora también prisma/seed.ts
+npx prisma migrate status
+pnpm typecheck
 pnpm lint
+pnpm test
 ```

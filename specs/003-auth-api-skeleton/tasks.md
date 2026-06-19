@@ -27,7 +27,7 @@ description: "Task list for feature: Autenticación y roles por proyecto"
 
 - [x] T001 Proponer (gate) e instalar dependencias: `express` y `zod` (prod), `@types/express` y `@types/node` (dev). `express-session`/`connect-pg-simple` NO (son de S09). En `package.json`.
 - [x] T002 [P] Añadir script `"dev:server": "node --env-file=.env --experimental-strip-types --watch src/server/index.ts"` en `package.json`.
-- [ ] T003 [P] Documentar `PORT=3000` en `.env.example` (sin secretos) y reflejarlo en `.env` local. ⚠️ **Pendiente**: en esta sesión `.env*` está bloqueado por permisos (lectura y escritura); lo añade Rubén. No bloquea S08: `config.ts` usa `PORT=3000` por defecto.
+- [x] T003 [P] Documentar `PORT=3000` en `.env.example` (sin secretos) y reflejarlo en `.env` local.
 - [x] T004 [P] Añadir `"prisma"` al `include` de `tsconfig.json` para que `pnpm typecheck` cubra `prisma/seed.ts` (habilitado por `@types/node`).
 - [x] T005 Crear el árbol de carpetas de `src/server/` (`routes/`, `middlewares/`, `errors/`).
 
@@ -60,16 +60,16 @@ description: "Task list for feature: Autenticación y roles por proyecto"
 
 **Goal**: login/logout/me con sesión en Postgres y cookie `httpOnly`.
 
-- [ ] T016 [US1] Proponer e instalar `express-session` + `connect-pg-simple` (+ tipos). Mini-decisión/diario.
-- [ ] T017 [US1] Capa de acceso a datos `src/lib/db` (cliente Prisma con `@prisma/adapter-pg`, `DATABASE_URL`).
-- [ ] T018 [US1] Middleware de sesión (store en Postgres, cookie `httpOnly`, `secure` según entorno).
-- [ ] T019 [US1] `POST /api/login` (valida con Zod, verifica argon2, abre sesión; error genérico si falla — FR-005).
-- [ ] T020 [US1] `POST /api/logout` (invalida la sesión).
-- [ ] T021 [US1] `GET /api/me` (identidad + proyectos donde participa — FR-004).
-- [ ] T022 [US1] Middleware `requireAuth` (no autenticado → `UNAUTHENTICATED`).
-- [ ] T023 [TEST] [US1] Tests de login OK / credenciales inválidas / sesión / logout.
+- [x] T016 [US1] Proponer e instalar `express-session` + `connect-pg-simple` (+ tipos). Mini-decisión/diario.
+- [x] T017 [US1] Capa de acceso a datos `src/lib/db` (cliente Prisma con `@prisma/adapter-pg`, `DATABASE_URL`).
+- [x] T018 [US1] Middleware de sesión (store en Postgres, cookie `httpOnly`, `secure` según entorno).
+- [x] T019 [US1] `POST /api/auth/login` (valida con Zod, verifica argon2, abre sesión; error genérico si falla — FR-005).
+- [x] T020 [US1] `POST /api/auth/logout` (invalida la sesión).
+- [x] T021 [US1] `GET /api/me` (identidad + proyectos donde participa — FR-004).
+- [x] T022 [US1] Middleware `requireAuth` (no autenticado → `UNAUTHENTICATED`).
+- [x] T023 [TEST] [US1] Tests de login OK / credenciales inválidas / sesión / logout.
 
-**Checkpoint**: SC-003 y SC-007 verificables.
+**Checkpoint (Hecho de S09)**: SC-003 y SC-007 verificables con tests de integración y `curl`: login crea cookie `httpOnly`, `/api/me` devuelve usuario + proyectos activos, logout invalida la sesión y credenciales inválidas no filtran si el email existe.
 
 ---
 

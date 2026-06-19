@@ -20,3 +20,30 @@ export interface ApiErrorResponse {
     details: Record<string, unknown>;
   };
 }
+
+/** Roles de proyecto expuestos por la API. No reutiliza AgentRole de FRC. */
+export type ProjectRoleCode =
+  | 'PROMOTER'
+  | 'DESIGNER'
+  | 'CONSTRUCTOR'
+  | 'PROJECT_MANAGER'
+  | 'OBSERVER';
+
+export interface CurrentUserResponse {
+  user: {
+    id: string;
+    email: string;
+    displayName: string;
+  };
+  projects: {
+    id: string;
+    code: string;
+    name: string;
+    agentId: string;
+    role: ProjectRoleCode;
+  }[];
+}
+
+export interface LogoutResponse {
+  ok: true;
+}
