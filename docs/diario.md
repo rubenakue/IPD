@@ -84,6 +84,13 @@ Una entrada por sesión de trabajo. Breve y honesto.
 - **Cómo lo resolví / qué usé de Claude Code:** workflow de revisión en segundo plano (subagentes por dimensión + verificación adversarial que descartó los 21 falsos positivos: p. ej. Express 5 sí captura los `throw` async, `AgentRole` ≡ `ProjectRoleCode`, `/api/me` no filtra datos económicos). Verificación: `pnpm typecheck`/`lint`/`test` **38/38** verdes (35 → 38). Mergeada PR #34 (merge commit `dacc85a`), issue #10 cerrada, rama remota borrada.
 - **Estado del sprint:** En camino. **H4 a falta de S10** (permisos por rol en servidor + RLS, criterio más literal del briefing). Siguiente: S10 (issue #11).
 
+## 2026-06-24 (sesion S10)
+
+- **Que hice:** Implementado issue #11: permisos por proyecto en dos capas. Capa API: matriz sec. 15 codificada como fuente unica (`PermissionAction` x `AgentRole`), middleware que resuelve el `Agent` activo del usuario en el proyecto, `NOT_FOUND` para proyectos donde no participa y `FORBIDDEN` cuando el rol no permite la accion. Capa BD: tabla `PromoterPrivateCost` para costes privados del promotor, politicas RLS y transacciones con `SET LOCAL` (`ipd.current_user_id`, `ipd.current_project_id`). Endpoint demostrable: `GET /api/projects/:projectId/promoter-private-costs`; Constructor no recibe esos datos, PM si.
+- **Que bloqueo:** En local `DATABASE_URL` conecta como `postgres`, que es superusuario y puede saltarse RLS aunque la tabla tenga `FORCE ROW LEVEL SECURITY`. El primer test directo contra RLS lo detecto: bajo contexto Constructor seguia devolviendo la fila privada.
+- **Como lo resolvi / que use de Claude Code:** La migracion crea/actualiza el rol `ipd_app NOLOGIN NOBYPASSRLS`, concede permisos de tabla y `withRlsContext()` ejecuta `SET LOCAL ROLE ipd_app` dentro de la transaccion antes de fijar las variables RLS. Tests S10 cubren API (`FORBIDDEN` sin filtrar datos), lectura PM, RLS directo saltando el middleware, misma cuenta con rol PM en un proyecto y Observador en otro, y usuario autenticado sin `Agent` (`NOT_FOUND`).
+- **Estado del sprint:** En camino. S10 completa el criterio literal del briefing: un constructor no recibe costes privados del promotor y la BD actua como segunda capa.
+
 ## AAAA-MM-DD
 
 - **Horas trabajadas:**

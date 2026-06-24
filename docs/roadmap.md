@@ -138,9 +138,9 @@ El orden es estrictamente secuencial — cada sesión asume hechas las anteriore
 **Hecho cuando:** con `curl`: login → recibe cookie → `/api/me` devuelve el usuario; las contraseñas en BD están hasheadas.
 
 #### S10 — Permisos en dos capas
-- [ ] Capa 1: middleware que resuelve el `Agent` del usuario en el proyecto y aplica la matriz §15.
-- [ ] Capa 2: políticas RLS en Postgres + patrón `SET LOCAL` por transacción (ADR-001). Rol de conexión sin privilegios.
-- [ ] Tests de integración de permisos: un constructor que llama al endpoint de costes privados del promotor recibe `FORBIDDEN`/datos vacíos — verificado contra **ambas** capas.
+- [x] Capa 1: middleware que resuelve el `Agent` del usuario en el proyecto y aplica la matriz §15.
+- [x] Capa 2: políticas RLS en Postgres + patrón `SET LOCAL` por transacción (ADR-001). Rol de conexión sin privilegios.
+- [x] Tests de integración de permisos: un constructor que llama al endpoint de costes privados del promotor recibe `FORBIDDEN`/datos vacíos — verificado contra **ambas** capas.
 
 **Hecho cuando:** los tests de permisos están verdes. Este es el criterio de evaluación más literal del briefing.
 

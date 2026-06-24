@@ -19,6 +19,13 @@
 
 > Dudas resueltas con Rubén antes de planificar (equivalen al paso `/speckit.clarify`). Las de comportamiento se registran aquí; las puramente de implementación (estructura de carpetas, puerto, dependencias) se detallan en `plan.md`.
 
+### Session 2026-06-20
+
+- Q: ¿Cuál es la duración de una sesión de servidor antes de que expire automáticamente? → A: **24 horas rolling** — la sesión se renueva en cada petición autenticada y expira tras 24 h de inactividad.
+- Q: ¿Qué protección debe aplicar el sistema ante intentos repetidos de login con credenciales incorrectas? → A: **Rate limiting por IP** — máx. 10 intentos de login en 15 min por IP; si se supera, el servidor responde `429 Too Many Requests` con el error estándar y código `RATE_LIMITED`.
+- Q: ¿Puede un mismo usuario tener varias sesiones activas simultáneamente? → A: **Sí, ilimitadas** — el mismo usuario puede tener sesiones activas en múltiples dispositivos/navegadores sin que se invaliden entre sí.
+- Q: ¿Qué responde el servidor cuando un usuario intenta acceder a un proyecto en el que no participa? → A: **Siempre `NOT_FOUND`** — si el usuario no es agente del proyecto, ese proyecto no existe para él; nunca se confirma su existencia.
+
 ### Session 2026-06-18
 
 - **Q: ¿Una sola spec de "auth + roles" o dos specs separadas (auth y permisos)?** → A: **Una sola spec** "autenticación y roles por proyecto". El concepto trata ambos juntos (§9.1) y la matriz de permisos (§15) depende de los roles que define auth; separarlos duplicaría contexto. La implementación se reparte en S09 (login/sesiones) y S10 (permisos en dos capas).
@@ -81,7 +88,7 @@ El rol no es una propiedad global del usuario: vive en la relación **usuario-pr
 
 1. **Given** una persona que es PM en el proyecto A y Observador en el proyecto B, **When** opera en A, **Then** se le permiten las acciones de PM; **When** opera en B, **Then** solo se le permite leer.
 2. **Given** una persona autenticada, **When** lista sus proyectos, **Then** solo aparecen aquellos en los que tiene un `Agent` activo.
-3. **Given** un proyecto en el que la persona no participa, **When** intenta acceder a él directamente, **Then** el servidor no le da acceso (según corresponda, `NOT_FOUND` o `FORBIDDEN`, sin filtrar la existencia de datos sensibles).
+3. **Given** un proyecto en el que la persona no participa, **When** intenta acceder a él directamente, **Then** el servidor responde `NOT_FOUND` (nunca `FORBIDDEN`), sin confirmar que el proyecto existe.
 
 ---
 
@@ -108,8 +115,9 @@ Toda la plataforma se comunica a través de una API HTTP bajo `/api`. Para que l
 ### Edge Cases
 
 - **Credenciales inválidas**: el mensaje de error no revela si el email existe (evita enumeración de usuarios). Siempre el mismo error genérico.
+- **Fuerza bruta en login**: tras 10 intentos fallidos desde la misma IP en 15 minutos, el servidor responde `RATE_LIMITED` (429). No se bloquea la cuenta, solo la IP; esto evita que un atacante deje fuera a usuarios legítimos bloqueando su cuenta.
 - **Sesión caducada o cookie manipulada**: se trata como no autenticado (`UNAUTHENTICATED`), nunca como error interno.
-- **Acceso a recurso de un proyecto ajeno**: para datos sensibles, el servidor no debe confirmar la existencia del recurso a quien no participa (preferir el comportamiento que no filtre información).
+- **Acceso a recurso de un proyecto ajeno**: el servidor responde **siempre `NOT_FOUND`** cuando el usuario no es agente del proyecto; nunca `FORBIDDEN`. Esto evita enumerar qué proyectos existen.
 - **Petición a `/api` mal formada (JSON inválido, campos faltantes, tipos erróneos)**: siempre `VALIDATION_ERROR`, nunca un fallo no controlado del servidor.
 - **Fallo inesperado (excepción no prevista)**: se captura de forma centralizada y se devuelve `INTERNAL_ERROR` genérico; el detalle queda en el log del servidor, no en la respuesta.
 - **Rol del promotor con honorarios a 0**: sigue siendo un agente con su rol; su visibilidad del FRC depende del rol, no de los honorarios (coherente con §9.5).
@@ -121,11 +129,12 @@ Toda la plataforma se comunica a través de una API HTTP bajo `/api`. Para que l
 #### Acceso y sesión (US1 — S09)
 
 - **FR-001**: El sistema MUST permitir iniciar sesión con **email y contraseña** de una cuenta existente, verificando la contraseña contra su hash almacenado (argon2, ya sembrado en S07), sin contraseñas hardcodeadas en el código.
-- **FR-002**: El sistema MUST mantener la sesión del lado del servidor y entregarla al navegador mediante una **cookie `httpOnly`** (no accesible por JavaScript), de modo que las peticiones siguientes se autentiquen sin reenviar credenciales.
-- **FR-003**: El sistema MUST permitir **cerrar sesión**, invalidándola de forma que las peticiones posteriores dejen de estar autenticadas.
+- **FR-002**: El sistema MUST mantener la sesión del lado del servidor y entregarla al navegador mediante una **cookie `httpOnly`** (no accesible por JavaScript), de modo que las peticiones siguientes se autentiquen sin reenviar credenciales. La sesión tiene una duración de **24 horas rolling**: se renueva en cada petición autenticada y expira si hay 24 h de inactividad.
+- **FR-003**: El sistema MUST permitir **cerrar sesión**, invalidándola de forma que las peticiones posteriores dejen de estar autenticadas. Un mismo usuario PUEDE tener múltiples sesiones activas simultáneas (distintos dispositivos/navegadores); cerrar sesión invalida únicamente la sesión actual, no las demás.
 - **FR-004**: El sistema MUST ofrecer una forma de consultar **la identidad de la sesión actual** ("quién soy") y los proyectos en los que la persona participa.
 - **FR-005**: Ante credenciales inválidas, el sistema MUST responder con un error **genérico** que no permita distinguir si el email existe.
 - **FR-006**: El sistema MUST NOT ofrecer registro abierto, signup, recuperación de contraseña ni invitaciones en el MVP; las cuentas se crean **solo por seed** (§9.1, §19).
+- **FR-022**: El sistema MUST aplicar **rate limiting por IP** en el endpoint de login: un máximo de 10 intentos fallidos en una ventana de 15 minutos por dirección IP. Al superarlo, MUST responder `429 Too Many Requests` con el error estándar y código `RATE_LIMITED`. El contador se resetea cuando la ventana expira.
 
 #### Permisos por rol (US2 + US3 — S10)
 
@@ -133,7 +142,7 @@ Toda la plataforma se comunica a través de una API HTTP bajo `/api`. Para que l
 - **FR-008**: El sistema MUST soportar los cinco roles del dominio —Promotor, Proyectista, Constructor, Project Manager, Observador— y aplicar sus permisos **en el servidor**, con independencia de lo que haga o muestre el frontend.
 - **FR-009**: El sistema MUST impedir que un Constructor (o cualquier rol distinto de Promotor/PM) obtenga los **costes privados del promotor**, incluso si invoca el endpoint directamente; la respuesta MUST excluir esos datos por completo, no solo ocultarlos en la interfaz.
 - **FR-010**: El sistema MUST aplicar la **matriz de permisos §15** celda a celda: editar proyecto, cargar presupuesto, imputar/anular costes, registrar avance, evaluar/aprobar cambios, registrar decisiones y gestionar agentes quedan restringidos a los roles indicados (PM principalmente; Constructor para imputar coste y avance); el Observador solo puede leer.
-- **FR-011**: El sistema MUST garantizar que una persona solo accede a los **proyectos en los que participa**; los proyectos donde no es agente no aparecen en sus listados ni le son accesibles.
+- **FR-011**: El sistema MUST garantizar que una persona solo accede a los **proyectos en los que participa**; los proyectos donde no es agente no aparecen en sus listados ni le son accesibles. Al intentar acceder a un proyecto ajeno, el servidor MUST responder `NOT_FOUND` (nunca `FORBIDDEN`), para no confirmar la existencia del proyecto.
 - **FR-012**: El sistema MUST permitir que una misma cuenta tenga **roles distintos en proyectos distintos** sin interferencia entre ellos.
 - **FR-013**: El sistema MUST aplicar los permisos en **dos capas** (defensa en profundidad): comprobación en el middleware de la API y **red de seguridad RLS** en la base de datos, de modo que un fallo en una capa no exponga datos (detalle de implementación en S10).
 
@@ -142,7 +151,7 @@ Toda la plataforma se comunica a través de una API HTTP bajo `/api`. Para que l
 - **FR-014**: El sistema MUST exponer la API bajo el prefijo **`/api`** y arrancar como un servidor HTTP escuchando en un puerto configurable.
 - **FR-015**: El sistema MUST ofrecer un endpoint de **salud** `GET /api/health` que responda un estado simple (p. ej. `{ "status": "ok" }`) sin requerir autenticación y **sin** envoltorio.
 - **FR-016**: El sistema MUST devolver **todos** los errores con el formato único `{ "error": { "code": string, "message": string, "details"?: object } }` (§14.3).
-- **FR-017**: El `code` de error MUST pertenecer a la lista cerrada: `UNAUTHENTICATED`, `FORBIDDEN`, `NOT_FOUND`, `VALIDATION_ERROR`, `DOMAIN_ERROR`, `CONFLICT`, `INTERNAL_ERROR`, y MUST corresponder a un código de estado HTTP coherente.
+- **FR-017**: El `code` de error MUST pertenecer a la lista cerrada: `UNAUTHENTICATED`, `FORBIDDEN`, `NOT_FOUND`, `VALIDATION_ERROR`, `DOMAIN_ERROR`, `CONFLICT`, `INTERNAL_ERROR`, `RATE_LIMITED`, y MUST corresponder a un código de estado HTTP coherente (`RATE_LIMITED` → 429).
 - **FR-018**: El sistema MUST centralizar el manejo de errores en un único punto (middleware de errores), de modo que ningún endpoint construya el JSON de error por su cuenta y ningún error escape sin formatear.
 - **FR-019**: El sistema MUST **validar la entrada** (parámetros de ruta, query y body) con esquemas declarativos antes de procesar la petición; una entrada que no cumple el esquema MUST producir `VALIDATION_ERROR` con el detalle del fallo en `details`.
 - **FR-020**: Ante un fallo inesperado, el sistema MUST responder `INTERNAL_ERROR` genérico y MUST NOT filtrar trazas, mensajes internos ni datos sensibles al cliente (quedan en el log del servidor).
