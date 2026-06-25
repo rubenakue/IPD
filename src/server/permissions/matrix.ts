@@ -87,6 +87,10 @@ export const PERMISSION_MATRIX: Record<PermissionAction, Readonly<Record<AgentRo
     [AgentRole.PROJECT_MANAGER]: yes,
     [AgentRole.OBSERVER]: no,
   },
+  // Nota ² de §15: el PM solo ve "FRC propio" si participa en el fondo con
+  // sharePercent > 0. La matriz es un lookup puro rol→acción y no puede expresar esa
+  // condición; al cablear el endpoint de FRC, el call-site debe comprobar además
+  // `agent.sharePercent > 0` para el PROJECT_MANAGER.
   'frc.own.view': {
     [AgentRole.PROMOTER]: yes,
     [AgentRole.DESIGNER]: yes,

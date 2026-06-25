@@ -25,6 +25,8 @@ describe('project permissions and RLS (S10)', () => {
   let projectAId: string;
   let projectBId: string;
   let constructorUserId: string;
+  let pmUserId: string;
+  let outsiderUserId: string;
 
   async function cleanupTestData(): Promise<void> {
     await prisma.session.deleteMany();
@@ -57,7 +59,7 @@ describe('project permissions and RLS (S10)', () => {
     await cleanupTestData();
 
     const passwordHash = await argon2.hash(TEST_PASSWORD);
-    const [pm, constructor, multiRole] = await Promise.all([
+    const [pm, constructor, multiRole, outsider] = await Promise.all([
       prisma.user.create({
         data: { email: pmEmail, displayName: 'S10 PM', passwordHash },
       }),
@@ -73,6 +75,8 @@ describe('project permissions and RLS (S10)', () => {
     ]);
 
     constructorUserId = constructor.id;
+    pmUserId = pm.id;
+    outsiderUserId = outsider.id;
 
     const [projectA, projectB] = await Promise.all([
       prisma.project.create({
@@ -194,6 +198,25 @@ describe('project permissions and RLS (S10)', () => {
     );
 
     expect(body.costs).toEqual([]);
+  });
+
+  it('la RLS aísla por proyecto en el resto de tablas: un extraño no ve filas vía contexto', async () => {
+    // Un usuario sin Agent en ningún proyecto no debe ver ninguna fila de `Agent`.
+    const outsiderAgents = await withRlsContext(
+      prisma,
+      { userId: outsiderUserId, projectId: projectAId },
+      (tx) => tx.agent.findMany(),
+    );
+    expect(outsiderAgents).toEqual([]);
+
+    // Un participante solo ve filas de SUS proyectos (A y B), nunca de otros.
+    const pmAgents = await withRlsContext(
+      prisma,
+      { userId: pmUserId, projectId: projectAId },
+      (tx) => tx.agent.findMany(),
+    );
+    expect(pmAgents.length).toBeGreaterThan(0);
+    expect(pmAgents.every((agent) => agent.projectId === projectAId || agent.projectId === projectBId)).toBe(true);
   });
 
   it('un usuario con roles distintos recibe permisos por proyecto, no globales', async () => {
