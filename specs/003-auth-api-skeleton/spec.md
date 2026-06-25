@@ -22,7 +22,7 @@
 ### Session 2026-06-20
 
 - Q: ¿Cuál es la duración de una sesión de servidor antes de que expire automáticamente? → A: **24 horas rolling** — la sesión se renueva en cada petición autenticada y expira tras 24 h de inactividad.
-- Q: ¿Qué protección debe aplicar el sistema ante intentos repetidos de login con credenciales incorrectas? → A: **Rate limiting por IP** — máx. 10 intentos de login en 15 min por IP; si se supera, el servidor responde `429 Too Many Requests` con el error estándar y código `RATE_LIMITED`.
+- Q: ¿Qué protección debe aplicar el sistema ante intentos repetidos de login con credenciales incorrectas? → A: **Rate limiting por IP** — máx. 10 intentos de login en 15 min por IP; si se supera, el servidor responde `429 Too Many Requests` con el error estándar y código `RATE_LIMITED`. **(FUTURO — aún NO implementado; ver FR-022.)**
 - Q: ¿Puede un mismo usuario tener varias sesiones activas simultáneamente? → A: **Sí, ilimitadas** — el mismo usuario puede tener sesiones activas en múltiples dispositivos/navegadores sin que se invaliden entre sí.
 - Q: ¿Qué responde el servidor cuando un usuario intenta acceder a un proyecto en el que no participa? → A: **Siempre `NOT_FOUND`** — si el usuario no es agente del proyecto, ese proyecto no existe para él; nunca se confirma su existencia.
 
@@ -134,7 +134,7 @@ Toda la plataforma se comunica a través de una API HTTP bajo `/api`. Para que l
 - **FR-004**: El sistema MUST ofrecer una forma de consultar **la identidad de la sesión actual** ("quién soy") y los proyectos en los que la persona participa.
 - **FR-005**: Ante credenciales inválidas, el sistema MUST responder con un error **genérico** que no permita distinguir si el email existe.
 - **FR-006**: El sistema MUST NOT ofrecer registro abierto, signup, recuperación de contraseña ni invitaciones en el MVP; las cuentas se crean **solo por seed** (§9.1, §19).
-- **FR-022**: El sistema MUST aplicar **rate limiting por IP** en el endpoint de login: un máximo de 10 intentos fallidos en una ventana de 15 minutos por dirección IP. Al superarlo, MUST responder `429 Too Many Requests` con el error estándar y código `RATE_LIMITED`. El contador se resetea cuando la ventana expira.
+- **FR-022** *(FUTURO — aún NO implementado; planificado fuera de S10)*: El sistema deberá aplicar **rate limiting por IP** en el endpoint de login: un máximo de 10 intentos fallidos en una ventana de 15 minutos por dirección IP. Al superarlo, responderá `429 Too Many Requests` con el error estándar y código `RATE_LIMITED`. El contador se resetea cuando la ventana expira. *(No hay implementación en el MVP actual: ni middleware de rate-limit ni el código `RATE_LIMITED` en `ApiError`. Pendiente de una sesión futura con su dependencia propuesta.)*
 
 #### Permisos por rol (US2 + US3 — S10)
 
@@ -151,7 +151,7 @@ Toda la plataforma se comunica a través de una API HTTP bajo `/api`. Para que l
 - **FR-014**: El sistema MUST exponer la API bajo el prefijo **`/api`** y arrancar como un servidor HTTP escuchando en un puerto configurable.
 - **FR-015**: El sistema MUST ofrecer un endpoint de **salud** `GET /api/health` que responda un estado simple (p. ej. `{ "status": "ok" }`) sin requerir autenticación y **sin** envoltorio.
 - **FR-016**: El sistema MUST devolver **todos** los errores con el formato único `{ "error": { "code": string, "message": string, "details"?: object } }` (§14.3).
-- **FR-017**: El `code` de error MUST pertenecer a la lista cerrada: `UNAUTHENTICATED`, `FORBIDDEN`, `NOT_FOUND`, `VALIDATION_ERROR`, `DOMAIN_ERROR`, `CONFLICT`, `INTERNAL_ERROR`, `RATE_LIMITED`, y MUST corresponder a un código de estado HTTP coherente (`RATE_LIMITED` → 429).
+- **FR-017**: El `code` de error MUST pertenecer a la lista cerrada: `UNAUTHENTICATED`, `FORBIDDEN`, `NOT_FOUND`, `VALIDATION_ERROR`, `DOMAIN_ERROR`, `CONFLICT`, `INTERNAL_ERROR`, y MUST corresponder a un código de estado HTTP coherente. *(`RATE_LIMITED` → 429 queda reservado para FR-022, aún no implementado: hoy NO forma parte del tipo `ErrorCode`.)*
 - **FR-018**: El sistema MUST centralizar el manejo de errores en un único punto (middleware de errores), de modo que ningún endpoint construya el JSON de error por su cuenta y ningún error escape sin formatear.
 - **FR-019**: El sistema MUST **validar la entrada** (parámetros de ruta, query y body) con esquemas declarativos antes de procesar la petición; una entrada que no cumple el esquema MUST producir `VALIDATION_ERROR` con el detalle del fallo en `details`.
 - **FR-020**: Ante un fallo inesperado, el sistema MUST responder `INTERNAL_ERROR` genérico y MUST NOT filtrar trazas, mensajes internos ni datos sensibles al cliente (quedan en el log del servidor).
