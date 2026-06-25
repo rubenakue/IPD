@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Selector de Proyectos - IPD</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;550;600;650&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "warning-soft": "#FFF6C7",
+                        "surface-warm": "#F4F1E8",
+                        "action-soft": "#DDEBFA",
+                        "on-secondary-fixed-variant": "#00468c",
+                        "surface-dim": "#ddd9d9",
+                        "tertiary-fixed": "#e8e1da",
+                        "tertiary-fixed-dim": "#cbc6bf",
+                        "surface-tint": "#5e5e61",
+                        "inverse-primary": "#c7c6c9",
+                        "on-surface-variant": "#45474a",
+                        "on-primary-fixed": "#1b1c1e",
+                        "success-soft": "#DFF3EA",
+                        "primary": "#000000",
+                        "secondary": "#005db6",
+                        "on-secondary-container": "#00376f",
+                        "role-designer": "#5B5FC7",
+                        "primary-fixed-dim": "#c7c6c9",
+                        "background": "#fcf8f8",
+                        "on-tertiary-fixed": "#1e1b17",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-primary-container": "#848386",
+                        "surface-container-high": "#ebe7e7",
+                        "secondary-fixed": "#d6e3ff",
+                        "surface-bright": "#fcf8f8",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f4f0ef",
+                        "danger-soft": "#FBE4E2",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#f1edec",
+                        "tertiary-container": "#1e1b17",
+                        "on-surface": "#1c1b1b",
+                        "secondary-container": "#63a1ff",
+                        "error-container": "#ffdad6",
+                        "surface": "#F6F7F8",
+                        "inverse-surface": "#313030",
+                        "outline": "#76777b",
+                        "hairline-soft": "#E8EBEF",
+                        "on-tertiary-fixed-variant": "#4a4641",
+                        "tertiary": "#000000",
+                        "panel": "#FFFFFF",
+                        "role-project-manager": "#005EB8",
+                        "danger": "#C7362E",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#001b3d",
+                        "surface-container-low": "#f7f3f2",
+                        "success": "#0B7A4B",
+                        "primary-fixed": "#e3e2e4",
+                        "slate": "#5F6670",
+                        "hairline": "#D8DDE3",
+                        "primary-container": "#1b1c1e",
+                        "on-background": "#1c1b1b",
+                        "canvas": "#FFFFFF",
+                        "on-primary-fixed-variant": "#464749",
+                        "muted": "#8A929D",
+                        "on-tertiary-container": "#88837d",
+                        "on-error-container": "#93000a",
+                        "graphite": "#2B2F33",
+                        "role-constructor": "#6E4B18",
+                        "warning": "#F5C400",
+                        "role-promoter": "#111111",
+                        "on-error": "#ffffff",
+                        "info": "#2563EB",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e5e2e1",
+                        "outline-variant": "#c6c6ca",
+                        "secondary-fixed-dim": "#a9c7ff",
+                        "on-tertiary": "#ffffff",
+                        "role-observer": "#6B7280"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "8px",
+                        "md": "16px",
+                        "section": "64px",
+                        "sm": "12px",
+                        "xxl": "48px",
+                        "xxs": "4px",
+                        "lg": "24px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "numeric": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "page-title": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "table": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "card-title": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "body-strong": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "section-title": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "display": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "body": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "numeric-table": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "label": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""]
+                    },
+                    "fontSize": {
+                        "numeric": ["24px", { "lineHeight": "1.1", "fontWeight": "650" }],
+                        "page-title": ["32px", { "lineHeight": "1.15", "fontWeight": "650" }],
+                        "table": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "card-title": ["16px", { "lineHeight": "1.35", "fontWeight": "650" }],
+                        "body-strong": ["15px", { "lineHeight": "1.45", "fontWeight": "600" }],
+                        "section-title": ["22px", { "lineHeight": "1.25", "fontWeight": "650" }],
+                        "display": ["48px", { "lineHeight": "1.05", "fontWeight": "650" }],
+                        "body": ["15px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "numeric-table": ["13px", { "lineHeight": "1.35", "fontWeight": "550" }],
+                        "label": ["12px", { "lineHeight": "1.25", "fontWeight": "650" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body min-h-screen flex items-center justify-center p-lg">
+<div class="w-full max-w-[1024px] bg-canvas border border-hairline rounded-lg shadow-sm flex flex-col">
+<!-- Header -->
+<div class="p-lg border-b border-hairline flex items-center justify-between bg-surface-container-lowest rounded-t-lg">
+<div>
+<h1 class="font-section-title text-section-title text-primary">Selector de Proyectos</h1>
+<p class="font-body text-body text-on-surface-variant mt-xxs">Seleccione un proyecto activo para acceder al Panel de Control.</p>
+</div>
+<div class="flex gap-sm">
+<button class="flex items-center gap-xs px-md py-sm border border-hairline rounded text-on-surface hover:bg-surface-container-low transition-colors font-body-strong text-body-strong">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+                    Filtrar
+                </button>
+</div>
+</div>
+<!-- Table Container -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-lowest border-b border-hairline font-label text-label text-on-surface-variant uppercase tracking-wide">
+<th class="py-md px-lg font-medium">Proyecto</th>
+<th class="py-md px-lg font-medium">Cliente</th>
+<th class="py-md px-lg font-medium">Fase</th>
+<th class="py-md px-lg font-medium">Tu Rol</th>
+<th class="py-md px-lg font-medium">Estado</th>
+<th class="py-md px-lg font-medium text-right">Acción</th>
+</tr>
+</thead>
+<tbody class="font-table text-table text-on-surface divide-y divide-hairline-soft">
+<!-- Row 1: Hotel Azahar (Target) -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-md px-lg">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded bg-action-soft flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">apartment</span>
+</div>
+<div>
+<span class="font-body-strong text-body-strong text-primary block">Hotel Azahar</span>
+<span class="font-label text-label text-on-surface-variant">PRJ-2023-089</span>
+</div>
+</div>
+</td>
+<td class="py-md px-lg">Vivare</td>
+<td class="py-md px-lg">Ejecución</td>
+<td class="py-md px-lg">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-surface-container border border-hairline text-role-promoter font-label text-label">
+                                Promotor
+                            </span>
+</td>
+<td class="py-md px-lg">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-success-soft text-success font-label text-label">
+<span class="w-2 h-2 rounded-full bg-success"></span>
+                                En plazo
+                            </span>
+</td>
+<td class="py-md px-lg text-right">
+<button class="bg-primary text-on-primary font-body-strong text-body-strong px-md py-xs rounded-full hover:bg-graphite transition-colors">
+                                Entrar
+                            </button>
+</td>
+</tr>
+<!-- Row 2: Complejo Residencial -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-md px-lg">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded bg-surface-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">home_work</span>
+</div>
+<div>
+<span class="font-body-strong text-body-strong text-primary block">Residencial Los Pinos</span>
+<span class="font-label text-label text-on-surface-variant">PRJ-2024-012</span>
+</div>
+</div>
+</td>
+<td class="py-md px-lg">Urbancorp</td>
+<td class="py-md px-lg">Diseño</td>
+<td class="py-md px-lg">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-surface-container border border-hairline text-role-constructor font-label text-label">
+                                Constructor
+                            </span>
+</td>
+<td class="py-md px-lg">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-warning-soft text-warning font-label text-label">
+<span class="w-2 h-2 rounded-full bg-warning"></span>
+                                Retraso leve
+                            </span>
+</td>
+<td class="py-md px-lg text-right">
+<button class="bg-primary text-on-primary font-body-strong text-body-strong px-md py-xs rounded-full hover:bg-graphite transition-colors">
+                                Entrar
+                            </button>
+</td>
+</tr>
+<!-- Row 3: Centro Logístico -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-md px-lg">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded bg-surface-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">warehouse</span>
+</div>
+<div>
+<span class="font-body-strong text-body-strong text-primary block">Centro Logístico Sur</span>
+<span class="font-label text-label text-on-surface-variant">PRJ-2023-145</span>
+</div>
+</div>
+</td>
+<td class="py-md px-lg">GlobalFreight</td>
+<td class="py-md px-lg">Cierre</td>
+<td class="py-md px-lg">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-surface-container border border-hairline text-role-project-manager font-label text-label">
+                                PM
+                            </span>
+</td>
+<td class="py-md px-lg">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-success-soft text-success font-label text-label">
+<span class="w-2 h-2 rounded-full bg-success"></span>
+                                Finalizado
+                            </span>
+</td>
+<td class="py-md px-lg text-right">
+<button class="border border-hairline text-on-surface font-body-strong text-body-strong px-md py-xs rounded-full hover:bg-surface-container-low transition-colors">
+                                Entrar
+                            </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Footer / Pagination (Optional Context) -->
+<div class="p-md border-t border-hairline bg-surface-container-lowest flex items-center justify-between rounded-b-lg">
+<span class="font-label text-label text-on-surface-variant">Mostrando 1-3 de 12 proyectos</span>
+<div class="flex gap-xs">
+<button class="w-8 h-8 flex items-center justify-center border border-hairline rounded text-on-surface-variant hover:bg-surface-container-low disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[16px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center border border-hairline rounded text-on-surface-variant hover:bg-surface-container-low">
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</body></html>

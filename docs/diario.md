@@ -98,6 +98,13 @@ Una entrada por sesión de trabajo. Breve y honesto.
 - **Cómo lo resolví / qué usé de Claude Code:** review adversarial guiada (Codex P1 + barrido propio), helpers RLS `SECURITY DEFINER` para resolver participación/projectId sin disparar la RLS de otras tablas. Migración additiva `expand_rls_and_grant` (sin reset). Verificación: `pnpm typecheck`/`lint` ✅, `pnpm test` **44/44 verde en 3 ejecuciones seguidas** (determinista), `migrate deploy` OK.
 - **Estado del sprint:** **PR #35 mergeada** (merge commit `ae940e3`), issue #11 cerrada, rama borrada. **Hito H4 (API y auth) CERRADO** (S08+S09+S10). Siguiente: **H5 Frontend shell (S11)** — Vite+React+Mantine, login contra `/api/auth/login` + listado de proyectos. **Heads-up para el front:** decidir CORS vs **proxy de Vite** (recomendado; cookie `sameSite=lax`); rate limiting y visibilidad fina §517 de `AuditEvent` quedan como deuda futura documentada.
 
+## 2026-06-25 (preparacion diseno Stitch para S11)
+
+- **Que hice:** Revisadas las tres referencias de `docs/diseño/` (`DESIGN.autodesk.md`, `DESIGN.apple.md`, `DESIGN.nike.md`) y creado un `docs/diseño/DESIGN.md` especifico para IPD. Decision: no pasar las tres marcas juntas a Stitch; usar una fusion controlada con Autodesk como base tecnica, Apple para disciplina visual y Nike para ritmo plano/compacto.
+- **Que bloqueo:** Ningun bloqueo. La principal tension era evitar que Stitch genere una landing o una web editorial cuando IPD necesita una sala de control economica, densa y role-aware.
+- **Como lo resolvi / que use de Claude Code:** Aterrice la guia contra `docs/concepto-global.md`, ADR-002/003/004/007 y el rol `ipd-frontend-dashboard`: Mantine, tablas, KPIs, permisos por rol, FRC/EVM, cambios, riesgos, incidencias y decisiones. Añadido `docs/diseño/STITCH-INSTRUCTIONS.md` con el texto exacto para pegar en Stitch.
+- **Estado del sprint:** En camino. Material de diseno listo para alimentar los mockups previos a S11 frontend shell.
+
 ## AAAA-MM-DD
 
 - **Horas trabajadas:**

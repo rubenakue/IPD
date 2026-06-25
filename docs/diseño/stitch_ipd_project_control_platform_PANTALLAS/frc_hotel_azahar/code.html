@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fondo de Riesgo Compartido - Promotora Levante</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter,+system-ui,+-apple-system,+Segoe+UI,+sans-serif:wght@100..900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "warning-soft": "#FFF6C7",
+                        "surface-warm": "#F4F1E8",
+                        "action-soft": "#DDEBFA",
+                        "on-secondary-fixed-variant": "#00468c",
+                        "surface-dim": "#ddd9d9",
+                        "tertiary-fixed": "#e8e1da",
+                        "tertiary-fixed-dim": "#cbc6bf",
+                        "surface-tint": "#5e5e61",
+                        "inverse-primary": "#c7c6c9",
+                        "on-surface-variant": "#45474a",
+                        "on-primary-fixed": "#1b1c1e",
+                        "success-soft": "#DFF3EA",
+                        "primary": "#000000",
+                        "secondary": "#005db6",
+                        "on-secondary-container": "#00376f",
+                        "role-designer": "#5B5FC7",
+                        "primary-fixed-dim": "#c7c6c9",
+                        "background": "#fcf8f8",
+                        "on-tertiary-fixed": "#1e1b17",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-primary-container": "#848386",
+                        "surface-container-high": "#ebe7e7",
+                        "secondary-fixed": "#d6e3ff",
+                        "surface-bright": "#fcf8f8",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f4f0ef",
+                        "danger-soft": "#FBE4E2",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#f1edec",
+                        "tertiary-container": "#1e1b17",
+                        "on-surface": "#1c1b1b",
+                        "secondary-container": "#63a1ff",
+                        "error-container": "#ffdad6",
+                        "surface": "#F6F7F8",
+                        "inverse-surface": "#313030",
+                        "outline": "#76777b",
+                        "hairline-soft": "#E8EBEF",
+                        "on-tertiary-fixed-variant": "#4a4641",
+                        "tertiary": "#000000",
+                        "panel": "#FFFFFF",
+                        "role-project-manager": "#005EB8",
+                        "danger": "#C7362E",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#001b3d",
+                        "surface-container-low": "#f7f3f2",
+                        "success": "#0B7A4B",
+                        "primary-fixed": "#e3e2e4",
+                        "slate": "#5F6670",
+                        "hairline": "#D8DDE3",
+                        "primary-container": "#1b1c1e",
+                        "on-background": "#1c1b1b",
+                        "canvas": "#FFFFFF",
+                        "on-primary-fixed-variant": "#464749",
+                        "muted": "#8A929D",
+                        "on-tertiary-container": "#88837d",
+                        "on-error-container": "#93000a",
+                        "graphite": "#2B2F33",
+                        "role-constructor": "#6E4B18",
+                        "warning": "#F5C400",
+                        "role-promoter": "#111111",
+                        "on-error": "#ffffff",
+                        "info": "#2563EB",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e5e2e1",
+                        "outline-variant": "#c6c6ca",
+                        "secondary-fixed-dim": "#a9c7ff",
+                        "on-tertiary": "#ffffff",
+                        "role-observer": "#6B7280"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "8px",
+                        "md": "16px",
+                        "section": "64px",
+                        "sm": "12px",
+                        "xxl": "48px",
+                        "xxs": "4px",
+                        "lg": "24px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "numeric": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "page-title": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "table": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "card-title": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "body-strong": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "section-title": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "display": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "body": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "numeric-table": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "label": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""]
+                    },
+                    "fontSize": {
+                        "numeric": ["24px", { "lineHeight": "1.1", "fontWeight": "650" }],
+                        "page-title": ["32px", { "lineHeight": "1.15", "fontWeight": "650" }],
+                        "table": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "card-title": ["16px", { "lineHeight": "1.35", "fontWeight": "650" }],
+                        "body-strong": ["15px", { "lineHeight": "1.45", "fontWeight": "600" }],
+                        "section-title": ["22px", { "lineHeight": "1.25", "fontWeight": "650" }],
+                        "display": ["48px", { "lineHeight": "1.05", "fontWeight": "650" }],
+                        "body": ["15px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "numeric-table": ["13px", { "lineHeight": "1.35", "fontWeight": "550" }],
+                        "label": ["12px", { "lineHeight": "1.25", "fontWeight": "650" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-screen w-[264px] bg-primary dark:bg-primary text-on-primary dark:text-on-primary border-r border-hairline flex flex-col h-full py-md z-20">
+<div class="px-lg pb-xl border-b border-surface-tint/20 mb-md">
+<div class="flex items-center gap-sm mb-lg">
+<img alt="Logo de Empresa Constructora" class="w-10 h-10 rounded object-cover" data-alt="Logotipo abstracto moderno con líneas geométricas que sugieren edificios o estructuras interconectadas, usando colores sobrios, en un estilo corporativo." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-CRcA6-6kGlc9FQtoKH0hmzkxlasLpKVEfVa-jyBArF6_tfJmYOCcjCyHqcl-uf1scJk4gxcMM3imnpe5AdWzJ0TaUAdtx_r32VU5uE7YotZ9p40tENrf-avNsGlRjRJXJA6Glwb4HkolVaK1XZYoLpvmqobOdjZJrHIwjfst22ePN3a_5ciOcVGcITy3CRCNRcwRrWWvzqj-1ArvZpcfTtRMNAILzodsQRHytcRWoHVYMmTfKcxi"/>
+<div>
+<h1 class="font-page-title text-page-title text-on-primary">Control Económico IPD</h1>
+<p class="font-body text-body text-on-primary/70">Gestión Integrada</p>
+</div>
+</div>
+<button class="w-full bg-canvas text-primary font-body-strong py-sm rounded-lg flex items-center justify-center gap-xs hover:bg-canvas/90 transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span> Nuevo Informe
+            </button>
+</div>
+<ul class="flex-1 px-sm space-y-1">
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span> Panel de Control
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">calendar_today</span> Planificación
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">description</span> Contratos
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-secondary-container font-body-strong bg-on-primary-container/10 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">payments</span> Presupuesto
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">warning</span> Riesgos
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span> Configuración
+                </a>
+</li>
+</ul>
+<div class="px-sm mt-auto pt-md border-t border-surface-tint/20">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">help</span> Ayuda
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">logout</span> Cerrar Sesión
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="ml-[264px] flex-1 flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-264px)] h-[64px] bg-canvas dark:bg-canvas text-on-surface dark:text-on-surface border-b border-hairline flex items-center justify-between px-lg z-10">
+<div class="flex items-center gap-xl h-full">
+<h2 class="font-card-title text-card-title text-on-surface mr-md">Proyecto Torre Norte</h2>
+<nav class="flex items-center gap-lg h-full">
+<a class="font-label text-label text-on-surface-variant hover:text-primary h-full flex items-center cursor-pointer transition-all" href="#">Resumen</a>
+<a class="font-label text-label text-primary border-b-2 border-primary pb-1 h-full flex items-center cursor-pointer transition-all" href="#">Costes</a>
+<a class="font-label text-label text-on-surface-variant hover:text-primary h-full flex items-center cursor-pointer transition-all" href="#">Cronograma</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="font-label text-label border border-hairline px-sm py-xs rounded hover:bg-surface transition-colors">Cambiar Rol</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-hairline cursor-pointer">
+<img alt="Avatar de Usuario" class="w-full h-full object-cover" data-alt="Fotografía profesional de un arquitecto o director de proyecto en un entorno de oficina moderna. Iluminación natural, expresión segura y confiable." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDw9xlr0W0KMntDsAt5BPRGfNcVAOrGyovv3zltatnSaqBdQI5ND8tLzTHRPnqp4N8_OpdEEN4k6llwr-AIPSf5ObL8MAGsfGC3ywL2l2obo5_qP4ll03VuHBgbJKKXPLw_ofXzBff0lmanAqKK5_nZVn-4MiNVLgrbpsbW6-KR6yKpva4c0IemDLU-3DOH4EOvpzv2sjJhslq7ztadH_9IBIz8iGMwbyIRho5rtGgWeDWQkgUw5MLA"/>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<main class="pt-[64px] p-lg flex-1 overflow-auto bg-surface">
+<div class="mb-lg flex justify-between items-end">
+<div>
+<h2 class="font-section-title text-section-title mb-xs">Fondo de Riesgo Compartido (FRC)</h2>
+<p class="font-body text-body text-on-surface-variant">Vista Consolidada - <span class="font-body-strong text-role-promoter bg-role-promoter/10 px-2 py-1 rounded">Rol: Promotor (Promotora Levante)</span></p>
+</div>
+<div class="bg-info/10 text-info font-label text-label px-sm py-xs rounded flex items-center gap-xs border border-info/20">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+                    Nivel de Confidencialidad: Promotor (Total)
+                </div>
+</div>
+<!-- Dashboard Grid -->
+<div class="grid grid-cols-12 gap-lg">
+<!-- KPI Cards Row -->
+<div class="col-span-12 grid grid-cols-4 gap-md">
+<div class="bg-canvas border border-hairline rounded-lg p-md shadow-sm">
+<div class="text-on-surface-variant font-label text-label mb-sm uppercase tracking-wider">FRC Total Objetivo</div>
+<div class="font-numeric text-numeric text-primary">€ 2.500.000</div>
+<div class="mt-sm flex items-center gap-xs text-success font-body text-body">
+<span class="material-symbols-outlined text-[16px]">trending_up</span> Asegurado
+                        </div>
+</div>
+<div class="bg-canvas border border-hairline rounded-lg p-md shadow-sm">
+<div class="text-on-surface-variant font-label text-label mb-sm uppercase tracking-wider">Desviación Proyectada</div>
+<div class="font-numeric text-numeric text-danger">€ -125.000</div>
+<div class="mt-sm flex items-center gap-xs text-danger font-body text-body">
+<span class="material-symbols-outlined text-[16px]">warning</span> Riesgo Estructura
+                        </div>
+</div>
+<div class="bg-canvas border border-hairline rounded-lg p-md shadow-sm">
+<div class="text-on-surface-variant font-label text-label mb-sm uppercase tracking-wider">Bonus Total (Promotor)</div>
+<div class="font-numeric text-numeric text-success">€ 45.000</div>
+<div class="mt-sm flex items-center gap-xs text-on-surface-variant font-body text-body">
+                            Por eficiencia temporal
+                        </div>
+</div>
+<div class="bg-canvas border border-hairline rounded-lg p-md shadow-sm">
+<div class="text-on-surface-variant font-label text-label mb-sm uppercase tracking-wider">Malus Pendiente</div>
+<div class="font-numeric text-numeric text-warning">€ 12.000</div>
+<div class="mt-sm flex items-center gap-xs text-warning font-body text-body">
+<span class="material-symbols-outlined text-[16px]">pending</span> Retraso licencias
+                        </div>
+</div>
+</div>
+<!-- Main Data Table -->
+<div class="col-span-8 bg-canvas border border-hairline rounded-lg shadow-sm flex flex-col">
+<div class="p-md border-b border-hairline-soft flex justify-between items-center">
+<h3 class="font-card-title text-card-title text-on-surface">Estado FRC por Agente IPD</h3>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+<div class="overflow-x-auto flex-1 p-sm">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-hairline-soft">
+<th class="font-label text-label text-on-surface-variant p-sm uppercase">Agente</th>
+<th class="font-label text-label text-on-surface-variant p-sm uppercase text-right">Aportación Base</th>
+<th class="font-label text-label text-on-surface-variant p-sm uppercase text-right">Resultado Proyectado</th>
+<th class="font-label text-label text-on-surface-variant p-sm uppercase text-right">Impacto FRC</th>
+<th class="font-label text-label text-on-surface-variant p-sm uppercase text-center">Bonus/Malus</th>
+<th class="font-label text-label text-on-surface-variant p-sm uppercase text-center">Estado</th>
+</tr>
+</thead>
+<tbody class="font-table text-table">
+<tr class="border-b border-hairline-soft hover:bg-surface-container-lowest transition-colors">
+<td class="p-sm flex items-center gap-xs">
+<div class="w-3 h-3 rounded-full bg-role-promoter"></div>
+<span class="font-body-strong">Promotora Levante (Tú)</span>
+</td>
+<td class="p-sm text-right font-numeric-table">€ 1.000.000</td>
+<td class="p-sm text-right font-numeric-table">€ 955.000</td>
+<td class="p-sm text-right font-numeric-table text-success">+ € 45.000</td>
+<td class="p-sm text-center">
+<span class="inline-block px-2 py-1 bg-success-soft text-success rounded text-xs font-bold">BONUS</span>
+</td>
+<td class="p-sm text-center">
+<span class="material-symbols-outlined text-success">check_circle</span>
+</td>
+</tr>
+<tr class="border-b border-hairline-soft hover:bg-surface-container-lowest transition-colors">
+<td class="p-sm flex items-center gap-xs">
+<div class="w-3 h-3 rounded-full bg-role-constructor"></div>
+<span>Construcciones Ibéricas</span>
+</td>
+<td class="p-sm text-right font-numeric-table">€ 800.000</td>
+<td class="p-sm text-right font-numeric-table text-danger">€ 860.000</td>
+<td class="p-sm text-right font-numeric-table text-danger">- € 60.000</td>
+<td class="p-sm text-center">
+<span class="inline-block px-2 py-1 bg-danger-soft text-danger rounded text-xs font-bold">MALUS</span>
+</td>
+<td class="p-sm text-center">
+<span class="material-symbols-outlined text-danger">cancel</span>
+</td>
+</tr>
+<tr class="border-b border-hairline-soft hover:bg-surface-container-lowest transition-colors">
+<td class="p-sm flex items-center gap-xs">
+<div class="w-3 h-3 rounded-full bg-role-designer"></div>
+<span>Estudio Arquitectura V</span>
+</td>
+<td class="p-sm text-right font-numeric-table">€ 400.000</td>
+<td class="p-sm text-right font-numeric-table">€ 390.000</td>
+<td class="p-sm text-right font-numeric-table text-success">+ € 10.000</td>
+<td class="p-sm text-center">
+<span class="inline-block px-2 py-1 bg-success-soft text-success rounded text-xs font-bold">BONUS</span>
+</td>
+<td class="p-sm text-center">
+<span class="material-symbols-outlined text-success">check_circle</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="p-sm flex items-center gap-xs">
+<div class="w-3 h-3 rounded-full bg-role-project-manager"></div>
+<span>Gestión Integral PM</span>
+</td>
+<td class="p-sm text-right font-numeric-table">€ 300.000</td>
+<td class="p-sm text-right font-numeric-table">€ 300.000</td>
+<td class="p-sm text-right font-numeric-table text-on-surface-variant">€ 0</td>
+<td class="p-sm text-center">
+<span class="inline-block px-2 py-1 bg-surface-container text-on-surface-variant rounded text-xs font-bold">NEUTRO</span>
+</td>
+<td class="p-sm text-center">
+<span class="material-symbols-outlined text-on-surface-variant">remove_circle_outline</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Distribution Chart -->
+<div class="col-span-4 bg-canvas border border-hairline rounded-lg shadow-sm p-md flex flex-col">
+<h3 class="font-card-title text-card-title text-on-surface mb-sm">Distribución Actual FRC</h3>
+<div class="flex-1 relative min-h-[250px] flex items-center justify-center">
+<canvas id="frcChart"></canvas>
+</div>
+<div class="mt-sm pt-sm border-t border-hairline-soft">
+<p class="font-label text-label text-on-surface-variant text-center">Datos actualizados a cierre de mes M-1</p>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script>
+        // Chart.js implementation for the distribution chart
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('frcChart').getContext('2d');
+            
+            // Getting colors from Tailwind config equivalent
+            const rolePromoter = '#111111';
+            const roleConstructor = '#6E4B18';
+            const roleDesigner = '#5B5FC7';
+            const rolePM = '#005EB8';
+            const bgCanvas = '#ffffff';
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Promotor', 'Constructor', 'Proyectista', 'PM'],
+                    datasets: [{
+                        data: [1045000, 740000, 410000, 300000], // Base + Impacto
+                        backgroundColor: [
+                            rolePromoter,
+                            roleConstructor,
+                            roleDesigner,
+                            rolePM
+                        ],
+                        borderWidth: 2,
+                        borderColor: bgCanvas
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: {
+                                    family: 'Inter',
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(context.parsed);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body></html>

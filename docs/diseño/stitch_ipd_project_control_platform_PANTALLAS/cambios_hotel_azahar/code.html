@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Control Económico IPD - Registro de Cambios</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter,+system-ui,+-apple-system,+Segoe+UI,+sans-serif:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "warning-soft": "#FFF6C7",
+                        "surface-warm": "#F4F1E8",
+                        "action-soft": "#DDEBFA",
+                        "on-secondary-fixed-variant": "#00468c",
+                        "surface-dim": "#ddd9d9",
+                        "tertiary-fixed": "#e8e1da",
+                        "tertiary-fixed-dim": "#cbc6bf",
+                        "surface-tint": "#5e5e61",
+                        "inverse-primary": "#c7c6c9",
+                        "on-surface-variant": "#45474a",
+                        "on-primary-fixed": "#1b1c1e",
+                        "success-soft": "#DFF3EA",
+                        "primary": "#000000",
+                        "secondary": "#005db6",
+                        "on-secondary-container": "#00376f",
+                        "role-designer": "#5B5FC7",
+                        "primary-fixed-dim": "#c7c6c9",
+                        "background": "#fcf8f8",
+                        "on-tertiary-fixed": "#1e1b17",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-primary-container": "#848386",
+                        "surface-container-high": "#ebe7e7",
+                        "secondary-fixed": "#d6e3ff",
+                        "surface-bright": "#fcf8f8",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f4f0ef",
+                        "danger-soft": "#FBE4E2",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#f1edec",
+                        "tertiary-container": "#1e1b17",
+                        "on-surface": "#1c1b1b",
+                        "secondary-container": "#63a1ff",
+                        "error-container": "#ffdad6",
+                        "surface": "#F6F7F8",
+                        "inverse-surface": "#313030",
+                        "outline": "#76777b",
+                        "hairline-soft": "#E8EBEF",
+                        "on-tertiary-fixed-variant": "#4a4641",
+                        "tertiary": "#000000",
+                        "panel": "#FFFFFF",
+                        "role-project-manager": "#005EB8",
+                        "danger": "#C7362E",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#001b3d",
+                        "surface-container-low": "#f7f3f2",
+                        "success": "#0B7A4B",
+                        "primary-fixed": "#e3e2e4",
+                        "slate": "#5F6670",
+                        "hairline": "#D8DDE3",
+                        "primary-container": "#1b1c1e",
+                        "on-background": "#1c1b1b",
+                        "canvas": "#FFFFFF",
+                        "on-primary-fixed-variant": "#464749",
+                        "muted": "#8A929D",
+                        "on-tertiary-container": "#88837d",
+                        "on-error-container": "#93000a",
+                        "graphite": "#2B2F33",
+                        "role-constructor": "#6E4B18",
+                        "warning": "#F5C400",
+                        "role-promoter": "#111111",
+                        "on-error": "#ffffff",
+                        "info": "#2563EB",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e5e2e1",
+                        "outline-variant": "#c6c6ca",
+                        "secondary-fixed-dim": "#a9c7ff",
+                        "on-tertiary": "#ffffff",
+                        "role-observer": "#6B7280"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "8px",
+                        "md": "16px",
+                        "section": "64px",
+                        "sm": "12px",
+                        "xxl": "48px",
+                        "xxs": "4px",
+                        "lg": "24px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "numeric": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "page-title": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "table": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "card-title": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "body-strong": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "section-title": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "display": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "body": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "numeric-table": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "label": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""]
+                    },
+                    "fontSize": {
+                        "numeric": ["24px", { "lineHeight": "1.1", "fontWeight": "650" }],
+                        "page-title": ["32px", { "lineHeight": "1.15", "fontWeight": "650" }],
+                        "table": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "card-title": ["16px", { "lineHeight": "1.35", "fontWeight": "650" }],
+                        "body-strong": ["15px", { "lineHeight": "1.45", "fontWeight": "600" }],
+                        "section-title": ["22px", { "lineHeight": "1.25", "fontWeight": "650" }],
+                        "display": ["48px", { "lineHeight": "1.05", "fontWeight": "650" }],
+                        "body": ["15px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "numeric-table": ["13px", { "lineHeight": "1.35", "fontWeight": "550" }],
+                        "label": ["12px", { "lineHeight": "1.25", "fontWeight": "650" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Base styles to ensure consistency */
+        body {
+            font-family: "Inter", system-ui, -apple-system, Segoe UI, sans-serif;
+            background-color: #F6F7F8; /* surface */
+            color: #1c1b1b; /* on-surface */
+            overflow-x: hidden;
+        }
+
+        /* Custom scrollbar for tables and sidebars to fit the mechanical aesthetic */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1edec; /* surface-container */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c6c6ca; /* outline-variant */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #76777b; /* outline */
+        }
+
+        /* Utility for Material Symbols to ensure they render correctly based on data attributes */
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* Drawer Transition Classes */
+        .drawer-overlay {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .drawer-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .drawer-panel {
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+        .drawer-panel.open {
+            transform: translateX(0);
+        }
+
+        /* Subtle row hover effect for data tables */
+        .table-row-hover:hover {
+            background-color: #f7f3f2; /* surface-container-low */
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased flex h-screen w-full overflow-hidden">
+<!-- SideNavBar (Shared Component) -->
+<nav class="bg-primary dark:bg-primary text-on-primary dark:text-on-primary font-body text-body fixed left-0 top-0 h-screen w-[264px] border-r border-hairline flat no shadows flex flex-col h-full py-md transition-colors duration-200 z-40 hidden md:flex">
+<!-- Header -->
+<div class="px-lg pb-md mb-md border-b border-hairline/20">
+<div class="flex items-center gap-sm mb-xs">
+<div class="w-8 h-8 rounded bg-canvas/10 flex items-center justify-center overflow-hidden shrink-0">
+<img alt="Logo de Empresa Constructora" class="w-full h-full object-cover" data-alt="A minimalist, stark white architectural logo on a dark geometric background, representing precision and structural integrity. High contrast, professional, stark." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUNRgqtXDWEdsNhgcig1qCka_rF0iPtsj37mkL0Xtk8_kKHzpi0kP-NpLjVeJytQofhtTpV7TwRMhswX61dfUhpCVm20Ta2cpD8MkTknHjZm46VV6hgQodb5oYfKTvCTW87dLiQ_wXzd15qdJ3FpbUurSv1Go9Mt1ELabSFOnbG_yP_9XuIqPwqO7sNl078RUht2H3-35TQyMH3FlosaOTEOFsRDLnAFh4YVPzeRqxacerGrA2sEFp"/>
+</div>
+<div>
+<div class="font-page-title text-card-title text-on-primary">Control Económico IPD</div>
+<div class="font-label text-[11px] text-on-primary-container tracking-wide uppercase">Gestión Integrada</div>
+</div>
+</div>
+</div>
+<!-- CTA -->
+<div class="px-md mb-lg">
+<button class="w-full bg-secondary hover:bg-secondary/90 text-on-secondary font-body-strong text-body-strong py-sm rounded transition-colors flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                Nuevo Informe
+            </button>
+</div>
+<!-- Main Navigation -->
+<div class="flex-1 overflow-y-auto px-xs space-y-[2px]">
+<!-- Inactive -->
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+                Panel de Control
+            </a>
+<!-- Active (Presupuesto logic -> Cambios is tied to Presupuesto/Costes) -->
+<a class="flex items-center gap-sm px-md py-sm rounded text-secondary-container font-body-strong bg-on-primary-container/10 transition-colors border-l-2 border-secondary-container" href="#">
+<span class="material-symbols-outlined text-[20px]" data-weight="fill">payments</span>
+                Presupuesto
+            </a>
+<!-- Inactive -->
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">calendar_today</span>
+                Planificación
+            </a>
+<!-- Inactive -->
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">description</span>
+                Contratos
+            </a>
+<!-- Inactive -->
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">warning</span>
+                Riesgos
+            </a>
+<!-- Inactive -->
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+                Configuración
+            </a>
+</div>
+<!-- Footer Navigation -->
+<div class="mt-auto px-xs pt-md border-t border-hairline/20 space-y-[2px]">
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+                Ayuda
+            </a>
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+                Cerrar Sesión
+            </a>
+</div>
+</nav>
+<!-- Main Content Wrapper (Accounts for SideNav width) -->
+<div class="flex-1 flex flex-col md:ml-[264px] min-h-screen relative w-full overflow-hidden">
+<!-- TopNavBar (Shared Component) -->
+<header class="bg-canvas dark:bg-canvas text-on-surface dark:text-on-surface font-label text-label fixed top-0 right-0 w-[calc(100%-264px)] h-[64px] border-b border-hairline flat no shadows flex items-center justify-between px-lg z-30 transition-all">
+<div class="flex items-center gap-lg">
+<h1 class="font-card-title text-card-title text-on-surface tracking-tight whitespace-nowrap">Proyecto Torre Norte</h1>
+<!-- Search Bar on Left as per JSON -->
+<div class="relative hidden lg:block w-64">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full bg-surface border border-hairline rounded pl-xl pr-sm py-xs text-body font-body text-on-surface placeholder-on-surface-variant focus:outline-none focus:border-outline focus:ring-1 focus:ring-outline transition-colors" placeholder="Buscar cambios..." type="text"/>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden xl:flex items-center gap-lg h-full">
+<a class="h-full flex items-center text-on-surface-variant hover:text-primary transition-all font-label text-label cursor-pointer" href="#">Resumen</a>
+<a class="h-full flex items-center text-primary border-b-2 border-primary pb-[2px] transition-all font-label text-label cursor-pointer" href="#">Costes</a>
+<a class="h-full flex items-center text-on-surface-variant hover:text-primary transition-all font-label text-label cursor-pointer" href="#">Cronograma</a>
+</nav>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-md">
+<button class="hidden md:block px-sm py-xs border border-hairline rounded text-body font-body-strong text-on-surface hover:bg-surface-container transition-colors">
+                    Cambiar Rol
+                </button>
+<div class="flex items-center gap-sm border-l border-hairline pl-md">
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="w-8 h-8 rounded-full overflow-hidden border border-hairline hover:border-outline transition-colors shrink-0">
+<img alt="Avatar de Usuario" class="w-full h-full object-cover" data-alt="A professional headshot of a corporate project manager in a well-lit modern office environment. Shallow depth of field, sharp focus, neutral expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsOBqr_8JQbHQ8LUrDj_CFMJ6HrT50UAg4yaH7LKBaoHqnvhQoewxGBvrTm5Lcwe9uj3LsWZN1MosrOGtvexvAqgSVVGBlpC-I_Dco9-eOKuYGfTzUFUPZ5i9Q5TGRDMeBY7iZCGzDXXm8hS73BJP0_k2u3V4LBiL7SkvbwT4wWYxPE4oymRx8qxZ_cGqtl47n1zoyKsECE6fubIS4NeV_X28rftiWvheLWcwKIHEJi2PZcdmZUogD"/>
+</button>
+</div>
+</div>
+</header>
+<!-- Page Canvas (Scrollable area) -->
+<main class="flex-1 overflow-y-auto mt-[64px] bg-surface p-lg relative">
+<!-- Page Header Area -->
+<div class="mb-lg flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div>
+<div class="flex items-center gap-xs mb-xs text-on-surface-variant font-label text-label">
+<span>Presupuesto</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-on-surface">Registro de Cambios</span>
+</div>
+<h2 class="font-page-title text-page-title text-on-surface tracking-tight">Registro de Cambios</h2>
+<p class="font-body text-body text-on-surface-variant mt-xs max-w-2xl">
+                        Listado consolidado de modificaciones presupuestarias y de alcance. Revise el impacto económico y las decisiones vinculadas del comité FRC.
+                    </p>
+</div>
+<div class="flex items-center gap-xs">
+<button class="px-md py-sm bg-canvas border border-hairline rounded font-body-strong text-body-strong text-on-surface hover:bg-surface-container transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                        Filtros
+                    </button>
+<button class="px-md py-sm bg-primary text-on-primary rounded font-body-strong text-body-strong hover:bg-primary/90 transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                        Registrar Cambio
+                    </button>
+</div>
+</div>
+<!-- KPI Summary Cards (Bento-ish layout for dense data) -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-md mb-lg">
+<div class="bg-canvas border border-hairline rounded-lg p-md flex flex-col justify-between">
+<div class="font-label text-label text-on-surface-variant uppercase tracking-wider mb-xs">Cambios Activos</div>
+<div class="font-numeric text-display text-on-surface">24</div>
+</div>
+<div class="bg-canvas border border-hairline rounded-lg p-md flex flex-col justify-between">
+<div class="font-label text-label text-on-surface-variant uppercase tracking-wider mb-xs">Impacto Total Aprobado</div>
+<div class="font-numeric text-numeric text-on-surface mb-xs">+452.300 €</div>
+<div class="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-success h-full w-[12%]"></div>
+</div>
+<div class="font-label text-[10px] text-on-surface-variant mt-xs text-right">12% de Contingencia</div>
+</div>
+<div class="bg-warning-soft border border-warning/30 rounded-lg p-md flex flex-col justify-between">
+<div class="font-label text-label text-on-surface-variant uppercase tracking-wider mb-xs">Pendientes Comité (FRC)</div>
+<div class="font-numeric text-display text-on-surface">8</div>
+</div>
+<div class="bg-canvas border border-hairline rounded-lg p-md flex flex-col justify-between">
+<div class="font-label text-label text-on-surface-variant uppercase tracking-wider mb-xs">Días Promedio Resolución</div>
+<div class="font-numeric text-numeric text-on-surface">14.2 d</div>
+<div class="flex items-center gap-xs mt-xs text-danger font-label text-label">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+<span>+2.1 d vs mes anterior</span>
+</div>
+</div>
+</div>
+<!-- Main Data Table Container -->
+<div class="bg-canvas border border-hairline rounded-lg overflow-hidden shadow-sm flex flex-col h-[calc(100vh-320px)] min-h-[400px]">
+<!-- Table Toolbar -->
+<div class="px-md py-sm border-b border-hairline bg-surface-bright flex items-center justify-between">
+<div class="flex gap-xs">
+<!-- Filter Chips -->
+<button class="px-sm py-1 rounded-full bg-primary text-on-primary font-label text-label transition-colors">
+                            Todos
+                        </button>
+<button class="px-sm py-1 rounded-full bg-surface border border-hairline text-on-surface-variant font-label text-label hover:bg-surface-container transition-colors">
+                            Aprobados
+                        </button>
+<button class="px-sm py-1 rounded-full bg-surface border border-hairline text-on-surface-variant font-label text-label hover:bg-surface-container transition-colors">
+                            Pendientes
+                        </button>
+</div>
+<div class="flex items-center gap-sm">
+<button class="text-on-surface-variant hover:text-on-surface p-1 rounded hover:bg-surface-container transition-colors" title="Exportar">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface p-1 rounded hover:bg-surface-container transition-colors" title="Configurar Columnas">
+<span class="material-symbols-outlined text-[18px]">view_column</span>
+</button>
+</div>
+</div>
+<!-- Table Header -->
+<div class="grid grid-cols-[100px_minmax(250px,1fr)_120px_140px_140px_minmax(150px,1fr)_40px] gap-sm px-md py-xs border-b border-hairline bg-surface font-label text-label text-on-surface-variant items-center sticky top-0 z-10">
+<div>ID Cambio</div>
+<div>Descripción</div>
+<div>Estado</div>
+<div class="text-right">Impacto Econ.</div>
+<div class="text-center">Impacto FRC</div>
+<div>Decisión Vinculada</div>
+<div></div>
+</div>
+<!-- Table Body (Scrollable) -->
+<div class="flex-1 overflow-y-auto bg-canvas">
+<!-- Row 1 (Approved) -->
+<div class="grid grid-cols-[100px_minmax(250px,1fr)_120px_140px_140px_minmax(150px,1fr)_40px] gap-sm px-md py-sm border-b border-hairline-soft font-table text-table text-on-surface items-center table-row-hover cursor-pointer group" onclick="toggleDrawer()">
+<div class="font-numeric-table text-on-surface-variant">CHG-0142</div>
+<div class="truncate font-body-strong pr-md">Modificación trazado HVAC Planta 4</div>
+<div>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-success-soft text-success font-label text-[10px] border border-success/20">
+                                APROBADO
+                            </span>
+</div>
+<div class="font-numeric-table text-right text-danger">+ 45.200 €</div>
+<div class="flex justify-center">
+<span class="w-4 h-4 rounded-full bg-warning flex items-center justify-center" title="Impacto Moderado">
+<span class="block w-2 h-2 bg-canvas rounded-full"></span>
+</span>
+</div>
+<div class="truncate text-on-surface-variant text-[12px]">DEC-008: Ajuste de Layouts</div>
+<div class="text-right">
+<button class="text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-surface-container">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Row 2 (Pending - Selected State Simulation via script later, styling it normally here) -->
+<div class="grid grid-cols-[100px_minmax(250px,1fr)_120px_140px_140px_minmax(150px,1fr)_40px] gap-sm px-md py-sm border-b border-hairline-soft font-table text-table text-on-surface items-center table-row-hover cursor-pointer group bg-action-soft/20" onclick="toggleDrawer()">
+<div class="font-numeric-table text-on-surface-variant">CHG-0145</div>
+<div class="truncate font-body-strong pr-md">Refuerzo cimentación sector B2</div>
+<div>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-warning-soft text-warning font-label text-[10px] border border-warning/30">
+                                PENDIENTE FRC
+                            </span>
+</div>
+<div class="font-numeric-table text-right text-danger">+ 128.500 €</div>
+<div class="flex justify-center">
+<span class="w-4 h-4 rounded-full bg-danger flex items-center justify-center" title="Impacto Alto">
+<span class="material-symbols-outlined text-[10px] text-canvas" data-weight="fill">warning</span>
+</span>
+</div>
+<div class="truncate text-on-surface-variant text-[12px] italic">Sin decisión vinculada</div>
+<div class="text-right">
+<button class="text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-surface-container">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Row 3 (Rejected) -->
+<div class="grid grid-cols-[100px_minmax(250px,1fr)_120px_140px_140px_minmax(150px,1fr)_40px] gap-sm px-md py-sm border-b border-hairline-soft font-table text-table text-on-surface-variant items-center table-row-hover cursor-pointer group bg-surface-bright" onclick="toggleDrawer()">
+<div class="font-numeric-table text-outline">CHG-0139</div>
+<div class="truncate pr-md line-through text-outline">Sustitución luminarias pasillos tipo A</div>
+<div>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label text-[10px] border border-hairline">
+                                RECHAZADO
+                            </span>
+</div>
+<div class="font-numeric-table text-right text-outline line-through">+ 12.000 €</div>
+<div class="flex justify-center">
+<span class="w-4 h-4 rounded-full bg-surface-variant flex items-center justify-center" title="Sin Impacto"></span>
+</div>
+<div class="truncate text-outline text-[12px]">DEC-005: Revisión VE</div>
+<div class="text-right">
+<button class="text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-surface-container">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Row 4 (Approved, Negative Impact/Savings) -->
+<div class="grid grid-cols-[100px_minmax(250px,1fr)_120px_140px_140px_minmax(150px,1fr)_40px] gap-sm px-md py-sm border-b border-hairline-soft font-table text-table text-on-surface items-center table-row-hover cursor-pointer group" onclick="toggleDrawer()">
+<div class="font-numeric-table text-on-surface-variant">CHG-0138</div>
+<div class="truncate font-body-strong pr-md">Optimización de acero en forjados P2</div>
+<div>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-success-soft text-success font-label text-[10px] border border-success/20">
+                                APROBADO
+                            </span>
+</div>
+<div class="font-numeric-table text-right text-success">- 34.100 €</div>
+<div class="flex justify-center">
+<span class="w-4 h-4 rounded-full bg-success flex items-center justify-center" title="Impacto Positivo"></span>
+</div>
+<div class="truncate text-on-surface-variant text-[12px]">DEC-011: Value Engineering Estructura</div>
+<div class="text-right">
+<button class="text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-surface-container">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Table Footer / Pagination -->
+<div class="px-md py-xs border-t border-hairline bg-surface-bright flex items-center justify-between font-label text-[11px] text-on-surface-variant">
+<div>Mostrando 1-4 de 24 registros</div>
+<div class="flex items-center gap-xs">
+<button class="p-1 rounded hover:bg-surface-container disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[16px]">chevron_left</span>
+</button>
+<span>Página 1 de 6</span>
+<button class="p-1 rounded hover:bg-surface-container">
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Right Drawer Overlay & Panel (Details) -->
+<!-- Default state: hidden via opacity and transform -->
+<div class="fixed inset-0 bg-primary/20 backdrop-blur-sm z-50 drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+<aside class="fixed top-0 right-0 h-screen w-full md:w-[480px] bg-canvas border-l border-hairline shadow-[-4px_0_24px_rgba(0,0,0,0.05)] z-50 flex flex-col drawer-panel" id="detailDrawer">
+<!-- Drawer Header -->
+<div class="px-lg py-md border-b border-hairline flex items-start justify-between bg-surface-bright">
+<div>
+<div class="flex items-center gap-xs mb-1">
+<span class="font-numeric text-[14px] font-semibold text-on-surface-variant">CHG-0145</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-warning-soft text-warning font-label text-[10px] border border-warning/30">PENDIENTE FRC</span>
+</div>
+<h3 class="font-section-title text-section-title text-on-surface leading-tight pr-md">Refuerzo cimentación sector B2</h3>
+</div>
+<button class="p-1 rounded-full hover:bg-surface-container text-on-surface-variant transition-colors" onclick="toggleDrawer()">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Drawer Content (Scrollable) -->
+<div class="flex-1 overflow-y-auto p-lg space-y-xl bg-canvas">
+<!-- Key Details Grid -->
+<div class="grid grid-cols-2 gap-md">
+<div class="flex flex-col">
+<span class="font-label text-[11px] text-on-surface-variant uppercase tracking-wider mb-1">Impacto Económico Estimado</span>
+<span class="font-numeric text-[20px] font-bold text-danger">+ 128.500 €</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label text-[11px] text-on-surface-variant uppercase tracking-wider mb-1">Impacto Cronograma</span>
+<span class="font-body text-body text-on-surface">+ 14 días (Ruta Crítica)</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label text-[11px] text-on-surface-variant uppercase tracking-wider mb-1">Solicitante</span>
+<div class="flex items-center gap-xs mt-1">
+<span class="w-2 h-2 rounded-full bg-role-constructor"></span>
+<span class="font-body text-[13px] text-on-surface">Constructora Principal S.A.</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label text-[11px] text-on-surface-variant uppercase tracking-wider mb-1">Fecha Registro</span>
+<span class="font-body text-[13px] text-on-surface">12 Oct 2023</span>
+</div>
+</div>
+<hr class="border-hairline"/>
+<!-- Description Section -->
+<div>
+<h4 class="font-card-title text-card-title text-on-surface mb-sm">Descripción Técnica</h4>
+<p class="font-body text-[13px] leading-relaxed text-on-surface-variant text-justify">
+                    Durante las excavaciones en el sector B2 se ha detectado una capa de arcillas expansivas no contemplada en el estudio geotécnico inicial. Se requiere profundizar la cimentación mediante micropilotes en 12 zapatas y aumentar la cuantía de acero en las vigas riostras asociadas para garantizar la estabilidad estructural según informe de la Dirección Facultativa (REF: INF-EST-042).
+                </p>
+</div>
+<!-- Documents Section (Flat Cards) -->
+<div>
+<h4 class="font-card-title text-card-title text-on-surface mb-sm flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">attachment</span>
+                    Documentación Respaldo
+                </h4>
+<div class="space-y-xs">
+<div class="p-sm border border-hairline rounded flex items-center justify-between hover:bg-surface-container cursor-pointer transition-colors group">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-danger text-[20px]">picture_as_pdf</span>
+<div>
+<div class="font-body-strong text-[13px] text-on-surface">INF-EST-042_Geotecnico_Adicional.pdf</div>
+<div class="font-label text-[10px] text-on-surface-variant">2.4 MB • Subido por D. Facultativa</div>
+</div>
+</div>
+<button class="text-outline opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+</div>
+<div class="p-sm border border-hairline rounded flex items-center justify-between hover:bg-surface-container cursor-pointer transition-colors group">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-success text-[20px]">table</span>
+<div>
+<div class="font-body-strong text-[13px] text-on-surface">Desglose_Costes_Micropilotes_RevB.xlsx</div>
+<div class="font-label text-[10px] text-on-surface-variant">856 KB • Subido por Constructora</div>
+</div>
+</div>
+<button class="text-outline opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Evaluation/Workflow Trazability -->
+<div>
+<h4 class="font-card-title text-card-title text-on-surface mb-sm">Trazabilidad de Revisión</h4>
+<div class="relative pl-sm border-l border-hairline ml-sm space-y-md">
+<!-- Step 1 -->
+<div class="relative">
+<div class="absolute -left-[25px] w-4 h-4 bg-canvas border-2 border-success rounded-full flex items-center justify-center">
+<div class="w-1.5 h-1.5 bg-success rounded-full"></div>
+</div>
+<div class="pl-md">
+<div class="font-body-strong text-[13px] text-on-surface">Registro y Validación Técnica</div>
+<div class="font-label text-[11px] text-on-surface-variant mb-xs">14 Oct 2023 • Project Manager</div>
+<div class="bg-surface p-sm rounded text-[12px] font-body text-on-surface-variant italic">
+                                "Justificación técnica validada conforme al informe de la DF. Cantidades revisadas preliminarmente."
+                            </div>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="relative">
+<div class="absolute -left-[25px] w-4 h-4 bg-canvas border-2 border-warning rounded-full flex items-center justify-center">
+<div class="w-1.5 h-1.5 bg-warning rounded-full"></div>
+</div>
+<div class="pl-md">
+<div class="font-body-strong text-[13px] text-on-surface">Evaluación Económica (Costes)</div>
+<div class="font-label text-[11px] text-on-surface-variant mb-xs">Pendiente de cierre</div>
+<div class="bg-warning-soft/50 p-sm rounded border border-warning/20 flex items-start gap-xs">
+<span class="material-symbols-outlined text-warning text-[16px] mt-0.5">info</span>
+<span class="text-[12px] font-body text-on-surface">Revisando precios unitarios de acero con contratista. Esperando oferta final (Vto: 20 Oct).</span>
+</div>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="relative opacity-50">
+<div class="absolute -left-[25px] w-4 h-4 bg-surface border-2 border-outline rounded-full"></div>
+<div class="pl-md">
+<div class="font-body-strong text-[13px] text-on-surface">Aprobación Comité (FRC)</div>
+<div class="font-label text-[11px] text-on-surface-variant">Agendado para próxima sesión</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Drawer Footer Actions -->
+<div class="p-md border-t border-hairline bg-surface-bright flex gap-sm justify-end">
+<button class="px-md py-sm border border-hairline rounded font-body-strong text-[13px] text-on-surface hover:bg-surface-container transition-colors" onclick="toggleDrawer()">
+                Cerrar
+            </button>
+<button class="px-md py-sm bg-primary text-on-primary rounded font-body-strong text-[13px] hover:bg-primary/90 transition-colors flex items-center gap-xs">
+                Gestionar Evaluación
+            </button>
+</div>
+</aside>
+<script>
+        function toggleDrawer() {
+            const overlay = document.getElementById('drawerOverlay');
+            const drawer = document.getElementById('detailDrawer');
+            
+            overlay.classList.toggle('open');
+            drawer.classList.toggle('open');
+        }
+    </script>
+</body></html>

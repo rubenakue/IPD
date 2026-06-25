@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hotel Azahar - Dashboard - Control Económico IPD</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;550;600;650&display=swap');
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "warning-soft": "#FFF6C7",
+                        "surface-warm": "#F4F1E8",
+                        "action-soft": "#DDEBFA",
+                        "on-secondary-fixed-variant": "#00468c",
+                        "surface-dim": "#ddd9d9",
+                        "tertiary-fixed": "#e8e1da",
+                        "tertiary-fixed-dim": "#cbc6bf",
+                        "surface-tint": "#5e5e61",
+                        "inverse-primary": "#c7c6c9",
+                        "on-surface-variant": "#45474a",
+                        "on-primary-fixed": "#1b1c1e",
+                        "success-soft": "#DFF3EA",
+                        "primary": "#000000",
+                        "secondary": "#005db6",
+                        "on-secondary-container": "#00376f",
+                        "role-designer": "#5B5FC7",
+                        "primary-fixed-dim": "#c7c6c9",
+                        "background": "#fcf8f8",
+                        "on-tertiary-fixed": "#1e1b17",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-primary-container": "#848386",
+                        "surface-container-high": "#ebe7e7",
+                        "secondary-fixed": "#d6e3ff",
+                        "surface-bright": "#fcf8f8",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f4f0ef",
+                        "danger-soft": "#FBE4E2",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#f1edec",
+                        "tertiary-container": "#1e1b17",
+                        "on-surface": "#1c1b1b",
+                        "secondary-container": "#63a1ff",
+                        "error-container": "#ffdad6",
+                        "surface": "#F6F7F8",
+                        "inverse-surface": "#313030",
+                        "outline": "#76777b",
+                        "hairline-soft": "#E8EBEF",
+                        "on-tertiary-fixed-variant": "#4a4641",
+                        "tertiary": "#000000",
+                        "panel": "#FFFFFF",
+                        "role-project-manager": "#005EB8",
+                        "danger": "#C7362E",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#001b3d",
+                        "surface-container-low": "#f7f3f2",
+                        "success": "#0B7A4B",
+                        "primary-fixed": "#e3e2e4",
+                        "slate": "#5F6670",
+                        "hairline": "#D8DDE3",
+                        "primary-container": "#1b1c1e",
+                        "on-background": "#1c1b1b",
+                        "canvas": "#FFFFFF",
+                        "on-primary-fixed-variant": "#464749",
+                        "muted": "#8A929D",
+                        "on-tertiary-container": "#88837d",
+                        "on-error-container": "#93000a",
+                        "graphite": "#2B2F33",
+                        "role-constructor": "#6E4B18",
+                        "warning": "#F5C400",
+                        "role-promoter": "#111111",
+                        "on-error": "#ffffff",
+                        "info": "#2563EB",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e5e2e1",
+                        "outline-variant": "#c6c6ca",
+                        "secondary-fixed-dim": "#a9c7ff",
+                        "on-tertiary": "#ffffff",
+                        "role-observer": "#6B7280"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "8px",
+                        "md": "16px",
+                        "section": "64px",
+                        "sm": "12px",
+                        "xxl": "48px",
+                        "xxs": "4px",
+                        "lg": "24px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "numeric": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "page-title": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "table": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "card-title": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "body-strong": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "section-title": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "display": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "body": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "numeric-table": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "label": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""]
+                    },
+                    "fontSize": {
+                        "numeric": ["24px", { "lineHeight": "1.1", "fontWeight": "650" }],
+                        "page-title": ["32px", { "lineHeight": "1.15", "fontWeight": "650" }],
+                        "table": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "card-title": ["16px", { "lineHeight": "1.35", "fontWeight": "650" }],
+                        "body-strong": ["15px", { "lineHeight": "1.45", "fontWeight": "600" }],
+                        "section-title": ["22px", { "lineHeight": "1.25", "fontWeight": "650" }],
+                        "display": ["48px", { "lineHeight": "1.05", "fontWeight": "650" }],
+                        "body": ["15px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "numeric-table": ["13px", { "lineHeight": "1.35", "fontWeight": "550" }],
+                        "label": ["12px", { "lineHeight": "1.25", "fontWeight": "650" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-full bg-surface text-on-surface font-body overflow-hidden">
+<!-- App Shell Container -->
+<div class="flex h-full w-full">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col bg-primary text-on-primary fixed left-0 top-0 h-screen w-[264px] border-r border-hairline transition-colors duration-200 z-20">
+<!-- Header -->
+<div class="p-md flex items-center gap-xs border-b border-on-primary-container/20">
+<div class="w-10 h-10 rounded-full bg-canvas flex items-center justify-center overflow-hidden shrink-0">
+<img alt="Logo de Empresa Constructora" class="w-full h-full object-cover" data-alt="A highly detailed, professional logo for a high-end construction company. Geometric shapes in stark black and white, conveying structural integrity and modern architectural precision. Minimalist, sharp edges, clean lines. High contrast, well-lit studio environment, crisp resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9CgAxjFaBbQk7xwWgTx5ZLYi91PXh6-U7uWZPSRaqYuv434g-LsD8WFkuw96iIoZra02Dte3239SKon65OVFpTdQtbLBjRrnf-UuOdt3w6aJ4eZxhUEKC2QlMS-pbHbd4H0nEW2_Vshq2KZ2Qh1kA4vmOT2ghYwia6TooBlzHvqCqAYgpb_KXomQaCfoY_jLl02OMxslh-_yWM5Mxld7x-iNM5mVdkR_t81DHXFbXU-BGwH8SMmL7"/>
+</div>
+<div class="overflow-hidden">
+<h1 class="font-card-title text-card-title text-on-primary truncate">Control Económico IPD</h1>
+<p class="font-label text-label text-on-primary-container truncate">Gestión Integrada</p>
+</div>
+</div>
+<!-- Primary Action -->
+<div class="p-md">
+<button class="w-full flex items-center justify-center gap-xs bg-canvas text-primary font-body-strong text-body-strong py-sm px-md rounded hover:bg-surface-warm transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+                    Nuevo Informe
+                </button>
+</div>
+<!-- Main Navigation -->
+<ul class="flex flex-col flex-1 py-xs px-sm gap-xxs overflow-y-auto">
+<li>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-secondary-container font-body-strong bg-on-primary-container/10 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="dashboard">dashboard</span>
+                        Panel de Control
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="calendar_today">calendar_today</span>
+                        Planificación
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="description">description</span>
+                        Contratos
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="payments">payments</span>
+                        Presupuesto
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="warning">warning</span>
+                        Riesgos
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+                        Configuración
+                    </a>
+</li>
+</ul>
+<!-- Footer Navigation -->
+<div class="mt-auto border-t border-on-primary-container/20 p-sm">
+<ul class="flex flex-col gap-xxs">
+<li>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="help">help</span>
+                            Ayuda
+                        </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="logout">logout</span>
+                            Cerrar Sesión
+                        </a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col md:ml-[264px] min-h-screen relative w-full">
+<!-- TopNavBar -->
+<header class="bg-canvas text-on-surface h-[64px] border-b border-hairline flex items-center justify-between px-lg w-full sticky top-0 z-10">
+<!-- Left: Context & Role -->
+<div class="flex items-center gap-md">
+<h2 class="font-card-title text-card-title text-on-surface">Proyecto Torre Norte</h2>
+<span class="px-sm py-xxs rounded-full bg-role-promoter text-on-primary font-label text-label flex items-center gap-xxs">
+<span class="material-symbols-outlined text-[14px]" data-icon="person">person</span>
+                        Promotor
+                    </span>
+</div>
+<!-- Center: Navigation (if applicable based on TopNavBar JSON, mapping "Resumen" to active for dashboard) -->
+<nav class="hidden lg:flex items-center h-full gap-lg">
+<a class="text-primary border-b-2 border-primary h-full flex items-center pb-1 font-body-strong text-body-strong cursor-pointer transition-all" href="#">Resumen</a>
+<a class="text-on-surface-variant h-full flex items-center pb-1 font-body text-body hover:text-primary cursor-pointer transition-all" href="#">Costes</a>
+<a class="text-on-surface-variant h-full flex items-center pb-1 font-body text-body hover:text-primary cursor-pointer transition-all" href="#">Cronograma</a>
+</nav>
+<!-- Right: Actions & Profile -->
+<div class="flex items-center gap-md">
+<button class="hidden md:block font-body-strong text-body-strong text-secondary border border-hairline rounded px-sm py-xs hover:bg-surface-warm transition-colors">
+                        Cambiar Rol
+                    </button>
+<div class="flex items-center gap-sm text-on-surface-variant">
+<button class="p-xs hover:bg-surface-warm rounded-full transition-colors flex items-center justify-center relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-[4px] right-[4px] w-2 h-2 bg-danger rounded-full border border-canvas"></span>
+</button>
+<button class="p-xs hover:bg-surface-warm rounded-full transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-dim overflow-hidden border border-hairline ml-xs">
+<img alt="Avatar de Usuario" class="w-full h-full object-cover" data-alt="Professional headshot of a confident corporate project manager. Neutral grey background, well-lit studio lighting, sharp focus. Wearing a crisp dark navy blazer over a white shirt. Serious but approachable expression. Corporate modern aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhhZSd394fsxXE28RFfmBV1p6iQdK1ng-Nce-7huR1TdATNrsDqYp8Y1-y3q0RzHsIjTHjxZZRjLExN88ZsxisIvKZ2oyZTYpDS_4He9fP127wwhaW3G_OBS-_E_pJU5KYZfzu_dHbycc7-FdFVVgGDx111SJXWRHnjqykVeiqV9vBkpXl6j58thYfgx-_RXGpuQxX7EYuCDxkOQsLei0ZOnXSTKT3Bl4MmMNYvrSdNQ5ElnvLfbrT"/>
+</div>
+</div>
+</header>
+<!-- Dashboard Canvas -->
+<main class="flex-1 overflow-y-auto p-md lg:p-lg bg-surface">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-sm mb-lg">
+<div>
+<h1 class="font-page-title text-page-title text-on-surface mb-xs">Hotel Azahar</h1>
+<p class="font-body text-body text-on-surface-variant">Dashboard Principal - Control Económico</p>
+</div>
+<div class="flex items-center gap-sm">
+<span class="font-label text-label text-on-surface-variant bg-canvas border border-hairline px-sm py-xs rounded">
+                            Actualizado: Hoy, 08:30
+                        </span>
+<button class="bg-canvas border border-hairline p-xs rounded hover:bg-surface-warm text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+<!-- KPI Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-sm mb-lg">
+<!-- KPI 1: Presupuesto Vigente -->
+<div class="bg-canvas border border-hairline rounded-lg p-md flex flex-col justify-between">
+<div class="flex items-center justify-between mb-sm">
+<h3 class="font-label text-label text-on-surface-variant uppercase tracking-wider">Presupuesto Vigente</h3>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]" data-icon="account_balance">account_balance</span>
+</div>
+<div>
+<p class="font-numeric text-numeric text-on-surface">€ 14.500.000</p>
+<div class="flex items-center gap-xxs mt-xs text-success">
+<span class="material-symbols-outlined text-[16px]" data-icon="check_circle">check_circle</span>
+<span class="font-label text-label">Aprobado</span>
+</div>
+</div>
+</div>
+<!-- KPI 2: Coste Real -->
+<div class="bg-canvas border border-hairline rounded-lg p-md flex flex-col justify-between">
+<div class="flex items-center justify-between mb-sm">
+<h3 class="font-label text-label text-on-surface-variant uppercase tracking-wider">Coste Real (Incurrido)</h3>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]" data-icon="payments">payments</span>
+</div>
+<div>
+<p class="font-numeric text-numeric text-on-surface">€ 8.240.500</p>
+<div class="flex items-center gap-xxs mt-xs text-on-surface-variant">
+<span class="font-label text-label">56.8% de avance financiero</span>
+</div>
+</div>
+</div>
+<!-- KPI 3: Previsión a Cierre -->
+<div class="bg-canvas border border-hairline rounded-lg p-md flex flex-col justify-between">
+<div class="flex items-center justify-between mb-sm">
+<h3 class="font-label text-label text-on-surface-variant uppercase tracking-wider">Previsión a Cierre</h3>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]" data-icon="trending_up">trending_up</span>
+</div>
+<div>
+<p class="font-numeric text-numeric text-on-surface">€ 14.850.000</p>
+<div class="flex items-center gap-xxs mt-xs text-danger">
+<span class="material-symbols-outlined text-[16px]" data-icon="arrow_upward">arrow_upward</span>
+<span class="font-label text-label">+2.4% sobre ppto.</span>
+</div>
+</div>
+</div>
+<!-- KPI 4: Desviación (Warning State) -->
+<div class="bg-warning-soft border border-warning rounded-lg p-md flex flex-col justify-between relative overflow-hidden">
+<div class="absolute right-0 top-0 w-16 h-16 bg-warning/10 rounded-bl-full pointer-events-none"></div>
+<div class="flex items-center justify-between mb-sm relative z-10">
+<h3 class="font-label text-label text-on-surface uppercase tracking-wider">Desviación Proyectada</h3>
+<span class="material-symbols-outlined text-danger text-[20px]" data-icon="warning">warning</span>
+</div>
+<div class="relative z-10">
+<p class="font-numeric text-numeric text-danger">€ 350.000</p>
+<div class="flex items-center gap-xxs mt-xs text-on-surface">
+<span class="font-label text-label">Requiere revisión C.D.</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Content Bento Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-md">
+<!-- FRC Chart Panel (Span 2 cols) -->
+<div class="bg-canvas border border-hairline rounded-lg flex flex-col lg:col-span-2">
+<div class="p-md border-b border-hairline-soft flex items-center justify-between">
+<h3 class="font-card-title text-card-title text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary" data-icon="monitoring">monitoring</span>
+                                Tendencia Fondo de Riesgo Compartido (FRC)
+                            </h3>
+<div class="flex gap-xs">
+<button class="px-sm py-xxs font-label text-label bg-surface border border-hairline rounded text-on-surface-variant">Mes</button>
+<button class="px-sm py-xxs font-label text-label bg-primary text-on-primary rounded">Acumulado</button>
+</div>
+</div>
+<div class="p-md flex-1 min-h-[300px] relative flex flex-col">
+<!-- FRC Value Header -->
+<div class="flex gap-md mb-md">
+<div>
+<p class="font-label text-label text-on-surface-variant">Bolsa FRC Inicial</p>
+<p class="font-numeric-table text-numeric-table text-on-surface">€ 1.200.000</p>
+</div>
+<div>
+<p class="font-label text-label text-on-surface-variant">FRC Consumido</p>
+<p class="font-numeric-table text-numeric-table text-danger">€ 450.000</p>
+</div>
+<div>
+<p class="font-label text-label text-on-surface-variant">FRC Disponible</p>
+<p class="font-numeric-table text-numeric-table text-success">€ 750.000</p>
+</div>
+</div>
+<!-- Placeholder for Chart -->
+<div class="flex-1 bg-surface-warm/50 border border-hairline-soft border-dashed rounded flex items-center justify-center relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-warm/20 to-transparent"></div>
+<!-- Abstract chart lines representation using tailwind -->
+<div class="w-full h-full absolute inset-0 flex items-end px-md pb-md gap-sm opacity-50">
+<div class="w-1/12 h-1/6 bg-secondary/20 rounded-t"></div>
+<div class="w-1/12 h-2/6 bg-secondary/30 rounded-t"></div>
+<div class="w-1/12 h-3/6 bg-secondary/40 rounded-t"></div>
+<div class="w-1/12 h-2/6 bg-secondary/50 rounded-t"></div>
+<div class="w-1/12 h-4/6 bg-secondary/60 rounded-t"></div>
+<div class="w-1/12 h-3/6 bg-secondary/70 rounded-t"></div>
+<div class="w-1/12 h-5/6 bg-secondary/80 rounded-t"></div>
+<div class="w-1/12 h-4/6 bg-danger/50 rounded-t"></div>
+<div class="w-1/12 h-6/6 bg-danger/70 rounded-t"></div>
+</div>
+<span class="font-label text-label text-on-surface-variant z-10 bg-canvas/80 px-sm py-xxs rounded backdrop-blur-sm border border-hairline">Gráfico de Burn-down FRC Interactivo</span>
+</div>
+</div>
+</div>
+<!-- Critical Alerts Panel -->
+<div class="bg-canvas border border-hairline rounded-lg flex flex-col">
+<div class="p-md border-b border-hairline-soft flex items-center justify-between">
+<h3 class="font-card-title text-card-title text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-danger" data-icon="error">error</span>
+                                Alertas Críticas
+                            </h3>
+<span class="bg-danger text-on-error font-label text-label px-xs py-xxs rounded-full">3</span>
+</div>
+<div class="p-0 flex-1 overflow-y-auto">
+<ul class="divide-y divide-hairline-soft">
+<!-- Alert 1 -->
+<li class="p-md hover:bg-surface-warm transition-colors cursor-pointer border-l-4 border-danger">
+<div class="flex items-start gap-sm">
+<div class="mt-1">
+<span class="material-symbols-outlined text-danger text-[18px]" data-icon="gavel">gavel</span>
+</div>
+<div>
+<div class="flex items-center justify-between mb-xxs">
+<h4 class="font-body-strong text-body-strong text-on-surface">Reclamación Subcontrata</h4>
+<span class="font-label text-label text-on-surface-variant">Hace 2h</span>
+</div>
+<p class="font-table text-table text-on-surface-variant mb-xs">Sobrecoste en cimentación fase 2. Impacto directo en FRC estimado: €85k.</p>
+<div class="flex gap-xs">
+<span class="px-xs py-xxs bg-surface-variant text-on-surface font-label text-[10px] rounded">Constructor</span>
+<span class="px-xs py-xxs bg-danger-soft text-danger font-label text-[10px] rounded">Alta Prioridad</span>
+</div>
+</div>
+</div>
+</li>
+<!-- Alert 2 -->
+<li class="p-md hover:bg-surface-warm transition-colors cursor-pointer border-l-4 border-warning">
+<div class="flex items-start gap-sm">
+<div class="mt-1">
+<span class="material-symbols-outlined text-warning text-[18px]" data-icon="inventory">inventory</span>
+</div>
+<div>
+<div class="flex items-center justify-between mb-xxs">
+<h4 class="font-body-strong text-body-strong text-on-surface">Retraso Suministro Acero</h4>
+<span class="font-label text-label text-on-surface-variant">Ayer</span>
+</div>
+<p class="font-table text-table text-on-surface-variant mb-xs">Posible desviación en cronograma que activaría penalizaciones contractuales.</p>
+<div class="flex gap-xs">
+<span class="px-xs py-xxs bg-surface-variant text-on-surface font-label text-[10px] rounded">PM</span>
+<span class="px-xs py-xxs bg-warning-soft text-on-surface font-label text-[10px] rounded">Riesgo</span>
+</div>
+</div>
+</div>
+</li>
+<!-- Alert 3 -->
+<li class="p-md hover:bg-surface-warm transition-colors cursor-pointer border-l-4 border-info">
+<div class="flex items-start gap-sm">
+<div class="mt-1">
+<span class="material-symbols-outlined text-info text-[18px]" data-icon="sync">sync</span>
+</div>
+<div>
+<div class="flex items-center justify-between mb-xxs">
+<h4 class="font-body-strong text-body-strong text-on-surface">Cambio de Diseño Pendiente</h4>
+<span class="font-label text-label text-on-surface-variant">Hace 2d</span>
+</div>
+<p class="font-table text-table text-on-surface-variant mb-xs">Aprobación requerida para modificación de fachadas. Presupuesto bloqueado.</p>
+<div class="flex gap-xs">
+<span class="px-xs py-xxs bg-surface-variant text-on-surface font-label text-[10px] rounded">Diseñador</span>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="p-sm border-t border-hairline-soft bg-surface text-center">
+<button class="font-label text-label text-secondary hover:underline">Ver registro completo de riesgos</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

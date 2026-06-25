@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Trazabilidad - Control Económico IPD</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter,+system-ui,+-apple-system,+Segoe+UI,+sans-serif:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "warning-soft": "#FFF6C7",
+                        "surface-warm": "#F4F1E8",
+                        "action-soft": "#DDEBFA",
+                        "on-secondary-fixed-variant": "#00468c",
+                        "surface-dim": "#ddd9d9",
+                        "tertiary-fixed": "#e8e1da",
+                        "tertiary-fixed-dim": "#cbc6bf",
+                        "surface-tint": "#5e5e61",
+                        "inverse-primary": "#c7c6c9",
+                        "on-surface-variant": "#45474a",
+                        "on-primary-fixed": "#1b1c1e",
+                        "success-soft": "#DFF3EA",
+                        "primary": "#000000",
+                        "secondary": "#005db6",
+                        "on-secondary-container": "#00376f",
+                        "role-designer": "#5B5FC7",
+                        "primary-fixed-dim": "#c7c6c9",
+                        "background": "#fcf8f8",
+                        "on-tertiary-fixed": "#1e1b17",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-primary-container": "#848386",
+                        "surface-container-high": "#ebe7e7",
+                        "secondary-fixed": "#d6e3ff",
+                        "surface-bright": "#fcf8f8",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f4f0ef",
+                        "danger-soft": "#FBE4E2",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#f1edec",
+                        "tertiary-container": "#1e1b17",
+                        "on-surface": "#1c1b1b",
+                        "secondary-container": "#63a1ff",
+                        "error-container": "#ffdad6",
+                        "surface": "#F6F7F8",
+                        "inverse-surface": "#313030",
+                        "outline": "#76777b",
+                        "hairline-soft": "#E8EBEF",
+                        "on-tertiary-fixed-variant": "#4a4641",
+                        "tertiary": "#000000",
+                        "panel": "#FFFFFF",
+                        "role-project-manager": "#005EB8",
+                        "danger": "#C7362E",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#001b3d",
+                        "surface-container-low": "#f7f3f2",
+                        "success": "#0B7A4B",
+                        "primary-fixed": "#e3e2e4",
+                        "slate": "#5F6670",
+                        "hairline": "#D8DDE3",
+                        "primary-container": "#1b1c1e",
+                        "on-background": "#1c1b1b",
+                        "canvas": "#FFFFFF",
+                        "on-primary-fixed-variant": "#464749",
+                        "muted": "#8A929D",
+                        "on-tertiary-container": "#88837d",
+                        "on-error-container": "#93000a",
+                        "graphite": "#2B2F33",
+                        "role-constructor": "#6E4B18",
+                        "warning": "#F5C400",
+                        "role-promoter": "#111111",
+                        "on-error": "#ffffff",
+                        "info": "#2563EB",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e5e2e1",
+                        "outline-variant": "#c6c6ca",
+                        "secondary-fixed-dim": "#a9c7ff",
+                        "on-tertiary": "#ffffff",
+                        "role-observer": "#6B7280"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "8px",
+                        "md": "16px",
+                        "section": "64px",
+                        "sm": "12px",
+                        "xxl": "48px",
+                        "xxs": "4px",
+                        "lg": "24px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "numeric": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "page-title": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "table": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "card-title": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "body-strong": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "section-title": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "display": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "body": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "numeric-table": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "label": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""]
+                    },
+                    "fontSize": {
+                        "numeric": ["24px", { "lineHeight": "1.1", "fontWeight": "650" }],
+                        "page-title": ["32px", { "lineHeight": "1.15", "fontWeight": "650" }],
+                        "table": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "card-title": ["16px", { "lineHeight": "1.35", "fontWeight": "650" }],
+                        "body-strong": ["15px", { "lineHeight": "1.45", "fontWeight": "600" }],
+                        "section-title": ["22px", { "lineHeight": "1.25", "fontWeight": "650" }],
+                        "display": ["48px", { "lineHeight": "1.05", "fontWeight": "650" }],
+                        "body": ["15px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "numeric-table": ["13px", { "lineHeight": "1.35", "fontWeight": "550" }],
+                        "label": ["12px", { "lineHeight": "1.25", "fontWeight": "650" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body text-body antialiased selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- SideNavBar (Shared Component) -->
+<!-- Mapped directly from JSON. "Riesgos" is the active tab based on intent. -->
+<nav class="bg-primary dark:bg-primary text-on-primary dark:text-on-primary font-body text-body fixed left-0 top-0 h-screen w-[264px] border-r border-hairline flex flex-col h-full py-md z-50">
+<!-- Header / Brand -->
+<div class="px-lg pb-xl flex flex-col gap-sm">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-surface-container flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-primary text-xl">domain</span>
+</div>
+<div class="flex flex-col">
+<span class="font-page-title text-page-title text-on-primary text-sm tracking-tight">Control Económico IPD</span>
+<span class="font-label text-label text-on-primary-container text-[10px] uppercase tracking-wider">Gestión Integrada</span>
+</div>
+</div>
+<!-- CTA Button -->
+<button class="mt-md w-full bg-secondary text-on-secondary font-body-strong text-body-strong py-sm rounded-DEFAULT flex items-center justify-center gap-xs hover:bg-secondary/90 transition-colors duration-200">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                Nuevo Informe
+            </button>
+</div>
+<!-- Main Navigation Tabs -->
+<div class="flex-1 overflow-y-auto px-md flex flex-col gap-xxs">
+<a class="flex items-center gap-sm px-sm py-xs rounded-DEFAULT text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-on-primary transition-colors">dashboard</span>
+<span class="group-hover:text-on-primary transition-colors">Panel de Control</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-xs rounded-DEFAULT text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-on-primary transition-colors">calendar_today</span>
+<span class="group-hover:text-on-primary transition-colors">Planificación</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-xs rounded-DEFAULT text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-on-primary transition-colors">description</span>
+<span class="group-hover:text-on-primary transition-colors">Contratos</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-xs rounded-DEFAULT text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-on-primary transition-colors">payments</span>
+<span class="group-hover:text-on-primary transition-colors">Presupuesto</span>
+</a>
+<!-- ACTIVE TAB: Riesgos (maps to Trazabilidad intent) -->
+<a class="flex items-center gap-sm px-sm py-xs rounded-DEFAULT text-secondary-container font-body-strong bg-on-primary-container/10 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px] icon-fill">warning</span>
+<span>Riesgos</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-xs rounded-DEFAULT text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-on-primary transition-colors">settings</span>
+<span class="group-hover:text-on-primary transition-colors">Configuración</span>
+</a>
+</div>
+<!-- Footer Navigation Tabs -->
+<div class="px-md pt-md border-t border-hairline/20 flex flex-col gap-xxs mt-auto">
+<a class="flex items-center gap-sm px-sm py-xs rounded-DEFAULT text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-on-primary transition-colors">help</span>
+<span class="group-hover:text-on-primary transition-colors">Ayuda</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-xs rounded-DEFAULT text-on-primary-container font-body hover:bg-on-primary-container/10 transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-on-primary transition-colors">logout</span>
+<span class="group-hover:text-on-primary transition-colors">Cerrar Sesión</span>
+</a>
+</div>
+</nav>
+<!-- TopNavBar (Shared Component) -->
+<header class="bg-canvas dark:bg-canvas text-on-surface dark:text-on-surface font-label text-label fixed top-0 right-0 w-[calc(100%-264px)] h-[64px] border-b border-hairline flex items-center justify-between px-lg z-40">
+<!-- Product Name & Context -->
+<div class="flex items-center gap-md">
+<span class="font-card-title text-card-title text-on-surface">Proyecto Torre Norte</span>
+<div class="h-4 w-[1px] bg-hairline"></div>
+<!-- Navigation Links (Contextual, none active for this deep view) -->
+<nav class="flex items-center gap-md">
+<a class="text-on-surface-variant hover:text-primary cursor-pointer transition-all" href="#">Resumen</a>
+<a class="text-on-surface-variant hover:text-primary cursor-pointer transition-all" href="#">Costes</a>
+<a class="text-on-surface-variant hover:text-primary cursor-pointer transition-all" href="#">Cronograma</a>
+</nav>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-md">
+<button class="font-label text-label text-secondary border border-hairline rounded-DEFAULT px-sm py-xs hover:bg-surface-container-low transition-colors">
+                Cambiar Rol
+            </button>
+<div class="flex items-center gap-xs">
+<button class="p-xs rounded-full hover:bg-surface-container-low text-on-surface-variant transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="p-xs rounded-full hover:bg-surface-container-low text-on-surface-variant transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">account_circle</span>
+</button>
+</div>
+<!-- Avatar Placeholder -->
+<div class="w-8 h-8 rounded-full bg-surface-container overflow-hidden border border-hairline ml-xs">
+<img alt="Avatar de Usuario" class="w-full h-full object-cover" data-alt="A professional headshot of an engineer in a hard hat, soft bright corporate lighting, light background, photorealistic, modern aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaX3yzqCinUf6ZwEQFj4hQXebCJZigCfw1YruPKDgJq2cSRw_J9BgyyKGBVaDQ0d80ctrkwn4Pix19_NL3XwiwZ_aiOZsA2S3WYskxrJXc1Ac0WJ22q1FuRm-JKP1oxcOJpMM9IrwiFpgqD3aAdI93QVjyg2Sn0bJ05g_5WxLlhl4AOcyQKSDQNcoQMMX_EPGPy9wto5B4cN2uv3GJZcljm7nnJp9uuJZ0tz6851IMJZhZT-TURZUs"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[264px] mt-[64px] p-lg min-h-[calc(100vh-64px)] flex flex-col gap-lg">
+<!-- Page Header -->
+<header class="flex items-end justify-between">
+<div class="flex flex-col gap-xxs">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-muted text-[24px]">account_tree</span>
+<h1 class="font-page-title text-page-title text-on-surface tracking-tight">Trazabilidad Integrada</h1>
+</div>
+<p class="font-body text-body text-on-surface-variant max-w-2xl">
+                    Registro unificado de riesgos, incidencias estructurales y decisiones clave. Priorizando la evidencia técnica y el marco de responsabilidad IPD.
+                </p>
+</div>
+<!-- High Level Action -->
+<button class="bg-primary text-on-primary font-body-strong text-body-strong px-md py-sm rounded-DEFAULT hover:bg-primary/90 transition-colors flex items-center gap-xs shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add_box</span>
+                Registrar Evento
+            </button>
+</header>
+<!-- Filter & Control Bar -->
+<section class="bg-canvas border border-hairline rounded-lg p-xs flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-sm px-sm">
+<!-- Search -->
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-sm text-muted text-[18px]">search</span>
+<input class="pl-[36px] pr-sm py-xs bg-surface-container-low border-transparent focus:bg-canvas focus:border-secondary focus:ring-1 focus:ring-secondary rounded-DEFAULT font-body text-body text-on-surface w-[300px] transition-all placeholder:text-muted" placeholder="Buscar por ID, descripción o entidad..." type="text"/>
+</div>
+<div class="h-6 w-[1px] bg-hairline mx-xs"></div>
+<!-- Filter Chips -->
+<div class="flex items-center gap-xs">
+<button class="bg-primary text-on-primary font-label text-label px-sm py-xs rounded-full border border-primary transition-colors">
+                        Todos
+                    </button>
+<button class="bg-canvas text-on-surface-variant font-label text-label px-sm py-xs rounded-full border border-outline-variant hover:bg-surface-container-low hover:text-on-surface transition-colors flex items-center gap-xxs">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                        Riesgos
+                    </button>
+<button class="bg-canvas text-on-surface-variant font-label text-label px-sm py-xs rounded-full border border-outline-variant hover:bg-surface-container-low hover:text-on-surface transition-colors flex items-center gap-xxs">
+<span class="material-symbols-outlined text-[14px]">error</span>
+                        Incidencias
+                    </button>
+<button class="bg-canvas text-on-surface-variant font-label text-label px-sm py-xs rounded-full border border-outline-variant hover:bg-surface-container-low hover:text-on-surface transition-colors flex items-center gap-xxs">
+<span class="material-symbols-outlined text-[14px]">gavel</span>
+                        Decisiones
+                    </button>
+</div>
+</div>
+<div class="flex items-center gap-xs px-sm">
+<button class="text-on-surface-variant hover:text-primary p-xs rounded-DEFAULT hover:bg-surface-container-low transition-colors flex items-center gap-xxs font-label text-label">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                    Más Filtros
+                </button>
+<button class="text-on-surface-variant hover:text-primary p-xs rounded-DEFAULT hover:bg-surface-container-low transition-colors flex items-center gap-xxs font-label text-label">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                    Exportar
+                </button>
+</div>
+</section>
+<!-- High-Density Data Table -->
+<section class="bg-canvas border border-hairline rounded-lg overflow-hidden shadow-sm flex-1">
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left border-collapse whitespace-nowrap">
+<thead class="bg-surface-container-lowest border-b border-hairline">
+<tr>
+<th class="py-sm px-md font-label text-label text-on-surface-variant uppercase tracking-wider w-[120px]">Tipo / ID</th>
+<th class="py-sm px-md font-label text-label text-on-surface-variant uppercase tracking-wider">Descripción</th>
+<th class="py-sm px-md font-label text-label text-on-surface-variant uppercase tracking-wider">Estado</th>
+<th class="py-sm px-md font-label text-label text-on-surface-variant uppercase tracking-wider">Responsable</th>
+<th class="py-sm px-md font-label text-label text-on-surface-variant uppercase tracking-wider">Impacto Econ.</th>
+<th class="py-sm px-md font-label text-label text-on-surface-variant uppercase tracking-wider">Fecha Reg.</th>
+<th class="py-sm px-md font-label text-label text-on-surface-variant uppercase tracking-wider">Entidad Vinculada</th>
+<th class="py-sm px-md w-[40px]"></th> <!-- Actions -->
+</tr>
+</thead>
+<tbody class="font-table text-table text-on-surface divide-y divide-hairline-soft">
+<!-- Row 1: Riesgo -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="py-sm px-md">
+<div class="flex items-center gap-xs">
+<div class="w-6 h-6 rounded-sm bg-warning-soft text-warning flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] icon-fill">warning</span>
+</div>
+<span class="font-numeric-table text-numeric-table text-on-surface-variant">RSK-042</span>
+</div>
+</td>
+<td class="py-sm px-md max-w-[300px] truncate" title="Retraso en suministro de acero estructural debido a huelga en puerto.">
+                                Retraso en suministro de acero estructural debido a huelga en puerto.
+                            </td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-danger-soft text-danger font-label text-[10px] uppercase tracking-wide border border-danger/20">
+                                    En Evaluación
+                                </span>
+</td>
+<td class="py-sm px-md">
+<div class="flex items-center gap-xs">
+<img alt="Avatar" class="w-6 h-6 rounded-full object-cover border border-hairline" data-alt="A small professional portrait of a male construction manager, corporate setting, neutral background, high resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVKNEutbZecK8AdKxD3VKjpP7jTzcsm21XkxqV5aerAEsSNzo5tQ7ETaKpV9h5TZSQevM13fGKn5J3EYY0yWox-RxH9ghRsbJf-nYqvyGN-OSHfUWqH49DyGufv0wuBKYV0Uv29dTzyqq1qao2fbbfYSlIEyedLiO9F7OrYHiAPpE_d-lZKfZ4rGOWD2wTVwjGlg2bj8ulfxN8KS2HiQpL9H9NAdy7lKAZGYiPKG57y47t60g41_oA"/>
+<div class="flex flex-col">
+<span>Carlos M.</span>
+<span class="text-[10px] text-role-constructor font-label uppercase">Constructor</span>
+</div>
+</div>
+</td>
+<td class="py-sm px-md">
+<div class="flex items-center gap-xs text-danger">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span class="font-numeric-table text-numeric-table">Alto (>50k€)</span>
+</div>
+</td>
+<td class="py-sm px-md font-numeric-table text-numeric-table text-on-surface-variant">24 Oct 2023</td>
+<td class="py-sm px-md">
+<a class="text-secondary hover:underline flex items-center gap-xxs" href="#">
+<span class="material-symbols-outlined text-[14px]">link</span>
+                                    Contrato CT-012
+                                </a>
+</td>
+<td class="py-sm px-md text-right">
+<button class="text-muted hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-surface-container">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2: Incidencia -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="py-sm px-md">
+<div class="flex items-center gap-xs">
+<div class="w-6 h-6 rounded-sm bg-danger-soft text-danger flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] icon-fill">error</span>
+</div>
+<span class="font-numeric-table text-numeric-table text-on-surface-variant">INC-105</span>
+</div>
+</td>
+<td class="py-sm px-md max-w-[300px] truncate" title="Discrepancia en cotas de cimentación sector B2.">
+                                Discrepancia en cotas de cimentación sector B2.
+                            </td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-warning-soft text-warning font-label text-[10px] uppercase tracking-wide border border-warning/20">
+                                    Mitigada
+                                </span>
+</td>
+<td class="py-sm px-md">
+<div class="flex items-center gap-xs">
+<img alt="Avatar" class="w-6 h-6 rounded-full object-cover border border-hairline" data-alt="A small professional portrait of a female architect, drafting room setting, neutral background, high resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDS_Z9iwe0RF1y7WEl5TLu-yCdN-wLtVWQm-a1Yf_zayRB8gAuDICHf6Jn7vfNsaZXUSHkURmukvYkGQwEVZ0i5TCeIvnZnCEtVijwP7CnmVzLDhKM6YWufFsjjs1dOex7mc9q7ZXGMNiJ4MZ7xiXBxKbM2yF-OYssJncO6dP6dQCtrvzEA_EvOssRM7VcKNVM7Zt3JNmZ5eq2vZHpkSzf9-wnomsLc5LtOAVzqaD30y6X5CuwjbClM"/>
+<div class="flex flex-col">
+<span>Elena S.</span>
+<span class="text-[10px] text-role-designer font-label uppercase">Proyectista</span>
+</div>
+</div>
+</td>
+<td class="py-sm px-md">
+<div class="flex items-center gap-xs text-warning">
+<span class="material-symbols-outlined text-[16px]">trending_flat</span>
+<span class="font-numeric-table text-numeric-table">Medio</span>
+</div>
+</td>
+<td class="py-sm px-md font-numeric-table text-numeric-table text-on-surface-variant">22 Oct 2023</td>
+<td class="py-sm px-md">
+<a class="text-secondary hover:underline flex items-center gap-xxs" href="#">
+<span class="material-symbols-outlined text-[14px]">link</span>
+                                    Plano PL-CIM-v3
+                                </a>
+</td>
+<td class="py-sm px-md text-right">
+<button class="text-muted hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-surface-container">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3: Decisión -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="py-sm px-md">
+<div class="flex items-center gap-xs">
+<div class="w-6 h-6 rounded-sm bg-success-soft text-success flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] icon-fill">gavel</span>
+</div>
+<span class="font-numeric-table text-numeric-table text-on-surface-variant">DEC-089</span>
+</div>
+</td>
+<td class="py-sm px-md max-w-[300px] truncate" title="Aprobación de cambio de material en fachadas (Variante V4).">
+                                Aprobación de cambio de material en fachadas (Variante V4).
+                            </td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-success-soft text-success font-label text-[10px] uppercase tracking-wide border border-success/20">
+                                    Cerrada
+                                </span>
+</td>
+<td class="py-sm px-md">
+<div class="flex items-center gap-xs">
+<img alt="Avatar" class="w-6 h-6 rounded-full object-cover border border-hairline" data-alt="A small professional portrait of a senior male executive, boardroom setting, neutral background, high resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCib7eCwClaBLa63XPLs0zW-qfInQlySUa58rb5o5mbK_LD9CItkveetVnZvmaW8Uiqlr_s03jmPecMubSqaErw_LdEtzyJZ6aC6prs1Gd6Y1mOABtHrlLYv5O1x5QXnxDn0r2_WU-BeiSs-M6Ta_kRNwSRL9chpVqUMflrLggKKbrORkOUrv3JSLKNSzQppTQjkXqOPioJLFAhFUBp02EQCHrnTZuEIJRCA-ovyodVu3VFyoimTWZK"/>
+<div class="flex flex-col">
+<span>Roberto L.</span>
+<span class="text-[10px] text-role-promoter font-label uppercase">Promotor</span>
+</div>
+</div>
+</td>
+<td class="py-sm px-md">
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">trending_down</span>
+<span class="font-numeric-table text-numeric-table">Nulo / Positivo</span>
+</div>
+</td>
+<td class="py-sm px-md font-numeric-table text-numeric-table text-on-surface-variant">15 Oct 2023</td>
+<td class="py-sm px-md">
+<a class="text-secondary hover:underline flex items-center gap-xxs" href="#">
+<span class="material-symbols-outlined text-[14px]">link</span>
+                                    Acta Reunión #12
+                                </a>
+</td>
+<td class="py-sm px-md text-right">
+<button class="text-muted hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-surface-container">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4: Riesgo (Mitigado) -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="py-sm px-md">
+<div class="flex items-center gap-xs">
+<div class="w-6 h-6 rounded-sm bg-warning-soft text-warning flex items-center justify-center opacity-70">
+<span class="material-symbols-outlined text-[14px] icon-fill">warning</span>
+</div>
+<span class="font-numeric-table text-numeric-table text-muted line-through">RSK-041</span>
+</div>
+</td>
+<td class="py-sm px-md max-w-[300px] truncate text-on-surface-variant" title="Posible interferencia con instalaciones soterradas no documentadas.">
+                                Posible interferencia con instalaciones soterradas no documentadas.
+                            </td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant font-label text-[10px] uppercase tracking-wide border border-outline-variant">
+                                    Descartado
+                                </span>
+</td>
+<td class="py-sm px-md">
+<div class="flex items-center gap-xs">
+<img alt="Avatar" class="w-6 h-6 rounded-full object-cover border border-hairline opacity-70" data-alt="A small professional portrait of a female project manager, construction site background out of focus, high resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUziZ_ZlkfinO70kQiEUjq5VYPDzJB27-usGoug9In42i8bfqhdxSm-fyR-bkhIi3BRCUCq8lKZFfGfVLB2ftD5duf6X0VlVLS8LH3JkIOatVFjQXcrsLkj47lPGHpehENU-5834MF4LOtzDDTMKk8zdfko4IWsQmtBYl0M0booE8JtCYTshTAmZVGvx0c2fABZ68aN617ZbWHMmCFgVTGCJVRM6NEDcXbCneldf7Q6vlAME8QfClG"/>
+<div class="flex flex-col opacity-70">
+<span>Ana G.</span>
+<span class="text-[10px] text-role-project-manager font-label uppercase">Project Mgr</span>
+</div>
+</div>
+</td>
+<td class="py-sm px-md">
+<span class="font-numeric-table text-numeric-table text-muted">-</span>
+</td>
+<td class="py-sm px-md font-numeric-table text-numeric-table text-muted">10 Oct 2023</td>
+<td class="py-sm px-md">
+<span class="text-muted flex items-center gap-xxs">
+<span class="material-symbols-outlined text-[14px]">link_off</span>
+                                    Estudio Topográfico
+                                </span>
+</td>
+<td class="py-sm px-md text-right">
+<button class="text-muted hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-surface-container">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer / Pagination Placeholder -->
+<div class="bg-surface-container-lowest border-t border-hairline p-sm flex items-center justify-between text-on-surface-variant">
+<span class="font-label text-label">Mostrando 1-4 de 128 registros</span>
+<div class="flex items-center gap-xs">
+<button class="p-xs rounded hover:bg-surface-container transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<span class="font-numeric-table text-numeric-table px-xs">1 / 32</span>
+<button class="p-xs rounded hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+</body></html>

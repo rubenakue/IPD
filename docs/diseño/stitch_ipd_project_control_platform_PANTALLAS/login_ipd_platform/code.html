@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Acceso a Control Económico - IPD Platform</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter,+system-ui,+-apple-system,+Segoe+UI,+sans-serif:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "warning-soft": "#FFF6C7",
+                        "surface-warm": "#F4F1E8",
+                        "action-soft": "#DDEBFA",
+                        "on-secondary-fixed-variant": "#00468c",
+                        "surface-dim": "#ddd9d9",
+                        "tertiary-fixed": "#e8e1da",
+                        "tertiary-fixed-dim": "#cbc6bf",
+                        "surface-tint": "#5e5e61",
+                        "inverse-primary": "#c7c6c9",
+                        "on-surface-variant": "#45474a",
+                        "on-primary-fixed": "#1b1c1e",
+                        "success-soft": "#DFF3EA",
+                        "primary": "#000000",
+                        "secondary": "#005db6",
+                        "on-secondary-container": "#00376f",
+                        "role-designer": "#5B5FC7",
+                        "primary-fixed-dim": "#c7c6c9",
+                        "background": "#fcf8f8",
+                        "on-tertiary-fixed": "#1e1b17",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-primary-container": "#848386",
+                        "surface-container-high": "#ebe7e7",
+                        "secondary-fixed": "#d6e3ff",
+                        "surface-bright": "#fcf8f8",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f4f0ef",
+                        "danger-soft": "#FBE4E2",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#f1edec",
+                        "tertiary-container": "#1e1b17",
+                        "on-surface": "#1c1b1b",
+                        "secondary-container": "#63a1ff",
+                        "error-container": "#ffdad6",
+                        "surface": "#F6F7F8",
+                        "inverse-surface": "#313030",
+                        "outline": "#76777b",
+                        "hairline-soft": "#E8EBEF",
+                        "on-tertiary-fixed-variant": "#4a4641",
+                        "tertiary": "#000000",
+                        "panel": "#FFFFFF",
+                        "role-project-manager": "#005EB8",
+                        "danger": "#C7362E",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#001b3d",
+                        "surface-container-low": "#f7f3f2",
+                        "success": "#0B7A4B",
+                        "primary-fixed": "#e3e2e4",
+                        "slate": "#5F6670",
+                        "hairline": "#D8DDE3",
+                        "primary-container": "#1b1c1e",
+                        "on-background": "#1c1b1b",
+                        "canvas": "#FFFFFF",
+                        "on-primary-fixed-variant": "#464749",
+                        "muted": "#8A929D",
+                        "on-tertiary-container": "#88837d",
+                        "on-error-container": "#93000a",
+                        "graphite": "#2B2F33",
+                        "role-constructor": "#6E4B18",
+                        "warning": "#F5C400",
+                        "role-promoter": "#111111",
+                        "on-error": "#ffffff",
+                        "info": "#2563EB",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e5e2e1",
+                        "outline-variant": "#c6c6ca",
+                        "secondary-fixed-dim": "#a9c7ff",
+                        "on-tertiary": "#ffffff",
+                        "role-observer": "#6B7280"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "8px",
+                        "md": "16px",
+                        "section": "64px",
+                        "sm": "12px",
+                        "xxl": "48px",
+                        "xxs": "4px",
+                        "lg": "24px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "numeric": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "page-title": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "table": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "card-title": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "body-strong": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "section-title": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "display": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "body": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "numeric-table": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""],
+                        "label": ["\"Inter, system-ui, -apple-system, Segoe UI, sans-serif\""]
+                    },
+                    "fontSize": {
+                        "numeric": ["24px", { "lineHeight": "1.1", "fontWeight": "650" }],
+                        "page-title": ["32px", { "lineHeight": "1.15", "fontWeight": "650" }],
+                        "table": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "card-title": ["16px", { "lineHeight": "1.35", "fontWeight": "650" }],
+                        "body-strong": ["15px", { "lineHeight": "1.45", "fontWeight": "600" }],
+                        "section-title": ["22px", { "lineHeight": "1.25", "fontWeight": "650" }],
+                        "display": ["48px", { "lineHeight": "1.05", "fontWeight": "650" }],
+                        "body": ["15px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "numeric-table": ["13px", { "lineHeight": "1.35", "fontWeight": "550" }],
+                        "label": ["12px", { "lineHeight": "1.25", "fontWeight": "650" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background min-h-screen text-on-surface antialiased selection:bg-secondary selection:text-on-secondary">
+<div class="min-h-screen w-full flex flex-col md:flex-row">
+<div class="hidden md:flex w-full md:w-1/2 lg:w-7/12 relative overflow-hidden bg-surface-dim">
+<div class="absolute inset-0 bg-primary/20 z-10 mix-blend-multiply"></div>
+<div class="w-full h-full bg-cover bg-center absolute inset-0 filter contrast-125 saturate-50" data-alt="A highly detailed, professional architectural rendering of a modern structural steel framework at dawn. High-key, clean lighting with deep shadows highlighting the precision of the construction. The aesthetic is extremely clean and technical, utilizing a palette of cool grays, steel blues, and bright whites to convey institutional trust and high-end engineering software." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC32i-iplsjJI26WLUg5ppKI6HE3DOAXo9KTxo1Sdrd9w2otrJOFTIz-lj-CahDVwKHlEkYzi52HbenFnZWdb2v7bpjTAMPCPMC41Ry_XfS8HpVxTiFR2pQA_sCCj0N9t3SJv9xalEIpIF0S0nzWxv_qEyObfCH6hCWYf7KSQU_NEKhzIsl2I04NkqsRxZk05egwmLm9ITvmKvWmh5va2w6qgOEFKez53OEl_SnMWbu9hXdai9EKsBR')"></div>
+<div class="absolute bottom-xl left-xl z-20 flex flex-col gap-sm max-w-md">
+<div class="flex items-center gap-sm mb-sm">
+<div class="w-12 h-12 bg-canvas rounded-lg flex items-center justify-center shadow-lg border border-hairline-soft/20 backdrop-blur-sm">
+<span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings: 'FILL' 1;">business_center</span>
+</div>
+<span class="font-section-title text-section-title text-canvas drop-shadow-md tracking-tight">IPD Platform</span>
+</div>
+<div class="h-px w-12 bg-canvas/50 mb-xs"></div>
+<p class="font-body-strong text-body-strong text-canvas drop-shadow-sm opacity-95">
+                    Infraestructura de control unificada.<br/>Precisión de datos para la construcción moderna.
+                </p>
+</div>
+</div>
+<div class="w-full md:w-1/2 lg:w-5/12 flex items-center justify-center p-xl md:p-xxl bg-canvas z-20 shadow-[-24px_0_48px_-16px_rgba(0,0,0,0.08)] relative min-h-screen">
+<div class="w-full max-w-[380px] flex flex-col">
+<div class="md:hidden flex items-center gap-sm mb-xl">
+<div class="w-10 h-10 bg-surface rounded-lg flex items-center justify-center border border-hairline-soft">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">business_center</span>
+</div>
+<span class="font-card-title text-card-title text-primary tracking-tight">IPD Platform</span>
+</div>
+<div class="flex flex-col gap-xs mb-xl">
+<h1 class="font-page-title text-page-title text-primary tracking-tight">Acceso a Control Económico</h1>
+<p class="font-body text-body text-on-surface-variant">Introduzca sus credenciales de acceso seguro.</p>
+</div>
+<form class="flex flex-col gap-lg w-full">
+<div class="flex flex-col gap-md">
+<div class="flex flex-col gap-xs">
+<label class="font-label text-label text-on-surface-variant uppercase tracking-widest" for="username">Usuario Corporativo</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[20px]">person</span>
+<input autocomplete="username" class="font-body text-body text-on-surface bg-surface border border-outline-variant rounded-DEFAULT pl-xl pr-md py-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all w-full shadow-sm placeholder:text-on-surface-variant/40" id="username" placeholder="usuario@empresa.com" type="text"/>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<div class="flex justify-between items-end">
+<label class="font-label text-label text-on-surface-variant uppercase tracking-widest" for="password">Contraseña</label>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[20px]">lock</span>
+<input autocomplete="current-password" class="font-body text-body text-on-surface bg-surface border border-outline-variant rounded-DEFAULT pl-xl pr-md py-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all w-full shadow-sm placeholder:text-on-surface-variant/40" id="password" placeholder="••••••••" type="password"/>
+</div>
+<div class="flex justify-end mt-xs">
+<a class="font-label text-label text-on-surface-variant hover:text-primary transition-colors border-b border-transparent hover:border-primary pb-0.5" href="#">¿Ha olvidado su contraseña?</a>
+</div>
+</div>
+</div>
+<button class="mt-sm bg-primary text-on-primary font-body-strong text-body-strong py-sm px-lg rounded-DEFAULT hover:bg-primary-container transition-all duration-200 w-full flex justify-center items-center gap-sm group shadow-md active:scale-[0.98]" type="submit">
+<span>Iniciar Sesión</span>
+<span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</form>
+<div class="w-full h-px bg-hairline-soft my-xl"></div>
+<div class="flex items-start gap-sm p-sm bg-surface-container-low rounded-DEFAULT border border-hairline-soft">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] mt-0.5" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
+<p class="font-label text-label text-on-surface-variant leading-relaxed">
+                        Entorno restringido. No existe portal de registro público. Solicite credenciales de acceso al administrador de su proyecto IPD.
+                    </p>
+</div>
+</div>
+</div>
+</div>
+</body></html>
