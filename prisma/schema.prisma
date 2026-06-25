@@ -109,6 +109,7 @@ model Project {
   agents      Agent[]
   budget      Budget?
   changes     Change[]
+  promoterPrivateCosts PromoterPrivateCost[]
   auditEvents AuditEvent[]
 }
 
@@ -192,6 +193,21 @@ model RealCost {
   recordedBy User       @relation("RecordedCosts", fields: [recordedById], references: [id])
   reversalOf RealCost?  @relation("Reversals", fields: [reversalOfId], references: [id])
   reversals  RealCost[] @relation("Reversals")
+}
+
+/// Costes privados de promocion. No forman parte de los libros abiertos: solo
+/// Promotor y PM los pueden leer, protegido en API y por RLS en PostgreSQL.
+model PromoterPrivateCost {
+  id         String   @id @default(cuid())
+  projectId  String
+  label      String
+  amount     BigInt
+  incurredAt DateTime?
+  createdAt  DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
 }
 
 /// Cambio (esqueleto mínimo). Sostiene los ChangeAdjustment; el flujo completo es de otra feature.

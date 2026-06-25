@@ -60,6 +60,22 @@ async function main(): Promise<void> {
     data: { activePhaseId: validationPhaseId },
   });
 
+  // Costes privados de promoción del proyecto demo (solo Promotor/PM los ven; ver
+  // RLS de `PromoterPrivateCost`). Idempotente: se siembran solo si no existen aún.
+  // El seed corre como superuser, que omite la RLS, así que no necesita contexto.
+  const existingPrivateCosts = await prisma.promoterPrivateCost.count({
+    where: { projectId: project.id },
+  });
+  if (existingPrivateCosts === 0) {
+    await prisma.promoterPrivateCost.createMany({
+      data: [
+        { projectId: project.id, label: 'Compra de suelo', amount: 1_200_000_00n },
+        { projectId: project.id, label: 'Tasas e impuestos de promoción', amount: 85_000_00n },
+        { projectId: project.id, label: 'Costes financieros', amount: 140_000_00n },
+      ],
+    });
+  }
+
   // Una cuenta y un agente por rol (upsert por email y por (userId, projectId)).
   for (const agent of DEMO_AGENTS) {
     const user = await prisma.user.upsert({

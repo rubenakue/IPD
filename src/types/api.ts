@@ -47,3 +47,14 @@ export interface CurrentUserResponse {
 export interface LogoutResponse {
   ok: true;
 }
+
+export interface PromoterPrivateCostsResponse {
+  costs: {
+    id: string;
+    projectId: string;
+    label: string;
+    amountCents: number;
+    incurredAt: string | null;
+    createdAt: string;
+  }[];
+}

@@ -6,6 +6,7 @@ import { loadConfig } from './config.ts';
 import { healthRouter } from './routes/health.ts';
 import { createAuthRouter } from './routes/auth.ts';
 import { createMeRouter } from './routes/me.ts';
+import { createProjectsRouter } from './routes/projects.ts';
 import { notFoundHandler } from './middlewares/not-found.ts';
 import { errorHandler } from './middlewares/error-handler.ts';
 import { createSessionMiddleware } from './middlewares/session.ts';
@@ -40,6 +41,7 @@ export function createApp(options: AppOptions = {}): Express {
   app.use('/api', healthRouter);
   app.use('/api', createAuthRouter(prisma));
   app.use('/api', createMeRouter(prisma));
+  app.use('/api', createProjectsRouter(prisma));
 
   // Cualquier ruta no resuelta → NOT_FOUND con formato §14.3.
   app.use(notFoundHandler);

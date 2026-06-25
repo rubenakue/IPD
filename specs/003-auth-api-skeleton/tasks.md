@@ -77,12 +77,12 @@ description: "Task list for feature: Autenticación y roles por proyecto"
 
 **Goal**: la matriz §15 aplicada en servidor; el constructor no recibe costes privados del promotor.
 
-- [ ] T024 [US2] Resolver el `Agent` (rol) del usuario en el proyecto de la ruta.
-- [ ] T025 [US2] Middleware `requireRole(...)` / `requirePermission(action)` derivado de la matriz §15.
-- [ ] T026 [US2] Tabla/мodelo de permisos (acción × rol) como única fuente de verdad, alineada con §15.
-- [ ] T027 [US2] Red de seguridad **RLS** en Postgres (políticas por proyecto/rol; `SET LOCAL` con la identidad).
-- [ ] T028 [US2] Garantizar exclusión de costes privados del promotor en la respuesta (FR-009), no solo en UI.
-- [ ] T029 [TEST] [US2] Tests por rol contra la matriz §15 (incl. el caso constructor vs costes privados).
+- [x] T024 [US2] Resolver el `Agent` (rol) del usuario en el proyecto de la ruta.
+- [x] T025 [US2] Middleware `requireRole(...)` / `requirePermission(action)` derivado de la matriz §15.
+- [x] T026 [US2] Tabla/мodelo de permisos (acción × rol) como única fuente de verdad, alineada con §15.
+- [x] T027 [US2] Red de seguridad **RLS** en Postgres (políticas por proyecto/rol; `SET LOCAL` con la identidad).
+- [x] T028 [US2] Garantizar exclusión de costes privados del promotor en la respuesta (FR-009), no solo en UI.
+- [x] T029 [TEST] [US2] Tests por rol contra la matriz §15 (incl. el caso constructor vs costes privados).
 
 **Checkpoint**: SC-004 y SC-006 verificables.
 
@@ -92,9 +92,9 @@ description: "Task list for feature: Autenticación y roles por proyecto"
 
 **Goal**: `User ≠ Agent`; mismo usuario con roles distintos por proyecto; solo ve sus proyectos.
 
-- [ ] T030 [US3] Listado de proyectos filtrado por participación (`Agent` activo) — FR-011.
-- [ ] T031 [US3] Resolución de rol por proyecto sin estado global (FR-007/FR-012).
-- [ ] T032 [TEST] [US3] Test: misma cuenta, PM en A y Observador en B, permisos correctos en cada uno.
+- [x] T030 [US3] Listado de proyectos filtrado por participación (`Agent` activo) — FR-011.
+- [x] T031 [US3] Resolución de rol por proyecto sin estado global (FR-007/FR-012).
+- [x] T032 [TEST] [US3] Test: misma cuenta, PM en A y Observador en B, permisos correctos en cada uno.
 
 **Checkpoint**: SC-005 verificable.
 
