@@ -10,13 +10,20 @@ import {
   Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { useLogin } from '../hooks/useLogin.ts';
 import { ApiError } from '../lib/api/client.ts';
 
+interface LoginLocationState {
+  reason?: 'session-expired';
+}
+
 export function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const login = useLogin();
+  const locationState = location.state as LoginLocationState | null;
+  const sessionExpired = locationState?.reason === 'session-expired';
 
   const form = useForm({
     initialValues: { email: '', password: '' },
@@ -52,6 +59,11 @@ export function LoginPage() {
       <Paper withBorder p="lg" radius="md">
         <form onSubmit={handleSubmit}>
           <Stack>
+            {sessionExpired && (
+              <Alert color="yellow" variant="light">
+                Tu sesión ha caducado. Inicia sesión de nuevo para continuar.
+              </Alert>
+            )}
             <TextInput
               label="Usuario corporativo"
               placeholder="nombre@empresa.com"

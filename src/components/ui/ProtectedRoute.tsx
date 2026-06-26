@@ -22,7 +22,7 @@ export function ProtectedRoute() {
 
   if (isError) {
     if (error instanceof ApiError && error.status === 401) {
-      return <Navigate to="/login" replace />;
+      return <Navigate to="/login" replace state={{ reason: 'session-expired' }} />;
     }
     return <ErrorState onRetry={() => void refetch()} />;
   }

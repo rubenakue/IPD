@@ -142,6 +142,10 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 
+# Local automation/test artifacts
+output/
+.playwright-cli/
+
 # Documentación inicial (solo local — contiene material real de cliente de Vivare)
 /Doc inicial/
 

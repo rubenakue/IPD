@@ -5,6 +5,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ProtectedRoute } from '../../src/components/ui/ProtectedRoute.tsx';
+import { LoginPage } from '../../src/pages/LoginPage.tsx';
 
 function renderAt(initialPath: string) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -16,7 +17,7 @@ function renderAt(initialPath: string) {
             <Route element={<ProtectedRoute />}>
               <Route path="/projects" element={<div>Contenido privado</div>} />
             </Route>
-            <Route path="/login" element={<div>Pantalla de login</div>} />
+            <Route path="/login" element={<LoginPage />} />
           </Routes>
         </MemoryRouter>
       </QueryClientProvider>
@@ -44,7 +45,9 @@ describe('ProtectedRoute', () => {
       ),
     );
     renderAt('/projects');
-    expect(await screen.findByText('Pantalla de login')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Tu sesión ha caducado. Inicia sesión de nuevo para continuar.'),
+    ).toBeInTheDocument();
   });
 
   it('muestra el contenido protegido cuando hay sesión', async () => {
