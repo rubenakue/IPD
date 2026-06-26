@@ -28,8 +28,8 @@ Monorepo único (ADR-001): backend `src/server/`, frontend `src/`, tests `tests/
 
 **Purpose**: contratos y andamiaje compartidos. Sin dependencias nuevas (todo ya instalado).
 
-- [ ] T001 Añadir los contratos de S12 a `src/types/api.ts`: `CreateProjectRequest`, `CreateProjectResponse`, `AgentView`, `AddAgentRequest`, `UpdateAgentRequest`, `ProjectAgentsResponse` (con `agents`, `shareSum`, `isComplete`), reutilizando `ProjectRoleCode`.
-- [ ] T002 [P] Crear el esqueleto de la función pura `validateShareSplit` en `src/lib/agents/share-split.ts` (firma + tipo de retorno `{ sum, isComplete }`; cuerpo mínimo).
+- [x] T001 Añadir los contratos de S12 a `src/types/api.ts`: `CreateProjectRequest`, `CreateProjectResponse`, `AgentView`, `AddAgentRequest`, `UpdateAgentRequest`, `ProjectAgentsResponse` (con `agents`, `shareSum`, `isComplete`), reutilizando `ProjectRoleCode`.
+- [x] T002 [P] Crear el esqueleto de la función pura `validateShareSplit` en `src/lib/agents/share-split.ts` (firma + tipo de retorno `{ sum, isComplete }`; cuerpo mínimo).
 
 **Checkpoint**: tipos compartidos disponibles para back y front.
 
@@ -40,10 +40,10 @@ Monorepo único (ADR-001): backend `src/server/`, frontend `src/`, tests `tests/
 **Purpose**: piezas que bloquean ambas historias (validación pura, contexto RLS de creación y
 políticas RLS). **Ninguna historia empieza hasta completar esta fase.**
 
-- [ ] T003 [P] Test de unidad de `validateShareSplit` en `tests/agents/share-split.test.ts`: casos suma 100, ≠100 (90/110), conjunto vacío, agentes a 0% (PM/observador) que no rompen el total.
-- [ ] T004 Implementar `validateShareSplit` en `src/lib/agents/share-split.ts` hasta poner T003 en verde (suma de `sharePercent`, `isComplete = sum === 100`).
-- [ ] T005 Extender `src/server/db/rls.ts` con una variante de contexto **sin** `projectId` (solo `SET LOCAL ipd.current_user_id`) para el bootstrap de creación de proyecto (research D1), sin romper `withRlsContext` existente.
-- [ ] T006 Crear una migración SQL **additiva** en `prisma/migrations/` con las políticas RLS de **INSERT/UPDATE** para la creación de proyecto (research D1): `Project` (INSERT con `current_user_id` presente), `Agent` (INSERT cuando `userId = current_user_id` o el solicitante es PM del proyecto, reutilizando helpers `SECURITY DEFINER` de S10), `Phase` (INSERT cuando el solicitante participa/PM del proyecto), y el `UPDATE` de `Project.activePhaseId`. Aplicar con `prisma migrate` sin reset.
+- [x] T003 [P] Test de unidad de `validateShareSplit` en `tests/agents/share-split.test.ts`: casos suma 100, ≠100 (90/110), conjunto vacío, agentes a 0% (PM/observador) que no rompen el total.
+- [x] T004 Implementar `validateShareSplit` en `src/lib/agents/share-split.ts` hasta poner T003 en verde (suma de `sharePercent`, `isComplete = sum === 100`).
+- [x] T005 Extender `src/server/db/rls.ts` con una variante de contexto **sin** `projectId` (`withUserRlsContext`, solo `SET LOCAL ipd.current_user_id`) para el bootstrap de creación de proyecto (research D1), sin romper `withRlsContext` existente.
+- [x] T006 Migración SQL additiva `20260626120000_project_creation_rls`: helper `app_project_has_no_agents` (SECURITY DEFINER) + política `Project_insert_bootstrap` (INSERT con usuario presente) + `Agent_insert_bootstrap` (auto-alta PM solo si el proyecto no tiene agentes aún — evita auto-añadirse a proyectos ajenos). Phase/UPDATE activePhase ya cubiertos por S10 tras insertar el Agent PM. Aplicada con `prisma migrate deploy`.
 
 **Checkpoint**: reparto validable, contexto y políticas RLS listas para crear bajo `ipd_app`.
 
@@ -57,12 +57,12 @@ políticas RLS). **Ninguna historia empieza hasta completar esta fase.**
 
 ### Tests for User Story 1 ⚠️
 
-- [ ] T007 [P] [US1] Test de integración en `tests/server/create-project.test.ts`: crear proyecto bajo contexto de usuario → existe Project + 4 Phases (Validación activa) + Agent PM del creador + audit `project.created`; código duplicado → `CONFLICT`; body inválido → `VALIDATION_ERROR`. Verifica que se ejecuta bajo RLS (`ipd_app`).
+- [x] T007 [P] [US1] Test de integración en `tests/server/create-project.test.ts`: crear proyecto bajo contexto de usuario → existe Project + 4 Phases (Validación activa) + Agent PM del creador + audit `project.created`; código duplicado → `CONFLICT`; body inválido → `VALIDATION_ERROR`. Verifica que se ejecuta bajo RLS (`ipd_app`). **4/4 verde.**
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Implementar la creación transaccional en `src/server/projects/create-project.ts`: orden `INSERT Project → INSERT Agent PM (self) → INSERT 4 Phases → UPDATE activePhaseId=VALIDATION`, dentro del contexto RLS de T005; registrar `project.created` (best-effort).
-- [ ] T009 [US1] Añadir `POST /api/projects` (con `requireAuth` + Zod del body) en `src/server/routes/projects.ts`, delegando en `create-project.ts` y devolviendo `CreateProjectResponse`.
+- [x] T008 [US1] Creación transaccional en `src/server/projects/create-project.ts`: Project y Agent PM con `$executeRaw` SIN RETURNING (el RETURNING del ORM dispara la SELECT policy y falla en el bootstrap) → luego 4 Phases (createMany) → UPDATE activePhaseId=VALIDATION; ids con `randomUUID`; comprobación previa de unicidad del código; `project.created` best-effort.
+- [x] T009 [US1] `POST /api/projects` (con `requireAuth` + Zod) en `src/server/routes/projects.ts`, delegando en `create-project.ts`; conflicto de código → `CONFLICT` (P2002/P2010).
 - [ ] T010 [P] [US1] Hook `useCreateProject` en `src/hooks/useCreateProject.ts` (mutation → `POST /api/projects`; al éxito invalida `['me']`).
 - [ ] T011 [US1] `NewProjectPage` en `src/pages/NewProjectPage.tsx` con `@mantine/form` (nombre, código, **cliente** obligatorios; descripción opcional), manejo de error (código duplicado) y navegación a `/projects/:id/agents` al crear.
 - [ ] T012 [US1] Enlazar la creación en la UI: botón "Nuevo proyecto" en `src/pages/ProjectsPage.tsx` y ruta `/projects/new` (protegida) en `src/App.tsx`.
