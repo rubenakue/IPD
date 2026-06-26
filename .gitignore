@@ -6,6 +6,11 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
@@ -145,6 +150,9 @@ vite.config.ts.timestamp-*
 # Local automation/test artifacts
 output/
 .playwright-cli/
+playwright-report/
+test-results/
+blob-report/
 
 # Documentación inicial (solo local — contiene material real de cliente de Vivare)
 /Doc inicial/
