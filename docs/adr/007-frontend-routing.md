@@ -27,3 +27,11 @@ React Router v7 usado como librería dentro de la SPA Vite (sin framework mode),
 ```bash
 pnpm add react-router
 ```
+
+## Enmienda 2026-06-26 — versión instalada v8
+
+Al implementar el frontend shell (S11) `pnpm add react-router` instaló **react-router 8.0.1**,
+la versión estable vigente. Se mantiene la decisión: React Router en **modo librería** dentro de
+la SPA Vite (sin framework mode). La API usada (`BrowserRouter`, `Routes`, `Route`, `Outlet`,
+`Navigate`, `useNavigate`) es la misma que en v7; v8 es continuidad, no un cambio de paradigma.
+No hay impacto en el resto de la decisión ni en sus consecuencias.

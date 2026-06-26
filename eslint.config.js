@@ -15,6 +15,8 @@ export default tseslint.config(
       '.claude/**',
       '.codex/**',
       'src/generated/**',
+      // Config de build CommonJS (usa `module`/`require` de Node, no es código de producto).
+      'postcss.config.cjs',
     ],
   },
   js.configs.recommended,

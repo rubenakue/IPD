@@ -7,5 +7,8 @@ export default defineConfig({
     // paralelo, uno borra la sesión que otro acaba de crear → 401 intermitentes. Los
     // serializamos: la suite es pequeña y así el verde es determinista.
     fileParallelism: false,
+    // Matchers de @testing-library/jest-dom para los tests de UI. El entorno por defecto
+    // es Node (cálculo y API); los tests de UI declaran `// @vitest-environment jsdom`.
+    setupFiles: ['tests/frontend/setup.ts'],
   },
 });
