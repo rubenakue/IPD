@@ -79,15 +79,15 @@ políticas RLS). **Ninguna historia empieza hasta completar esta fase.**
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T013 [P] [US2] Test de integración en `tests/server/project-agents.test.ts`: añadir agente con email existente (audit `agent.added`); email inexistente → rechazo sin crear usuario; **no-PM → `FORBIDDEN`** (verificado contra servidor); usuario ya agente → `CONFLICT`; varios agentes del mismo rol permitidos; `sharePercent` fuera de 0–100 / honorarios negativos → `VALIDATION_ERROR`.
+- [x] T013 [P] [US2] Test de integración en `tests/server/project-agents.test.ts`: añadir agente con email existente (audit `agent.added`); email inexistente → rechazo sin crear usuario; **no-PM → `FORBIDDEN`** (verificado contra servidor); usuario ya agente → `CONFLICT`; varios agentes del mismo rol permitidos; `sharePercent` fuera de 0–100 → `VALIDATION_ERROR`. **7/7 verde.**
 
 ### Implementation for User Story 2
 
-- [ ] T014 [US2] Implementar la lógica de agentes en `src/server/projects/agents.ts`: listar (con `shareSum`/`isComplete` vía `validateShareSplit`), resolver usuario por email (rechazo si no existe), añadir y editar; conversión euros→céntimos en el borde; todo bajo `withRlsContext`.
-- [ ] T015 [US2] Añadir `GET`/`POST`/`PATCH` `/api/projects/:projectId/agents` en `src/server/routes/projects.ts` (`GET` con `project.view`; `POST`/`PATCH` con `requireProjectPermission('agent.manage')`), delegando en `agents.ts`.
-- [ ] T016 [P] [US2] Hooks en `src/hooks/`: `useProjectAgents` (query `['project-agents', projectId]`), `useAddAgent` y `useUpdateAgent` (mutations que invalidan esa query).
-- [ ] T017 [US2] `ProjectAgentsPage` en `src/pages/ProjectAgentsPage.tsx`: tabla de agentes + formulario de alta/edición (`@mantine/form`), aviso de suma en vivo con `validateShareSplit`, y botón "Confirmar" deshabilitado si la suma ≠ 100%.
-- [ ] T018 [US2] Conectar la ruta real `/projects/:projectId/agents` a `ProjectAgentsPage` en `src/App.tsx` (sustituye el placeholder de la sección "Agentes" del SideNav de S11).
+- [x] T014 [US2] Lógica de agentes en `src/server/projects/agents.ts`: listar (con `shareSum`/`isComplete` vía `validateShareSplit`), resolver usuario por email (rechazo si no existe), añadir y editar; euros→céntimos en el borde. Lecturas con cliente normal tras la autorización del middleware (incluyen `User`, sin RLS); escrituras de Agent bajo `withRlsContext`.
+- [x] T015 [US2] `GET`/`POST`/`PATCH` `/api/projects/:projectId/agents` en `src/server/routes/projects.ts` (`GET` con `project.view`; `POST`/`PATCH` con `requireProjectPermission('agent.manage')`), delegando en `agents.ts`.
+- [x] T016 [P] [US2] Hooks en `src/hooks/`: `useProjectAgents`, `useAddAgent`, `useUpdateAgent` (+ `api.patch` en el cliente).
+- [x] T017 [US2] `ProjectAgentsPage` en `src/pages/ProjectAgentsPage.tsx`: tabla con % editable (`EditableShare` → PATCH), formulario de alta (`@mantine/form`), suma en vivo y botón "Confirmar" deshabilitado si la suma ≠ 100%.
+- [x] T018 [US2] Ruta real `/projects/:projectId/agents` → `ProjectAgentsPage` en `src/App.tsx` (sustituye el placeholder de la sección "Agentes").
 
 **Checkpoint**: flujo A completo (crear proyecto → configurar agentes con suma validada).
 
@@ -95,11 +95,11 @@ políticas RLS). **Ninguna historia empieza hasta completar esta fase.**
 
 ## Phase 5: Polish & Cross-Cutting Concerns
 
-- [ ] T019 [P] [US2] (Opcional) Test de UI en `tests/frontend/project-agents.test.tsx`: el botón "Confirmar" se habilita solo cuando la suma de reparto es 100%.
-- [ ] T020 Verificar auditoría (`project.created`, `agent.added`) sin datos sensibles (quickstart V8).
-- [ ] T021 `pnpm typecheck` + `pnpm lint` + `pnpm test` en verde; sin `console.log` ni código muerto.
-- [ ] T022 Ejecutar la validación de `quickstart.md` (V1–V9) en el navegador, incluida V7 (no-PM → `FORBIDDEN`) verificada contra el servidor.
-- [ ] T023 Entrada en `docs/diario.md` cerrando S12.
+- [x] T019 [P] [US2] Test de UI en `tests/frontend/project-agents.test.tsx`: el botón "Confirmar" se habilita solo cuando la suma de reparto es 100%. **2/2 verde.**
+- [x] T020 Auditoría (`project.created`, `agent.added`) sin datos sensibles, verificada por los tests de integración (create-project + project-agents).
+- [x] T021 `pnpm typecheck` + `pnpm lint` + `pnpm test` en verde (**68/68**); sin `console.log` ni código muerto.
+- [x] T022 Validación en navegador (preview MCP): login → crear proyecto → añadir agente → suma 100% → "Confirmar" habilitado (V1/V3/V5/V6). V7 (no-PM → `FORBIDDEN`) verificado por el test de integración T013.
+- [x] T023 Entrada en `docs/diario.md` cerrando S12.
 
 ---
 
