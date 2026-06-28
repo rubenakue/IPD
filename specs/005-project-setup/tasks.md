@@ -63,9 +63,9 @@ políticas RLS). **Ninguna historia empieza hasta completar esta fase.**
 
 - [x] T008 [US1] Creación transaccional en `src/server/projects/create-project.ts`: Project y Agent PM con `$executeRaw` SIN RETURNING (el RETURNING del ORM dispara la SELECT policy y falla en el bootstrap) → luego 4 Phases (createMany) → UPDATE activePhaseId=VALIDATION; ids con `randomUUID`; comprobación previa de unicidad del código; `project.created` best-effort.
 - [x] T009 [US1] `POST /api/projects` (con `requireAuth` + Zod) en `src/server/routes/projects.ts`, delegando en `create-project.ts`; conflicto de código → `CONFLICT` (P2002/P2010).
-- [ ] T010 [P] [US1] Hook `useCreateProject` en `src/hooks/useCreateProject.ts` (mutation → `POST /api/projects`; al éxito invalida `['me']`).
-- [ ] T011 [US1] `NewProjectPage` en `src/pages/NewProjectPage.tsx` con `@mantine/form` (nombre, código, **cliente** obligatorios; descripción opcional), manejo de error (código duplicado) y navegación a `/projects/:id/agents` al crear.
-- [ ] T012 [US1] Enlazar la creación en la UI: botón "Nuevo proyecto" en `src/pages/ProjectsPage.tsx` y ruta `/projects/new` (protegida) en `src/App.tsx`.
+- [x] T010 [P] [US1] Hook `useCreateProject` en `src/hooks/useCreateProject.ts` (mutation → `POST /api/projects`; al éxito invalida `['me']`).
+- [x] T011 [US1] `NewProjectPage` en `src/pages/NewProjectPage.tsx` con `@mantine/form` (nombre, código, **cliente** obligatorios; descripción opcional), manejo de error y navegación a `/projects/:id/agents` al crear. Test UI en `tests/frontend/new-project.test.tsx` (2/2). (Textarea sin `autosize`: rompía en jsdom.)
+- [x] T012 [US1] Enlazar la creación en la UI: botón "Nuevo proyecto" en `src/pages/ProjectsPage.tsx` y ruta `/projects/new` (protegida) en `src/App.tsx`. Navegación validada en navegador (login → /projects → /projects/new).
 
 **Checkpoint**: crear proyecto funcional de extremo a extremo (MVP del flujo A).
 
