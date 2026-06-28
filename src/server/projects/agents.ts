@@ -7,7 +7,7 @@ import type {
   ProjectAgentsResponse,
   UpdateAgentRequest,
 } from '../../types/api.ts';
-import { recordAuditEvent, type AuditEventInput } from '../audit/record-audit-event.ts';
+import { safeRecordAuditEvent } from '../audit/record-audit-event.ts';
 import { withRlsContext } from '../db/rls.ts';
 import { ApiError } from '../errors/api-error.ts';
 
@@ -31,15 +31,6 @@ function toAgentView(agent: AgentRow, user: { email: string; displayName: string
     guaranteedFeeCents: Number(agent.guaranteedFee),
     feeAtRiskCents: Number(agent.feeAtRisk),
   };
-}
-
-// La auditoría es un efecto secundario best-effort: su fallo no debe tumbar la operación.
-async function safeRecordAuditEvent(prisma: DbClient, input: AuditEventInput): Promise<void> {
-  try {
-    await recordAuditEvent(prisma, input);
-  } catch (auditErr) {
-    console.error('[api] auditoría fallida:', auditErr);
-  }
 }
 
 /**
@@ -98,7 +89,14 @@ export async function addAgent(
         feeAtRisk: BigInt(input.feeAtRiskCents),
       },
     }),
-  );
+  ).catch((err: unknown) => {
+    // Carrera: dos PM añaden el mismo email a la vez; ambos pasan el preflight y el
+    // segundo choca con @@unique([userId, projectId]). Lo mapeamos al mismo CONFLICT.
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+      throw new ApiError('CONFLICT', 'Ese usuario ya es agente del proyecto.');
+    }
+    throw err;
+  });
 
   await safeRecordAuditEvent(prisma, {
     action: 'agent.added',
@@ -126,6 +124,17 @@ export async function updateAgent(
   });
   if (!existing) {
     throw ApiError.notFound('Agente no encontrado en el proyecto.');
+  }
+
+  // No dejar el proyecto sin Project Manager: si se cambia el rol del único PM activo
+  // a otro rol, se rechaza (si no, nadie podría volver a gestionar agentes).
+  if (input.role !== undefined && input.role !== 'PROJECT_MANAGER' && existing.role === 'PROJECT_MANAGER') {
+    const activeProjectManagers = await prisma.agent.count({
+      where: { projectId, role: 'PROJECT_MANAGER', status: AgentStatus.ACTIVE },
+    });
+    if (activeProjectManagers <= 1) {
+      throw new ApiError('DOMAIN_ERROR', 'El proyecto debe tener al menos un Project Manager.');
+    }
   }
 
   const data: Prisma.AgentUpdateInput = {};

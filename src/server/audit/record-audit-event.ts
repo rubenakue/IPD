@@ -25,3 +25,16 @@ export async function recordAuditEvent(
     },
   });
 }
+
+/**
+ * Registra un AuditEvent best-effort: su fallo NO debe tumbar una operación ya
+ * consumada (una sesión creada/destruida, un proyecto creado, un agente añadido). El
+ * error se traga y se registra. Compartido por auth, creación de proyecto y agentes.
+ */
+export async function safeRecordAuditEvent(prisma: DbClient, input: AuditEventInput): Promise<void> {
+  try {
+    await recordAuditEvent(prisma, input);
+  } catch (auditErr) {
+    console.error('[api] auditoría fallida:', auditErr);
+  }
+}

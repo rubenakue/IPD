@@ -52,6 +52,14 @@ describe('configurar agentes (S12 / US2)', () => {
     return fetch(`${url}/api/projects/${projectId}/agents`, { headers: { Cookie: cookie } });
   }
 
+  function patchAgent(cookie: string, agentId: string, body: unknown): Promise<Response> {
+    return fetch(`${url}/api/projects/${projectId}/agents/${agentId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Cookie: cookie },
+      body: JSON.stringify(body),
+    });
+  }
+
   beforeAll(async () => {
     await cleanup();
     const passwordHash = await argon2.hash(TEST_PASSWORD);
@@ -183,5 +191,26 @@ describe('configurar agentes (S12 / US2)', () => {
     expect(body.agents.length).toBeGreaterThanOrEqual(2);
     expect(typeof body.shareSum).toBe('number');
     expect(body.isComplete).toBe(body.shareSum === 100);
+  });
+
+  it('rechaza degradar al único Project Manager (DOMAIN_ERROR)', async () => {
+    const cookie = await login(pmEmail);
+    const list = (await (await getAgents(cookie)).json()) as ProjectAgentsResponse;
+    const pmAgent = list.agents.find((a) => a.role === 'PROJECT_MANAGER');
+    if (!pmAgent) throw new Error('No se encontró el agente PM en el proyecto de prueba.');
+
+    const res = await patchAgent(cookie, pmAgent.id, { role: 'OBSERVER' });
+    expect(res.status).toBe(422);
+    expect((await res.json()).error.code).toBe('DOMAIN_ERROR');
+  });
+
+  it('rechaza un PATCH de agente sin ningún campo (VALIDATION_ERROR)', async () => {
+    const cookie = await login(pmEmail);
+    const list = (await (await getAgents(cookie)).json()) as ProjectAgentsResponse;
+    const someAgent = list.agents[0];
+
+    const res = await patchAgent(cookie, someAgent.id, {});
+    expect(res.status).toBe(400);
+    expect((await res.json()).error.code).toBe('VALIDATION_ERROR');
   });
 });

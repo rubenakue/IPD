@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import type { DbClient } from '../../lib/db/client.ts';
 import type { LogoutResponse } from '../../types/api.ts';
-import { recordAuditEvent, type AuditEventInput } from '../audit/record-audit-event.ts';
+import { safeRecordAuditEvent } from '../audit/record-audit-event.ts';
 import { getCurrentUserResponse } from '../auth/current-user.ts';
 import { destroySession, regenerateSession, saveSession } from '../auth/session-promises.ts';
 import { ApiError } from '../errors/api-error.ts';
@@ -25,16 +25,6 @@ let dummyPasswordHash: Promise<string> | null = null;
 function getDummyPasswordHash(): Promise<string> {
   dummyPasswordHash ??= argon2.hash('invalid-credentials-placeholder');
   return dummyPasswordHash;
-}
-
-// La auditoría es un efecto secundario: su fallo NO debe tumbar un login/logout ya
-// consumado (la sesión ya quedó creada o destruida). Se registra best-effort.
-async function safeRecordAuditEvent(prisma: DbClient, input: AuditEventInput): Promise<void> {
-  try {
-    await recordAuditEvent(prisma, input);
-  } catch (auditErr) {
-    console.error('[api] auditoría fallida:', auditErr);
-  }
 }
 
 export function createAuthRouter(prisma: DbClient): Router {

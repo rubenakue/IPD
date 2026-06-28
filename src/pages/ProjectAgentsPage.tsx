@@ -52,7 +52,13 @@ function EditableShare({ projectId, agent }: { projectId: string; agent: AgentVi
       onChange={setValue}
       onBlur={() => {
         const next = typeof value === 'number' ? value : Number(value);
-        if (Number.isFinite(next) && next !== agent.sharePercent) {
+        // Campo vacío o no numérico: revertimos al valor actual en vez de persistir un
+        // 0 accidental al perder el foco.
+        if (value === '' || !Number.isFinite(next)) {
+          setValue(agent.sharePercent);
+          return;
+        }
+        if (next !== agent.sharePercent) {
           updateAgent.mutate({ agentId: agent.id, input: { sharePercent: next } });
         }
       }}
@@ -63,7 +69,7 @@ function EditableShare({ projectId, agent }: { projectId: string; agent: AgentVi
 export function ProjectAgentsPage() {
   const { projectId } = useParams();
   const id = projectId ?? '';
-  const { data, isPending, isError, refetch } = useProjectAgents(id);
+  const { data, isPending, isError, refetch, isRefetching } = useProjectAgents(id);
   const addAgent = useAddAgent(id);
 
   const addForm = useForm({
@@ -85,13 +91,16 @@ export function ProjectAgentsPage() {
   const { agents, shareSum, isComplete } = data;
 
   const handleAdd = addForm.onSubmit((values) => {
+    // Los NumberInput pueden quedar vacíos ('') al borrarlos; coercemos a número para
+    // no enviar cadenas vacías al contrato (que espera números) ni un NaN.
+    const toCents = (euros: number | string) => Math.round((Number(euros) || 0) * 100);
     addAgent.mutate(
       {
         email: values.email.trim(),
         role: values.role,
-        sharePercent: values.sharePercent,
-        guaranteedFeeCents: Math.round(values.guaranteedFeeEuros * 100),
-        feeAtRiskCents: Math.round(values.feeAtRiskEuros * 100),
+        sharePercent: Number(values.sharePercent) || 0,
+        guaranteedFeeCents: toCents(values.guaranteedFeeEuros),
+        feeAtRiskCents: toCents(values.feeAtRiskEuros),
       },
       { onSuccess: () => addForm.reset() },
     );
@@ -125,7 +134,7 @@ export function ProjectAgentsPage() {
                     <RoleBadge role={agent.role} />
                   </Table.Td>
                   <Table.Td>
-                    <EditableShare projectId={id} agent={agent} />
+                    <EditableShare key={`${agent.id}:${agent.sharePercent}`} projectId={id} agent={agent} />
                   </Table.Td>
                   <Table.Td>{formatEuros(agent.guaranteedFeeCents)}</Table.Td>
                   <Table.Td>{formatEuros(agent.feeAtRiskCents)}</Table.Td>
@@ -189,9 +198,20 @@ export function ProjectAgentsPage() {
       <Group justify="flex-end">
         <Button
           disabled={!isComplete}
-          onClick={() =>
-            notifications.show({ color: 'green', message: 'Configuración de agentes completa.' })
-          }
+          loading={isRefetching}
+          onClick={async () => {
+            // Revalidamos contra el servidor: otra sesión pudo cambiar el reparto desde
+            // que se cargó la página, así que no declaramos "completo" con datos obsoletos.
+            const fresh = await refetch();
+            if (fresh.data?.isComplete) {
+              notifications.show({ color: 'green', message: 'Configuración de agentes completa.' });
+            } else {
+              notifications.show({
+                color: 'yellow',
+                message: `La suma de reparto ya no es 100% (actual: ${fresh.data?.shareSum ?? '—'}%). Revisa los agentes.`,
+              });
+            }
+          }}
         >
           Confirmar configuración
         </Button>

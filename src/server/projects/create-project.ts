@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { PhaseName } from '../../generated/prisma/client.ts';
 import type { DbClient } from '../../lib/db/client.ts';
 import type { CreateProjectResponse } from '../../types/api.ts';
-import { recordAuditEvent } from '../audit/record-audit-event.ts';
+import { safeRecordAuditEvent } from '../audit/record-audit-event.ts';
 import { withUserRlsContext } from '../db/rls.ts';
 import { ApiError } from '../errors/api-error.ts';
 
@@ -74,18 +74,13 @@ export async function createProject(
     return { id: projectId, code: input.code, name: input.name, agentId };
   });
 
-  // Auditoría best-effort: su fallo no debe tumbar una creación ya consumada.
-  try {
-    await recordAuditEvent(prisma, {
-      action: 'project.created',
-      actorUserId: userId,
-      projectId: created.id,
-      entityType: 'Project',
-      entityId: created.id,
-    });
-  } catch (auditErr) {
-    console.error('[api] auditoría project.created fallida:', auditErr);
-  }
+  await safeRecordAuditEvent(prisma, {
+    action: 'project.created',
+    actorUserId: userId,
+    projectId: created.id,
+    entityType: 'Project',
+    entityId: created.id,
+  });
 
   return { ...created, role: 'PROJECT_MANAGER' };
 }

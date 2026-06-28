@@ -41,7 +41,10 @@ const updateAgentSchema = z
     guaranteedFeeCents: z.number().int().min(0),
     feeAtRiskCents: z.number().int().min(0),
   })
-  .partial();
+  .partial()
+  .refine((value) => Object.keys(value).length > 0, {
+    message: 'Indica al menos un campo a actualizar.',
+  });
 
 /**
  * `true` si el error es una violación de unicidad: P2002 del ORM o el SQLSTATE 23505
