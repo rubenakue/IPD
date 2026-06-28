@@ -58,3 +58,51 @@ export interface PromoterPrivateCostsResponse {
     createdAt: string;
   }[];
 }
+
+// ── S12: setup de proyecto (crear proyecto y configurar agentes) ──
+// Honorarios en CÉNTIMOS enteros (la conversión a/desde euros ocurre en la UI).
+
+export interface CreateProjectRequest {
+  name: string;
+  code: string;
+  clientName: string;
+  description?: string;
+}
+
+/** Proyecto recién creado; misma forma que `CurrentUserResponse.projects[]`. */
+export interface CreateProjectResponse {
+  id: string;
+  code: string;
+  name: string;
+  agentId: string;
+  role: ProjectRoleCode;
+}
+
+export interface AgentView {
+  id: string;
+  userId: string;
+  email: string;
+  displayName: string;
+  role: ProjectRoleCode;
+  sharePercent: number;
+  guaranteedFeeCents: number;
+  feeAtRiskCents: number;
+}
+
+export interface AddAgentRequest {
+  email: string;
+  role: ProjectRoleCode;
+  sharePercent: number;
+  guaranteedFeeCents: number;
+  feeAtRiskCents: number;
+}
+
+export type UpdateAgentRequest = Partial<Omit<AddAgentRequest, 'email'>>;
+
+export interface ProjectAgentsResponse {
+  agents: AgentView[];
+  /** Suma de los porcentajes de reparto (derivado, no persistido). */
+  shareSum: number;
+  /** `true` cuando `shareSum === 100` (gate de configuración completa). */
+  isComplete: boolean;
+}

@@ -1,4 +1,4 @@
-import { Badge, Button, Container, Paper, Table, Title } from '@mantine/core';
+import { Badge, Button, Container, Group, Paper, Table, Title } from '@mantine/core';
 import { useNavigate } from 'react-router';
 import { EmptyState, ErrorState, LoadingState } from '../components/ui/StatePanels.tsx';
 import { useCurrentUser } from '../hooks/useCurrentUser.ts';
@@ -15,9 +15,10 @@ export function ProjectsPage() {
 
   return (
     <Container size="md" py="xl">
-      <Title order={1} mb="lg">
-        Selector de proyectos
-      </Title>
+      <Group justify="space-between" mb="lg">
+        <Title order={1}>Selector de proyectos</Title>
+        <Button onClick={() => navigate('/projects/new')}>Nuevo proyecto</Button>
+      </Group>
       {projects.length === 0 ? (
         <EmptyState
           title="No tienes proyectos asignados"
