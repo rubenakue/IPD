@@ -225,6 +225,41 @@ describe('presupuesto objetivo (S13)', () => {
     expect((await getBudget(projectId, outsiderCookie)).status).toBe(404);
   });
 
+  it('no permite mutar la linea base por carrera entre edicion y aprobacion concurrentes', async () => {
+    const projectId = await createProject('RACE');
+    const cookie = await login(pmEmail);
+    const created = (await (await postLine(projectId, cookie, line)).json()) as BudgetView;
+    const budgetId = created.id;
+    const lineId = created.chapters[0].lines[0].id;
+
+    const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    // T1: toma el lock de aprobacion (FOR UPDATE sobre Budget), deja una ventana para que
+    // T2 intente mutar la linea (y se bloquee en el trigger), y entonces aprueba.
+    const approveTx = prisma.$transaction(
+      async (tx) => {
+        await tx.$executeRaw`SELECT "id" FROM "Budget" WHERE "id" = ${budgetId} FOR UPDATE`;
+        await sleep(500);
+        await tx.$executeRaw`UPDATE "Budget" SET "status" = 'APPROVED', "approvedAt" = now() WHERE "id" = ${budgetId}`;
+      },
+      { timeout: 15_000, maxWait: 15_000 },
+    );
+
+    // T2: edita la base en paralelo. Con el lock del trigger espera a que T1 apruebe y
+    // entonces aborta; sin el fix, colaria la mutacion DESPUES de la aprobacion.
+    const mutateTx = sleep(100).then(() =>
+      prisma.budgetLine.update({ where: { id: lineId }, data: { baseAmount: 999_00n } }),
+    );
+
+    await approveTx;
+    await expect(mutateTx).rejects.toThrow();
+
+    const finalLine = await prisma.budgetLine.findUniqueOrThrow({ where: { id: lineId } });
+    expect(finalLine.baseAmount).toBe(BigInt(line.baseAmountCents));
+    const finalBudget = await prisma.budget.findUniqueOrThrow({ where: { id: budgetId } });
+    expect(finalBudget.status).toBe('APPROVED');
+  });
+
   it('permite una partida cero si el total del presupuesto es mayor que cero', async () => {
     const projectId = await createProject('ZERO');
     const cookie = await login(pmEmail);

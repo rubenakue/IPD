@@ -57,6 +57,18 @@ describe('budget summary', () => {
     expect(validation.errors.join(' ')).toContain('duplicado');
   });
 
+  it('agrupa el mismo capitulo aunque el codigo varie en mayusculas o espacios', () => {
+    const summary = summarizeBudgetLines([
+      { id: 'a', chapterCode: 'C01', chapterName: 'Cimentacion', code: '01.01', name: 'Excavacion', baseAmountCents: 100_00 },
+      { id: 'b', chapterCode: ' c01 ', chapterName: 'Cimentacion', code: '01.02', name: 'Losa', baseAmountCents: 50_00 },
+    ]);
+
+    expect(summary.chapters).toHaveLength(1);
+    expect(summary.chapters[0]).toEqual(
+      expect.objectContaining({ chapterCode: 'C01', subtotalBaseAmountCents: 150_00 }),
+    );
+  });
+
   it('detecta nombres inconsistentes para el mismo codigo de capitulo', () => {
     const conflict = findChapterNameConflict([
       { chapterCode: '01', chapterName: 'Cimentacion' },

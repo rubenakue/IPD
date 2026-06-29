@@ -17,17 +17,22 @@ export function summarizeBudgetLines(lines: readonly BudgetLineView[]): {
   chapters: BudgetChapterView[];
   totalBaseAmountCents: number;
 } {
+  // Agrupamos por la MISMA clave normalizada (trim+lowercase) que usa
+  // findChapterNameConflict, para que 'C01' y 'c01' sean el mismo capítulo en los dos
+  // sitios. Si agrupásemos por el código crudo, un capítulo escrito con distinta
+  // capitalización se partiría en dos grupos con subtotales separados.
   const chaptersByCode = new Map<string, BudgetChapterView>();
   let totalBaseAmountCents = 0;
 
   for (const line of lines) {
     totalBaseAmountCents += line.baseAmountCents;
-    const existing = chaptersByCode.get(line.chapterCode);
+    const key = normalizeCode(line.chapterCode);
+    const existing = chaptersByCode.get(key);
     if (existing) {
       existing.lines.push(line);
       existing.subtotalBaseAmountCents += line.baseAmountCents;
     } else {
-      chaptersByCode.set(line.chapterCode, {
+      chaptersByCode.set(key, {
         chapterCode: line.chapterCode,
         chapterName: line.chapterName,
         subtotalBaseAmountCents: line.baseAmountCents,

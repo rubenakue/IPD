@@ -41,6 +41,21 @@ const emptyLineForm: LineFormValues = {
   baseAmountEuros: 0,
 };
 
+// Validación compartida por el formulario de alta y el de edición: así el modal de edición
+// valida igual que el alta (antes no validaba) y un importe vacío no se envía como 0 silencioso.
+const lineValidation = {
+  chapterCode: (value: string) => (value.trim() ? null : 'Indica el codigo de capitulo.'),
+  chapterName: (value: string) => (value.trim() ? null : 'Indica el nombre de capitulo.'),
+  code: (value: string) => (value.trim() ? null : 'Indica el codigo de partida.'),
+  name: (value: string) => (value.trim() ? null : 'Indica el nombre de partida.'),
+  baseAmountEuros: (value: number | string) => {
+    const amount = Number(value);
+    if (value === '' || !Number.isFinite(amount)) return 'Indica un importe valido.';
+    if (amount < 0) return 'El importe no puede ser negativo.';
+    return null;
+  },
+};
+
 function formatEuros(cents: number): string {
   return (cents / 100).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
 }
@@ -90,7 +105,7 @@ function BudgetTable({
         {budget.chapters.map((chapter) => (
           <Table.Tbody key={chapter.chapterCode}>
             <Table.Tr bg="gray.0">
-              <Table.Td colSpan={canEdit ? 2 : 2}>
+              <Table.Td colSpan={2}>
                 <Text fw={700}>
                   {chapter.chapterCode} · {chapter.chapterName}
                 </Text>
@@ -150,17 +165,8 @@ export function ProjectBudgetPage() {
   const [editingLine, setEditingLine] = useState<BudgetLineView | null>(null);
   const [deletingLineId, setDeletingLineId] = useState<string | null>(null);
 
-  const addForm = useForm<LineFormValues>({
-    initialValues: emptyLineForm,
-    validate: {
-      chapterCode: (value) => (value.trim() ? null : 'Indica el codigo de capitulo.'),
-      chapterName: (value) => (value.trim() ? null : 'Indica el nombre de capitulo.'),
-      code: (value) => (value.trim() ? null : 'Indica el codigo de partida.'),
-      name: (value) => (value.trim() ? null : 'Indica el nombre de partida.'),
-    },
-  });
-
-  const editForm = useForm<LineFormValues>({ initialValues: emptyLineForm });
+  const addForm = useForm<LineFormValues>({ initialValues: emptyLineForm, validate: lineValidation });
+  const editForm = useForm<LineFormValues>({ initialValues: emptyLineForm, validate: lineValidation });
 
   if (isPending) return <LoadingState />;
   if (isError) return <ErrorState onRetry={() => void refetch()} />;

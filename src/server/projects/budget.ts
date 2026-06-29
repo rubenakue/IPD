@@ -2,6 +2,7 @@ import { BudgetStatus, Prisma } from '../../generated/prisma/client.ts';
 import type { BudgetLineInput, BudgetLineView, BudgetView, UpdateBudgetLineRequest } from '../../types/api.ts';
 import { findChapterNameConflict, summarizeBudgetLines, validateBudgetForApproval } from '../../lib/budget/summary.ts';
 import type { DbClient } from '../../lib/db/client.ts';
+import { safeRecordAuditEvent } from '../audit/record-audit-event.ts';
 import { withRlsContext, type RlsTransaction } from '../db/rls.ts';
 import { ApiError } from '../errors/api-error.ts';
 
@@ -248,7 +249,7 @@ export async function approveBudget(
   userId: string,
   projectId: string,
 ): Promise<BudgetView> {
-  return withRlsContext(prisma, { userId, projectId }, async (tx) => {
+  const view = await withRlsContext(prisma, { userId, projectId }, async (tx) => {
     const locked = await tx.$queryRaw<BudgetLockRow[]>`
       SELECT "id" FROM "Budget"
       WHERE "projectId" = ${projectId}
@@ -270,24 +271,27 @@ export async function approveBudget(
       });
     }
 
-    const approved = await tx.budget.update({
+    const approvedAt = new Date();
+    await tx.budget.update({
       where: { id: budget.id },
-      data: { status: BudgetStatus.APPROVED, approvedAt: new Date() },
+      data: { status: BudgetStatus.APPROVED, approvedAt },
     });
 
-    await tx.auditEvent.create({
-      data: {
-        action: 'budget.approved',
-        actorUserId: userId,
-        projectId,
-        entityType: 'Budget',
-        entityId: approved.id,
-        metadata: { totalBaseAmountCents: toBudgetView(budget).totalBaseAmountCents },
-      },
-    });
-
-    const view = await getBudgetView(tx, projectId);
-    if (!view) throw ApiError.notFound();
-    return view;
+    // Construimos la vista desde las líneas ya leídas (no releemos): el único cambio es el
+    // estado/fecha de aprobación; las partidas no se tocan al aprobar.
+    return toBudgetView({ ...budget, status: BudgetStatus.APPROVED, approvedAt });
   });
+
+  // Auditoría best-effort y fuera de la transacción, igual que en auth/create-project/agents:
+  // un fallo al auditar no debe revertir una aprobación ya validada y confirmada.
+  await safeRecordAuditEvent(prisma, {
+    action: 'budget.approved',
+    actorUserId: userId,
+    projectId,
+    entityType: 'Budget',
+    entityId: view.id,
+    metadata: { totalBaseAmountCents: view.totalBaseAmountCents },
+  });
+
+  return view;
 }
