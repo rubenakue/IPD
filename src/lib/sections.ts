@@ -9,7 +9,7 @@ export interface ProjectSection {
 
 export const PROJECT_SECTIONS: ProjectSection[] = [
   { key: 'dashboard', label: 'Panel de control', ready: true },
-  { key: 'budget', label: 'Presupuesto' },
+  { key: 'budget', label: 'Presupuesto', ready: true },
   { key: 'real-costs', label: 'Costes' },
   { key: 'frc', label: 'FRC' },
   { key: 'changes', label: 'Cambios' },

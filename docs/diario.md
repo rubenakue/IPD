@@ -119,6 +119,13 @@ Una entrada por sesión de trabajo. Breve y honesto.
 - **Cómo lo resolví / qué usé de Claude Code:** insertar Project y Agent PM con **`$executeRaw` sin RETURNING** (id `randomUUID`); el resto del ORM funciona en cuanto el PM ya es agente. Unicidad: comprobación previa con el cliente normal + respaldo P2010. Lecturas (listado, email→usuario) con cliente normal tras la autorización del middleware; escrituras de Agent bajo `withRlsContext`. Diagnóstico del RLS con script temporal + `psql`. Subagentes en paralelo para el issue #37 y la reducción de la spec. Verificación: `pnpm typecheck`/`lint` ✅, `pnpm test` **68/68** ✅ (5 archivos nuevos de test). Validación en navegador con el preview MCP.
 - **Estado del sprint:** **S12 completo — flujo A en el navegador. Hito H5 (Frontend shell) terminado** salvo merge. Deuda documentada: invitación de usuarios (issue #37 / spec 006); el #37 quedó en milestone H4 (cerrado) → reubicar.
 
+## 2026-06-29 (S13 - presupuesto objetivo, flujo B)
+
+- **Qué hice:** Implementado el flujo B: presupuesto objetivo manual por partidas, capítulos embebidos en `BudgetLine`, consulta agrupada por capítulos para cualquier agente, gestión PM-only en borrador y aprobación como línea base inmutable. Añadidos artefactos SDD de S13 (`plan.md`, `research.md`, `data-model.md`, `contracts/api.md`, `quickstart.md`), migración additiva con constraints/triggers, endpoints REST `GET/POST/PATCH/DELETE /budget...`, servicio transaccional bajo RLS, hooks TanStack Query y `ProjectBudgetPage` en el shell.
+- **Qué bloqueó:** No hubo bloqueo funcional. El único ajuste fue de test: el mismo importe aparece legítimamente como subtotal, línea y total, así que la aserción frontend debía esperar tres apariciones.
+- **Cómo lo resolví / qué usé de Claude Code:** Reutilicé los patrones de S12 (permisos `requireProjectPermission`, `withRlsContext`, Zod, tipos en `src/types/api.ts`). La aprobación toma lock del `Budget`, revalida reglas de dominio, actualiza `status/approvedAt` y registra `budget.approved` en la misma transacción. La BD bloquea reapertura y mutaciones de la base aprobada con triggers. Verificación: `pnpm typecheck`, `pnpm lint`, `pnpm test` **82/82**, `pnpm prisma migrate deploy` y `pnpm prisma migrate status`.
+- **Estado del sprint:** En camino. S13 queda implementado y validado en automático; pendiente validación manual en navegador si se quiere recorrer el quickstart.
+
 ## AAAA-MM-DD
 
 - **Horas trabajadas:**
