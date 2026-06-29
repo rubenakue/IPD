@@ -106,3 +106,49 @@ export interface ProjectAgentsResponse {
   /** `true` cuando `shareSum === 100` (gate de configuración completa). */
   isComplete: boolean;
 }
+
+// -- S13: presupuesto objetivo (flujo B) --
+// Importes en CENTIMOS enteros. La UI convierte desde/hacia euros.
+
+export type BudgetStatusCode = 'DRAFT' | 'APPROVED';
+
+export interface BudgetLineView {
+  id: string;
+  chapterCode: string;
+  chapterName: string;
+  code: string;
+  name: string;
+  baseAmountCents: number;
+}
+
+export interface BudgetChapterView {
+  chapterCode: string;
+  chapterName: string;
+  subtotalBaseAmountCents: number;
+  lines: BudgetLineView[];
+}
+
+export interface BudgetView {
+  id: string;
+  projectId: string;
+  status: BudgetStatusCode;
+  approvedAt: string | null;
+  createdAt: string;
+  totalBaseAmountCents: number;
+  chapters: BudgetChapterView[];
+}
+
+export interface ProjectBudgetResponse {
+  budget: BudgetView | null;
+  canManageBudget: boolean;
+}
+
+export interface BudgetLineInput {
+  chapterCode: string;
+  chapterName: string;
+  code: string;
+  name: string;
+  baseAmountCents: number;
+}
+
+export type UpdateBudgetLineRequest = Partial<BudgetLineInput>;

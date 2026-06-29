@@ -6,8 +6,16 @@ import { withRlsContext } from '../db/rls.ts';
 import { ApiError } from '../errors/api-error.ts';
 import { requireAuth } from '../middlewares/require-auth.ts';
 import { validate } from '../middlewares/validate.ts';
+import { hasPermission } from '../permissions/matrix.ts';
 import { requireProjectPermission } from '../permissions/project-agent.ts';
 import { addAgent, listProjectAgents, updateAgent } from '../projects/agents.ts';
+import {
+  addBudgetLine,
+  approveBudget,
+  deleteBudgetLine,
+  getProjectBudget,
+  updateBudgetLine,
+} from '../projects/budget.ts';
 import { createProject } from '../projects/create-project.ts';
 import { getPromoterPrivateCosts } from '../projects/promoter-private-costs.ts';
 
@@ -46,6 +54,19 @@ const updateAgentSchema = z
     message: 'Indica al menos un campo a actualizar.',
   });
 
+const budgetLineSchema = z.object({
+  chapterCode: z.string().trim().min(1),
+  chapterName: z.string().trim().min(1),
+  code: z.string().trim().min(1),
+  name: z.string().trim().min(1),
+  baseAmountCents: z.number().int().min(0),
+});
+
+const updateBudgetLineSchema = budgetLineSchema.partial().refine(
+  (value) => Object.keys(value).length > 0,
+  { message: 'Indica al menos un campo a actualizar.' },
+);
+
 /**
  * `true` si el error es una violación de unicidad: P2002 del ORM o el SQLSTATE 23505
  * de Postgres (que es como aflora desde un `$executeRaw`, usado al crear el proyecto).
@@ -77,6 +98,86 @@ export function createProjectsRouter(prisma: DbClient): Router {
       throw err;
     }
   });
+
+  router.get(
+    '/projects/:projectId/budget',
+    requireAuth,
+    requireProjectPermission(prisma, 'project.view'),
+    async (req, res) => {
+      const userId = req.session.userId;
+      const { projectId } = req.params;
+      if (typeof userId !== 'string') throw ApiError.unauthenticated();
+      if (typeof projectId !== 'string' || projectId.length === 0) throw ApiError.notFound();
+      if (!req.projectAgent) throw ApiError.notFound();
+
+      res.json({
+        budget: await getProjectBudget(prisma, userId, projectId),
+        canManageBudget: hasPermission(req.projectAgent.role, 'budget.upload'),
+      });
+    },
+  );
+
+  router.post(
+    '/projects/:projectId/budget/lines',
+    requireAuth,
+    requireProjectPermission(prisma, 'budget.upload'),
+    validate({ body: budgetLineSchema }),
+    async (req, res) => {
+      const userId = req.session.userId;
+      const { projectId } = req.params;
+      if (typeof userId !== 'string') throw ApiError.unauthenticated();
+      if (typeof projectId !== 'string' || projectId.length === 0) throw ApiError.notFound();
+
+      const input = budgetLineSchema.parse(req.body);
+      res.status(201).json(await addBudgetLine(prisma, userId, projectId, input));
+    },
+  );
+
+  router.patch(
+    '/projects/:projectId/budget/lines/:lineId',
+    requireAuth,
+    requireProjectPermission(prisma, 'budget.upload'),
+    validate({ body: updateBudgetLineSchema }),
+    async (req, res) => {
+      const userId = req.session.userId;
+      const { projectId, lineId } = req.params;
+      if (typeof userId !== 'string') throw ApiError.unauthenticated();
+      if (typeof projectId !== 'string' || projectId.length === 0) throw ApiError.notFound();
+      if (typeof lineId !== 'string' || lineId.length === 0) throw ApiError.notFound();
+
+      const input = updateBudgetLineSchema.parse(req.body);
+      res.json(await updateBudgetLine(prisma, userId, projectId, lineId, input));
+    },
+  );
+
+  router.delete(
+    '/projects/:projectId/budget/lines/:lineId',
+    requireAuth,
+    requireProjectPermission(prisma, 'budget.upload'),
+    async (req, res) => {
+      const userId = req.session.userId;
+      const { projectId, lineId } = req.params;
+      if (typeof userId !== 'string') throw ApiError.unauthenticated();
+      if (typeof projectId !== 'string' || projectId.length === 0) throw ApiError.notFound();
+      if (typeof lineId !== 'string' || lineId.length === 0) throw ApiError.notFound();
+
+      res.json(await deleteBudgetLine(prisma, userId, projectId, lineId));
+    },
+  );
+
+  router.post(
+    '/projects/:projectId/budget/approve',
+    requireAuth,
+    requireProjectPermission(prisma, 'budget.upload'),
+    async (req, res) => {
+      const userId = req.session.userId;
+      const { projectId } = req.params;
+      if (typeof userId !== 'string') throw ApiError.unauthenticated();
+      if (typeof projectId !== 'string' || projectId.length === 0) throw ApiError.notFound();
+
+      res.json(await approveBudget(prisma, userId, projectId));
+    },
+  );
 
   router.get(
     '/projects/:projectId/promoter-private-costs',

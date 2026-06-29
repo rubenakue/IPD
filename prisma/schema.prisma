@@ -164,6 +164,8 @@ model Budget {
 model BudgetLine {
   id                  String    @id @default(cuid())
   budgetId            String
+  chapterCode         String
+  chapterName         String
   code                String
   name                String
   baseAmount          BigInt // céntimos
