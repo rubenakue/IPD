@@ -8,6 +8,7 @@ export function useApproveBudget(projectId: string) {
     mutationFn: () => api.post<BudgetView>(`/projects/${projectId}/budget/approve`),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['project-budget', projectId] });
+      void queryClient.invalidateQueries({ queryKey: ['project-economics', projectId] });
     },
   });
 }

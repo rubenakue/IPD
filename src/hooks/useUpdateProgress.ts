@@ -13,6 +13,7 @@ export function useUpdateProgress(projectId: string, lineId: string) {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['budget-line', projectId, lineId] });
       void queryClient.invalidateQueries({ queryKey: ['project-budget', projectId] });
+      void queryClient.invalidateQueries({ queryKey: ['project-economics', projectId] });
     },
   });
 }

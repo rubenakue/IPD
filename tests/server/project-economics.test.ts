@@ -1,7 +1,13 @@
 import type { Server } from 'node:http';
 import argon2 from 'argon2';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { AgentRole, BudgetStatus, RealCostType } from '../../src/generated/prisma/client.ts';
+import {
+  AgentRole,
+  BudgetStatus,
+  ChangeStatus,
+  ChangeType,
+  RealCostType,
+} from '../../src/generated/prisma/client.ts';
 import type { DbClient } from '../../src/lib/db/client.ts';
 import type { SessionStore } from '../../src/server/middlewares/session.ts';
 import type { ProjectEconomicsResponse } from '../../src/types/api.ts';
@@ -167,6 +173,45 @@ describe('derivados economicos y alertas (S15)', () => {
       expect(line.varianceCents).toBe(0);
       expect(line.alertLevel).toBe('normal');
     }
+  });
+
+  it('solo suma ajustes de cambios aprobados al presupuesto vigente', async () => {
+    const { projectId, l1Id } = await createScenario('ADJUSTMENTS');
+    await prisma.change.create({
+      data: {
+        projectId,
+        type: ChangeType.COST_IMPACT,
+        status: ChangeStatus.APPROVED,
+        title: 'Ajuste aprobado',
+        adjustments: { create: [{ budgetLineId: l1Id, delta: 200_00n }] },
+      },
+    });
+    await prisma.change.create({
+      data: {
+        projectId,
+        type: ChangeType.COST_IMPACT,
+        status: ChangeStatus.PROPOSED,
+        title: 'Ajuste propuesto',
+        adjustments: { create: [{ budgetLineId: l1Id, delta: 700_00n }] },
+      },
+    });
+    await prisma.change.create({
+      data: {
+        projectId,
+        type: ChangeType.COST_IMPACT,
+        status: ChangeStatus.REJECTED,
+        title: 'Ajuste rechazado',
+        adjustments: { create: [{ budgetLineId: l1Id, delta: 300_00n }] },
+      },
+    });
+
+    const cookie = await login(constructorEmail);
+    const body = (await (await getEconomics(projectId, cookie)).json()) as ProjectEconomicsResponse;
+    const l1 = body.chapters[0].lines.find((line) => line.code === '01.01')!;
+
+    expect(l1.adjustmentsCents).toBe(200_00);
+    expect(l1.currentBudgetCents).toBe(1_200_00);
+    expect(body.totals.currentBudgetCents).toBe(2_200_00);
   });
 
   it('un presupuesto en borrador no muestra derivados', async () => {

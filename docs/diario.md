@@ -142,6 +142,13 @@ Una entrada por sesión de trabajo. Breve y honesto.
 - **Cómo lo resolví / qué usé de Claude Code:** añadí al mock de ese test la respuesta económica. Reutilicé `accumulatedCostCents` (S14) y `normalizeBudgetLineCode` (S13) para agrupar capítulos; endpoint de derivados **separado** del `GET /budget` de S13 (no rompe su contrato). Verificación: `pnpm typecheck` ✅, `pnpm lint` ✅, `pnpm test` **120/120** ✅.
 - **Estado del sprint:** En camino. S15 implementado y validado en automático; **pendiente la validación manual en navegador** (T016) de la tabla económica y el override.
 
+## 2026-06-30 (S15 review fixes + hardening previo a merge)
+
+- **Que hice:** Arreglados los dos hallazgos de review de S15: las mutaciones que cambian fuentes economicas invalidan tambien `project-economics`, y el vigente solo suma ajustes de cambios `APPROVED`. En el barrido adicional de `main`, endureci la integridad de `ChangeAdjustment`: un ajuste no puede enlazar un `Change` de un proyecto con una `BudgetLine` de otro, y la lectura defensiva de economia tambien filtra por `change.projectId`. Ademas, los eventos de auditoria con `projectId` se insertan bajo contexto RLS para no depender de un usuario de BD superuser.
+- **Que bloqueo:** El primer fixture de test intentaba crear una partida dentro de un presupuesto ya aprobado; el trigger de linea base lo rechazo correctamente. Ajuste el setup para crear la partida en borrador y aprobar despues.
+- **Como lo resolvi / que use de Claude Code:** migracion additiva `20260630123000_change_adjustment_project_integrity`, test RLS directo en `permissions.test.ts`, test de ajustes aprobados en `project-economics.test.ts` y regresion de cache en `project-economics.test.tsx`. Verificacion: `pnpm typecheck`, `pnpm lint`, `pnpm test` **123/123**, `pnpm prisma migrate deploy` y `pnpm prisma migrate status`.
+- **Estado del sprint:** En camino. Rama S15 endurecida para merge; pendiente solo revision humana/merge del PR.
+
 ## AAAA-MM-DD
 
 - **Horas trabajadas:**

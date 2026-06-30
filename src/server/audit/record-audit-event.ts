@@ -1,5 +1,6 @@
 import type { Prisma } from '../../generated/prisma/client.ts';
 import type { DbClient } from '../../lib/db/client.ts';
+import { withRlsContext } from '../db/rls.ts';
 
 export interface AuditEventInput {
   action: string;
@@ -14,6 +15,22 @@ export async function recordAuditEvent(
   prisma: DbClient,
   input: AuditEventInput,
 ): Promise<void> {
+  if (input.projectId && input.actorUserId) {
+    await withRlsContext(prisma, { userId: input.actorUserId, projectId: input.projectId }, async (tx) => {
+      await tx.auditEvent.create({
+        data: {
+          action: input.action,
+          actorUserId: input.actorUserId,
+          entityType: input.entityType,
+          entityId: input.entityId,
+          projectId: input.projectId ?? null,
+          metadata: input.metadata,
+        },
+      });
+    });
+    return;
+  }
+
   await prisma.auditEvent.create({
     data: {
       action: input.action,

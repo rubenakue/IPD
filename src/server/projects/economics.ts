@@ -1,4 +1,4 @@
-import { BudgetStatus } from '../../generated/prisma/client.ts';
+import { BudgetStatus, ChangeStatus } from '../../generated/prisma/client.ts';
 import { deriveBudgetLine, summarizeEconomics } from '../../lib/budget/derived.ts';
 import { accumulatedCostCents } from '../../lib/budget/real-costs.ts';
 import { normalizeBudgetLineCode } from '../../lib/budget/summary.ts';
@@ -98,7 +98,10 @@ async function loadLines(tx: RlsTransaction, projectId: string): Promise<{ statu
           progressPercent: true,
           manualForecast: true,
           realCosts: { select: { amount: true } },
-          adjustments: { select: { delta: true } },
+          adjustments: {
+            where: { change: { projectId, status: ChangeStatus.APPROVED } },
+            select: { delta: true },
+          },
         },
       },
     },

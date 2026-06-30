@@ -1,11 +1,16 @@
 // @vitest-environment jsdom
 import { MantineProvider } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ProjectBudgetPage } from '../../src/pages/ProjectBudgetPage.tsx';
-import type { ProjectBudgetResponse, ProjectEconomicsResponse } from '../../src/types/api.ts';
+import type {
+  BudgetLineDetailView,
+  ProjectBudgetResponse,
+  ProjectEconomicsResponse,
+} from '../../src/types/api.ts';
 
 const budgetResponse: ProjectBudgetResponse = {
   canManageBudget: true,
@@ -56,6 +61,47 @@ const economicsResponse: ProjectEconomicsResponse = {
   },
 };
 
+const economicsAfterCostResponse: ProjectEconomicsResponse = {
+  ...economicsResponse,
+  chapters: [
+    {
+      ...economicsResponse.chapters[0],
+      accumulatedCostCents: 2_000_00,
+      forecastCents: 2_500_00,
+      varianceCents: -500_00,
+      variancePercent: -25,
+      lines: [
+        {
+          ...economicsResponse.chapters[0].lines[0],
+          accumulatedCostCents: 800_00,
+        },
+        economicsResponse.chapters[0].lines[1],
+      ],
+    },
+  ],
+  totals: {
+    currentBudgetCents: 2_000_00,
+    accumulatedCostCents: 2_000_00,
+    forecastCents: 2_500_00,
+    varianceCents: -500_00,
+    variancePercent: -25,
+    alertLevel: 'alert',
+  },
+};
+
+const detail: BudgetLineDetailView = {
+  id: 'l1',
+  chapterCode: '01',
+  chapterName: 'Cimentacion',
+  code: '01.01',
+  name: 'A',
+  baseAmountCents: 1_000_00,
+  progressPercent: 40,
+  progressUpdatedAt: null,
+  accumulatedCostCents: 500_00,
+  costs: [],
+};
+
 function jsonResponse(body: unknown): Response {
   return new Response(JSON.stringify(body), {
     status: 200,
@@ -64,16 +110,26 @@ function jsonResponse(body: unknown): Response {
 }
 
 function renderPage() {
+  let economicsFetchCount = 0;
+  const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+    const urlStr = typeof input === 'string' ? input : input.toString();
+    const method = init?.method ?? 'GET';
+    if (urlStr.includes('/budget/economics')) {
+      economicsFetchCount += 1;
+      return jsonResponse(economicsFetchCount === 1 ? economicsResponse : economicsAfterCostResponse);
+    }
+    if (urlStr.includes('/budget/lines/l1/costs') && method === 'POST') {
+      return jsonResponse({ ...detail, accumulatedCostCents: 800_00 });
+    }
+    if (urlStr.includes('/budget/lines/l1')) return jsonResponse(detail);
+    return jsonResponse(budgetResponse);
+  });
   vi.stubGlobal(
     'fetch',
-    vi.fn(async (input: RequestInfo | URL) => {
-      const urlStr = typeof input === 'string' ? input : input.toString();
-      if (urlStr.includes('/budget/economics')) return jsonResponse(economicsResponse);
-      return jsonResponse(budgetResponse);
-    }),
+    fetchMock,
   );
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return render(
+  const result = render(
     <MantineProvider>
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={['/projects/p1/budget']}>
@@ -84,6 +140,7 @@ function renderPage() {
       </QueryClientProvider>
     </MantineProvider>,
   );
+  return { ...result, fetchMock };
 }
 
 afterEach(() => {
@@ -101,5 +158,24 @@ describe('ProjectBudgetPage — tabla económica (S15)', () => {
     expect(screen.getAllByText('-10.0%').length).toBeGreaterThan(0);
     // El control de previsión manual aparece para quien puede actualizarla.
     expect(screen.getAllByRole('button', { name: 'Prevision' }).length).toBe(2);
+  });
+
+  it('refresca la tabla económica al imputar un coste desde el detalle', async () => {
+    const { fetchMock } = renderPage();
+    const user = userEvent.setup();
+
+    await user.click((await screen.findAllByRole('button', { name: 'Detalle' }))[0]);
+    await screen.findByText(/Coste real acumulado/);
+    await user.type(screen.getByLabelText('Importe (EUR)'), '300');
+    await user.type(screen.getByLabelText('Descripcion'), 'Coste adicional');
+    await user.click(screen.getByRole('button', { name: 'Imputar coste' }));
+
+    await waitFor(() => {
+      const economicsCalls = fetchMock.mock.calls.filter(([input]) =>
+        input.toString().includes('/budget/economics'),
+      );
+      expect(economicsCalls.length).toBeGreaterThanOrEqual(2);
+    });
+    expect((await screen.findAllByText('-25.0%')).length).toBeGreaterThan(0);
   });
 });
