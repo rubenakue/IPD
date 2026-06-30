@@ -207,3 +207,49 @@ export interface ReverseRealCostRequest {
 export interface UpdateProgressRequest {
   progressPercent: number;
 }
+
+// -- S15: derivados economicos y alertas de desviacion --
+// Todo en CENTIMOS. Salvo manualForecastCents (almacenado), TODO es derivado (no se persiste).
+
+export type AlertLevel = 'normal' | 'warning' | 'alert';
+
+/** Magnitudes agregables de una fila/grupo económico (todas derivadas). */
+export interface EconomicsAmounts {
+  currentBudgetCents: number;
+  accumulatedCostCents: number;
+  forecastCents: number;
+  varianceCents: number;
+  /** Desviación % sobre el vigente; null si el vigente es 0. */
+  variancePercent: number | null;
+  alertLevel: AlertLevel;
+}
+
+export interface EconomicsLineView extends EconomicsAmounts {
+  id: string;
+  code: string;
+  name: string;
+  baseAmountCents: number;
+  adjustmentsCents: number;
+  progressPercent: number | null;
+  /** Previsión manual almacenada (céntimos) o null si rige la regla por defecto. */
+  manualForecastCents: number | null;
+}
+
+export interface EconomicsChapterView extends EconomicsAmounts {
+  chapterCode: string;
+  chapterName: string;
+  lines: EconomicsLineView[];
+}
+
+export interface ProjectEconomicsResponse {
+  budgetStatus: BudgetStatusCode | null;
+  /** `forecast.update` (constructor + PM): fijar/eliminar la previsión manual. */
+  canUpdateForecast: boolean;
+  chapters: EconomicsChapterView[];
+  totals: EconomicsAmounts;
+}
+
+export interface SetForecastRequest {
+  /** Céntimos > 0 para fijar la previsión manual, o null para volver al default. */
+  manualForecastCents: number | null;
+}

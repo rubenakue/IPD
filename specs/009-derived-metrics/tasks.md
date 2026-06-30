@@ -12,7 +12,7 @@ Dinero en céntimos. **Sin migración** (modelo ya completo). La lógica pura se
 
 ## Phase 1 — Setup (contratos compartidos)
 
-- [ ] T001 [P] Añadir a `src/types/api.ts`: `AlertLevel = 'normal' | 'warning' | 'alert'`;
+- [x] T001 [P] Añadir a `src/types/api.ts`: `AlertLevel = 'normal' | 'warning' | 'alert'`;
   `EconomicsLineView` (id, code, name, baseAmountCents, adjustmentsCents, currentBudgetCents,
   accumulatedCostCents, progressPercent, manualForecastCents, forecastCents, varianceCents,
   variancePercent (number|null), alertLevel); `EconomicsChapterView` (chapterCode/Name + mismos
@@ -23,12 +23,12 @@ Dinero en céntimos. **Sin migración** (modelo ya completo). La lógica pura se
 
 ## Phase 2 — Foundational (bloquea las US) — lógica pura (TDD)
 
-- [ ] T002 [P] Escribir `tests/budget-derived.test.ts` (rojo): `deriveBudgetLine` — vigente =
+- [x] T002 [P] Escribir `tests/budget-derived.test.ts` (rojo): `deriveBudgetLine` — vigente =
   base + ajustes; previsión default = max(coste, vigente) y manual prioritaria; desviación € =
   vigente − previsión y % sobre vigente; `variancePercent` null y `alertLevel` normal cuando
   vigente = 0; umbrales (4% normal, 5% warning, 10% alert); agregación de capítulo/total que
   **recalcula** el % sobre el vigente agregado (no promedia).
-- [ ] T003 Implementar `src/lib/budget/derived.ts` (verde): `deriveBudgetLine(input)` y
+- [x] T003 Implementar `src/lib/budget/derived.ts` (verde): `deriveBudgetLine(input)` y
   `summarizeEconomics(lines)` (agregados por capítulo y total), con constantes
   `WARNING_PERCENT = 5` y `ALERT_PERCENT = 10`. Sin I/O. Reutiliza `accumulatedCostCents` (S14)
   donde aplique.
@@ -41,26 +41,26 @@ Dinero en céntimos. **Sin migración** (modelo ya completo). La lógica pura se
 alertas. **Test independiente**: con costes conocidos, los derivados y subtotales cuadran y la
 partida en sobrecoste se resalta.
 
-- [ ] T004 [US1] Crear `src/server/projects/economics.ts` con `getProjectEconomics(prisma,
+- [x] T004 [US1] Crear `src/server/projects/economics.ts` con `getProjectEconomics(prisma,
   userId, projectId)`: bajo `withRlsContext`, carga el presupuesto + líneas con sus `realCosts`
   (acumulado), `adjustments` (Σ delta) y `manualForecast`; arma `ProjectEconomicsResponse` con
   `deriveBudgetLine` + `summarizeEconomics`. Si no hay presupuesto o está en DRAFT → `chapters:
   []`, `totals` en cero y `budgetStatus` correspondiente.
-- [ ] T005 [US1] En `src/server/routes/projects.ts`: `GET /projects/:projectId/budget/economics`
+- [x] T005 [US1] En `src/server/routes/projects.ts`: `GET /projects/:projectId/budget/economics`
   (o `/economics`) con `requireProjectPermission 'project.view'`; incluye `canUpdateForecast =
   hasPermission(role, 'forecast.update')`.
-- [ ] T006 [P] [US1] Hook `src/hooks/useProjectEconomics.ts` (query `['project-economics',
+- [x] T006 [P] [US1] Hook `src/hooks/useProjectEconomics.ts` (query `['project-economics',
   projectId]`).
-- [ ] T007 [US1] En `src/pages/ProjectBudgetPage.tsx`: cuando el presupuesto está **APPROVED**,
+- [x] T007 [US1] En `src/pages/ProjectBudgetPage.tsx`: cuando el presupuesto está **APPROVED**,
   mostrar la **tabla económica** (columnas: base, ajustes, vigente, coste real, avance %,
   previsión, desviación €, desviación %) agrupada por capítulos con subtotales y total, y
   **resaltar** las filas según `alertLevel` (warning/alert). En DRAFT, mantener la tabla de
   carga de S13.
-- [ ] T008 [US1] `tests/server/project-economics.test.ts` (integración): cuadre de vigente,
+- [x] T008 [US1] `tests/server/project-economics.test.ts` (integración): cuadre de vigente,
   previsión y desviación; partida con coste > vigente → previsión = coste, desviación negativa,
   alerta; partida sin costes → previsión = vigente, desviación 0; subtotales/total cuadran;
   no-agente → `NOT_FOUND`; presupuesto en DRAFT → `chapters` vacío.
-- [ ] T009 [P] [US1] `tests/frontend/project-economics.test.tsx`: render de la tabla con
+- [x] T009 [P] [US1] `tests/frontend/project-economics.test.tsx`: render de la tabla con
   derivados y una fila resaltada por alerta.
 
 **Checkpoint US1**: tabla económica completa con alertas (MVP entregable).
@@ -73,19 +73,19 @@ partida en sobrecoste se resalta.
 independiente**: fijar manual > default cambia previsión/desviación/alerta; eliminar vuelve al
 default.
 
-- [ ] T010 [US2] En `src/server/projects/economics.ts`, `setLineForecast(prisma, userId,
+- [x] T010 [US2] En `src/server/projects/economics.ts`, `setLineForecast(prisma, userId,
   projectId, lineId, manualForecastCents | null)`: valida presupuesto **APPROVED** y que la
   partida es del proyecto; persiste `manualForecast` bajo `withRlsContext`; `safeRecordAuditEvent`
   `forecast.updated`. Devuelve la vista económica actualizada.
-- [ ] T011 [US2] En `src/server/routes/projects.ts`: `PATCH .../budget/lines/:lineId/forecast`
+- [x] T011 [US2] En `src/server/routes/projects.ts`: `PATCH .../budget/lines/:lineId/forecast`
   (`requireProjectPermission 'forecast.update'`) con Zod (`manualForecastCents` int positivo
   **o** null).
-- [ ] T012 [P] [US2] Hook `src/hooks/useSetForecast.ts` (invalida `['project-economics',
+- [x] T012 [P] [US2] Hook `src/hooks/useSetForecast.ts` (invalida `['project-economics',
   projectId]`).
-- [ ] T013 [US2] En la tabla económica (`ProjectBudgetPage.tsx`): por fila, un control "Previsión"
+- [x] T013 [US2] En la tabla económica (`ProjectBudgetPage.tsx`): por fila, un control "Previsión"
   (visible para `canUpdateForecast`) que abre un modal para fijar la previsión manual (> 0) o
   **limpiarla** (volver al default).
-- [ ] T014 [US2] Tests en `tests/server/project-economics.test.ts`: fijar manual recalcula
+- [x] T014 [US2] Tests en `tests/server/project-economics.test.ts`: fijar manual recalcula
   previsión/desviación/alerta; eliminar (null) vuelve al default; valor ≤ 0 → `VALIDATION_ERROR`;
   rol sin permiso (observador) → `FORBIDDEN`; presupuesto no aprobado → `DOMAIN_ERROR`; auditoría
   `forecast.updated`.
@@ -96,11 +96,11 @@ default.
 
 ## Phase 5 — Polish & cross-cutting
 
-- [ ] T015 [P] Sin `console.log` ni código muerto; `pnpm typecheck` + `pnpm lint` + `pnpm test`
+- [x] T015 [P] Sin `console.log` ni código muerto; `pnpm typecheck` + `pnpm lint` + `pnpm test`
   en verde.
-- [ ] T016 Validar en navegador la tabla económica y el override según `quickstart.md` (proyecto
+- [x] T016 Validar en navegador la tabla económica y el override según `quickstart.md` (proyecto
   aprobado con costes), capturar evidencia.
-- [ ] T017 [P] Anotar la sesión S15 en `docs/diario.md`.
+- [x] T017 [P] Anotar la sesión S15 en `docs/diario.md`.
 
 ---
 

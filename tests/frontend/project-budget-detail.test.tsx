@@ -6,7 +6,11 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ProjectBudgetPage } from '../../src/pages/ProjectBudgetPage.tsx';
-import type { BudgetLineDetailView, ProjectBudgetResponse } from '../../src/types/api.ts';
+import type {
+  BudgetLineDetailView,
+  ProjectBudgetResponse,
+  ProjectEconomicsResponse,
+} from '../../src/types/api.ts';
 
 const budgetResponse: ProjectBudgetResponse = {
   canManageBudget: true,
@@ -64,6 +68,37 @@ const detail: BudgetLineDetailView = {
   ],
 };
 
+// Con el presupuesto APROBADO, la página muestra la tabla económica (S15), que se nutre de
+// GET /budget/economics. El botón "Detalle" de la fila l1 abre el modal de detalle.
+const economicsResponse: ProjectEconomicsResponse = {
+  budgetStatus: 'APPROVED',
+  canUpdateForecast: false,
+  chapters: [
+    {
+      chapterCode: '01',
+      chapterName: 'Cimentacion',
+      currentBudgetCents: 1_000_00,
+      accumulatedCostCents: 150_00,
+      forecastCents: 1_000_00,
+      varianceCents: 0,
+      variancePercent: 0,
+      alertLevel: 'normal',
+      lines: [
+        {
+          id: 'l1', code: '01.01', name: 'Excavacion', baseAmountCents: 1_000_00, adjustmentsCents: 0,
+          progressPercent: 40, manualForecastCents: null,
+          currentBudgetCents: 1_000_00, accumulatedCostCents: 150_00, forecastCents: 1_000_00,
+          varianceCents: 0, variancePercent: 0, alertLevel: 'normal',
+        },
+      ],
+    },
+  ],
+  totals: {
+    currentBudgetCents: 1_000_00, accumulatedCostCents: 150_00, forecastCents: 1_000_00,
+    varianceCents: 0, variancePercent: 0, alertLevel: 'normal',
+  },
+};
+
 function jsonResponse(body: unknown): Response {
   return new Response(JSON.stringify(body), {
     status: 200,
@@ -77,6 +112,7 @@ function renderPage() {
     vi.fn(async (input: RequestInfo | URL) => {
       const urlStr = typeof input === 'string' ? input : input.toString();
       if (urlStr.includes('/budget/lines/l1')) return jsonResponse(detail);
+      if (urlStr.includes('/budget/economics')) return jsonResponse(economicsResponse);
       return jsonResponse(budgetResponse);
     }),
   );
