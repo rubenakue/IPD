@@ -9,7 +9,7 @@ import type {
   UpdateProgressRequest,
 } from '../../types/api.ts';
 import { safeRecordAuditEvent } from '../audit/record-audit-event.ts';
-import { withRlsContext } from '../db/rls.ts';
+import { withRlsContext, type RlsTransaction } from '../db/rls.ts';
 import { ApiError } from '../errors/api-error.ts';
 
 interface RealCostRow {
@@ -70,17 +70,12 @@ function toDetailView(line: LineWithCostsRow): BudgetLineDetailView {
   };
 }
 
-/**
- * Carga la partida (validando que es del proyecto) con sus asientos y avance. Lectura con el
- * cliente normal tras la autorización del middleware (`project.view`), porque incluye `User`
- * (sin RLS); el aislamiento por proyecto lo da el filtro `budget.projectId`.
- */
 async function loadLineOrThrow(
-  prisma: DbClient,
+  tx: RlsTransaction,
   projectId: string,
   lineId: string,
 ): Promise<LineWithCostsRow> {
-  const line = await prisma.budgetLine.findFirst({
+  const line = await tx.budgetLine.findFirst({
     where: { id: lineId, budget: { projectId } },
     select: {
       id: true,
@@ -120,10 +115,13 @@ function assertApproved(status: BudgetStatus): void {
 
 export async function getBudgetLineDetail(
   prisma: DbClient,
+  userId: string,
   projectId: string,
   lineId: string,
 ): Promise<BudgetLineDetailView> {
-  return toDetailView(await loadLineOrThrow(prisma, projectId, lineId));
+  return withRlsContext(prisma, { userId, projectId }, async (tx) =>
+    toDetailView(await loadLineOrThrow(tx, projectId, lineId)),
+  );
 }
 
 /** Imputa un coste real (asiento NORMAL) a una partida de un presupuesto aprobado. */
@@ -134,11 +132,11 @@ export async function addRealCost(
   lineId: string,
   input: AddRealCostRequest,
 ): Promise<BudgetLineDetailView> {
-  const line = await loadLineOrThrow(prisma, projectId, lineId);
-  assertApproved(line.budget.status);
+  const result = await withRlsContext(prisma, { userId, projectId }, async (tx) => {
+    const line = await loadLineOrThrow(tx, projectId, lineId);
+    assertApproved(line.budget.status);
 
-  const created = await withRlsContext(prisma, { userId, projectId }, (tx) =>
-    tx.realCost.create({
+    const created = await tx.realCost.create({
       data: {
         budgetLineId: lineId,
         amount: BigInt(input.amountCents),
@@ -147,19 +145,20 @@ export async function addRealCost(
         incurredOn: new Date(input.incurredOn),
         recordedById: userId,
       },
-    }),
-  );
+    });
+    return { createdId: created.id, view: toDetailView(await loadLineOrThrow(tx, projectId, lineId)) };
+  });
 
   await safeRecordAuditEvent(prisma, {
     action: 'realCost.created',
     actorUserId: userId,
     projectId,
     entityType: 'RealCost',
-    entityId: created.id,
+    entityId: result.createdId,
     metadata: { amountCents: input.amountCents },
   });
 
-  return getBudgetLineDetail(prisma, projectId, lineId);
+  return result.view;
 }
 
 /** Registra el avance físico (0-100) de una partida de un presupuesto aprobado. */
@@ -170,21 +169,22 @@ export async function updateProgress(
   lineId: string,
   input: UpdateProgressRequest,
 ): Promise<BudgetLineDetailView> {
-  const line = await loadLineOrThrow(prisma, projectId, lineId);
-  assertApproved(line.budget.status);
+  const view = await withRlsContext(prisma, { userId, projectId }, async (tx) => {
+    const line = await loadLineOrThrow(tx, projectId, lineId);
+    assertApproved(line.budget.status);
 
-  // Solo toca progressPercent/progressUpdated*: el trigger de inmutabilidad de la base
-  // (S13) vigila los campos base de la partida, no estos, así que no se dispara.
-  await withRlsContext(prisma, { userId, projectId }, (tx) =>
-    tx.budgetLine.update({
+    // Solo toca progressPercent/progressUpdated*: el trigger de inmutabilidad de la base
+    // (S13) vigila los campos base de la partida, no estos, así que no se dispara.
+    await tx.budgetLine.update({
       where: { id: lineId },
       data: {
         progressPercent: input.progressPercent,
         progressUpdatedById: userId,
         progressUpdatedAt: new Date(),
       },
-    }),
-  );
+    });
+    return toDetailView(await loadLineOrThrow(tx, projectId, lineId));
+  });
 
   await safeRecordAuditEvent(prisma, {
     action: 'progress.updated',
@@ -195,7 +195,7 @@ export async function updateProgress(
     metadata: { progressPercent: input.progressPercent },
   });
 
-  return getBudgetLineDetail(prisma, projectId, lineId);
+  return view;
 }
 
 interface OriginalCostRow {
@@ -215,29 +215,29 @@ export async function reverseRealCost(
   costId: string,
   input: ReverseRealCostRequest,
 ): Promise<BudgetLineDetailView> {
-  const original: OriginalCostRow | null = await prisma.realCost.findFirst({
-    where: { id: costId, budgetLine: { budget: { projectId } } },
-    select: {
-      id: true,
-      amount: true,
-      type: true,
-      budgetLineId: true,
-      budgetLine: { select: { budget: { select: { status: true } } } },
-      reversals: { select: { id: true }, take: 1 },
-    },
-  });
-  if (!original) throw ApiError.notFound('Coste no encontrado en el proyecto.');
-  assertApproved(original.budgetLine.budget.status);
-  if (original.type !== RealCostType.NORMAL) {
-    throw new ApiError('CONFLICT', 'No se puede anular un contra-asiento.');
-  }
-  if (original.reversals.length > 0) {
-    throw new ApiError('CONFLICT', 'Ese coste ya está anulado.');
-  }
-
   const reason = input.reason.trim();
-  const created = await withRlsContext(prisma, { userId, projectId }, (tx) =>
-    tx.realCost.create({
+  const result = await withRlsContext(prisma, { userId, projectId }, async (tx) => {
+    const original: OriginalCostRow | null = await tx.realCost.findFirst({
+      where: { id: costId, budgetLine: { budget: { projectId } } },
+      select: {
+        id: true,
+        amount: true,
+        type: true,
+        budgetLineId: true,
+        budgetLine: { select: { budget: { select: { status: true } } } },
+        reversals: { select: { id: true }, take: 1 },
+      },
+    });
+    if (!original) throw ApiError.notFound('Coste no encontrado en el proyecto.');
+    assertApproved(original.budgetLine.budget.status);
+    if (original.type !== RealCostType.NORMAL) {
+      throw new ApiError('CONFLICT', 'No se puede anular un contra-asiento.');
+    }
+    if (original.reversals.length > 0) {
+      throw new ApiError('CONFLICT', 'Ese coste ya está anulado.');
+    }
+
+    const created = await tx.realCost.create({
       data: {
         budgetLineId: original.budgetLineId,
         amount: -original.amount, // signo contrario: el acumulado resta
@@ -248,8 +248,13 @@ export async function reverseRealCost(
         incurredOn: new Date(),
         recordedById: userId,
       },
-    }),
-  ).catch((err: unknown) => {
+    });
+    return {
+      originalId: original.id,
+      reversalId: created.id,
+      view: toDetailView(await loadLineOrThrow(tx, projectId, original.budgetLineId)),
+    };
+  }).catch((err: unknown) => {
     // Carrera: dos anulaciones del mismo coste a la vez chocan con el índice único parcial.
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
       throw new ApiError('CONFLICT', 'Ese coste ya está anulado.');
@@ -262,9 +267,9 @@ export async function reverseRealCost(
     actorUserId: userId,
     projectId,
     entityType: 'RealCost',
-    entityId: original.id,
-    metadata: { reversalId: created.id },
+    entityId: result.originalId,
+    metadata: { reversalId: result.reversalId },
   });
 
-  return getBudgetLineDetail(prisma, projectId, original.budgetLineId);
+  return result.view;
 }

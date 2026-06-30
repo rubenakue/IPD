@@ -75,7 +75,7 @@ const updateBudgetLineSchema = budgetLineSchema.partial().refine(
 
 const addRealCostSchema = z.object({
   amountCents: z.number().int().positive(),
-  incurredOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Fecha inválida (YYYY-MM-DD).'),
+  incurredOn: z.iso.date('Fecha inválida (YYYY-MM-DD).'),
   description: z.string().trim().min(1),
 });
 
@@ -207,10 +207,12 @@ export function createProjectsRouter(prisma: DbClient): Router {
     requireProjectPermission(prisma, 'project.view'),
     async (req, res) => {
       const { projectId, lineId } = req.params;
+      const userId = req.session.userId;
+      if (typeof userId !== 'string') throw ApiError.unauthenticated();
       if (typeof projectId !== 'string' || projectId.length === 0) throw ApiError.notFound();
       if (typeof lineId !== 'string' || lineId.length === 0) throw ApiError.notFound();
 
-      res.json(await getBudgetLineDetail(prisma, projectId, lineId));
+      res.json(await getBudgetLineDetail(prisma, userId, projectId, lineId));
     },
   );
 

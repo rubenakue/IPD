@@ -170,6 +170,14 @@ describe('costes reales, contra-asientos y avance (S14)', () => {
     expect((await res.json()).error.code).toBe('VALIDATION_ERROR');
   });
 
+  it('rechaza una fecha inexistente aunque tenga formato YYYY-MM-DD (VALIDATION_ERROR)', async () => {
+    const { projectId, lineId } = await createLine('BADDATE');
+    const cookie = await login(constructorEmail);
+    const res = await postCost(projectId, lineId, cookie, { ...cost, incurredOn: '2026-02-31' });
+    expect(res.status).toBe(400);
+    expect((await res.json()).error.code).toBe('VALIDATION_ERROR');
+  });
+
   it('un observador no puede imputar (FORBIDDEN)', async () => {
     const { projectId, lineId } = await createLine('OBS');
     const cookie = await login(observerEmail);
