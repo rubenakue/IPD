@@ -23,7 +23,7 @@ Detalle de una partida con sus asientos, el acumulado y el avance. Permiso: `pro
       "description": "Factura hormigón", "incurredOn": "2026-06-20",
       "recordedByName": "Ana", "createdAt": "...", "voided": true, "reversalOfId": null },
     { "id": "c2", "amountCents": -15000000, "type": "REVERSAL",
-      "description": null, "reason": "Importe erróneo", "incurredOn": "2026-06-21",
+      "description": "Importe erróneo", "reason": "Importe erróneo", "incurredOn": "2026-06-21",
       "recordedByName": "PM", "createdAt": "...", "voided": false, "reversalOfId": "c1" }
   ]
 }

@@ -29,10 +29,13 @@ contra-asiento hereda la descripción/fecha o usa el motivo como descripción (v
 - FKs: `budgetLineId` (CASCADE), `recordedById` (RESTRICT), `reversalOfId` (SET NULL).
 
 ### Refuerzos additivos de S14 (migración nueva)
-- **Inmutabilidad** (D1): trigger `BEFORE UPDATE OR DELETE ON "RealCost"` → excepción.
+- **Inmutabilidad** (D1): trigger `BEFORE UPDATE ON "RealCost"` → excepción. Solo UPDATE: el
+  borrado de un asiento individual no se expone por la API (+ RLS), y bloquear `DELETE` en el
+  trigger impediría el borrado **en cascada** legítimo de un proyecto.
 - **Una anulación por coste** (D2): `CREATE UNIQUE INDEX ON "RealCost"("reversalOfId") WHERE
   "type" = 'REVERSAL'`.
-- **Nuevos campos** del coste: `description` (texto no vacío) y fecha del coste (`incurredOn`).
+- **Nuevos campos** del coste: `description` (texto no vacío, NOT NULL en toda fila; en un
+  contra-asiento se rellena con el motivo) y fecha del coste (`incurredOn`, DATE NOT NULL).
   CHECK de descripción no vacía análogo a otros del esquema.
 
 > Nota sobre la FK `reversalOfId ON DELETE SET NULL`: con la inmutabilidad (no se borra ningún

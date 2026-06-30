@@ -188,6 +188,8 @@ model RealCost {
   type         RealCostType @default(NORMAL)
   reversalOfId String?
   reason       String? // SQL CHECK: required for REVERSAL, null for NORMAL
+  description  String // qué se imputó; en un contra-asiento, el motivo de la anulación
+  incurredOn   DateTime     @db.Date // fecha del coste (sin hora)
   recordedById String
   createdAt    DateTime     @default(now())
 

@@ -170,8 +170,10 @@ vinculado, que el acumulado vuelve a su valor previo y que el original consta co
   PM) registrar un **coste real** contra una partida, con importe, fecha y descripción.
 - **FR-002**: El sistema MUST guardar cada coste real con el **agente que lo registra** y el
   momento de registro.
-- **FR-003**: El sistema MUST tratar cada coste real como **inmutable**: MUST rechazar
-  cualquier intento de editarlo o borrarlo.
+- **FR-003**: El sistema MUST tratar cada coste real como **inmutable**: la **edición** se
+  rechaza en la base de datos (trigger), y el **borrado** de un asiento individual no se expone
+  por la API (queda cubierto además por RLS). El borrado en cascada al eliminar el proyecto
+  entero es una operación de ciclo de vida, no una corrección, y sí está permitido.
 - **FR-004**: El sistema MUST almacenar y calcular los importes en **céntimos enteros**; la
   conversión a/desde euros ocurre solo en presentación o formularios.
 - **FR-005**: El sistema MUST calcular el **coste real acumulado** de una partida como la

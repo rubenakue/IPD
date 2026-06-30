@@ -65,14 +65,14 @@ afterEach(() => {
 
 describe('ProjectBudgetPage', () => {
   it('muestra estado vacio y formulario al PM', async () => {
-    renderWith({ budget: null, canManageBudget: true });
+    renderWith({ budget: null, canManageBudget: true, canRecordRealCost: true });
 
     expect(await screen.findByText('Sin presupuesto cargado')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Anadir partida' })).toBeInTheDocument();
   });
 
   it('muestra tabla agrupada sin acciones a un agente no PM', async () => {
-    renderWith({ budget, canManageBudget: false });
+    renderWith({ budget, canManageBudget: false, canRecordRealCost: false });
 
     expect(await screen.findByText('01 · Cimentacion')).toBeInTheDocument();
     expect(screen.getAllByText('150,00 €')).toHaveLength(3);

@@ -6,8 +6,10 @@ ADRs 001–010). El modelo de datos ya existe (S07); estas decisiones cubren los
 ## D1 — Inmutabilidad de `RealCost` (FR-003)
 
 **Decisión**: defensa en dos capas. (1) **No exponer** endpoints de edición/borrado de
-`RealCost`. (2) **Trigger** `BEFORE UPDATE OR DELETE` en `RealCost` que lanza excepción
-(`ERRCODE 23514`), salvo el `UPDATE` técnico nulo que Prisma no hace aquí.
+`RealCost`. (2) **Trigger** `BEFORE UPDATE` en `RealCost` que lanza excepción (`ERRCODE 23514`).
+Solo UPDATE: bloquear `DELETE` en el trigger también impediría el borrado **en cascada** de un
+proyecto (ciclo de vida legítimo); el borrado de asientos individuales ya queda cubierto por la
+ausencia de endpoint y por RLS.
 
 **Rationale**: §8.8 — un coste imputado nunca se edita ni se borra; la corrección es un
 contra-asiento. El trigger replica el patrón de inmutabilidad ya usado para la base del

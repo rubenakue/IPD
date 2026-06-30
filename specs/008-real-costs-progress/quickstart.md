@@ -25,8 +25,9 @@ pnpm typecheck && pnpm lint && pnpm test
   incluye; queda `realCost.created` en auditoría. Un segundo coste suma al acumulado.
 
 ### 2. Inmutabilidad (US1)
-- Intentar editar/borrar un coste por API directa o BD.
-- **Esperado**: rechazado (no hay endpoint; el trigger impide UPDATE/DELETE).
+- Intentar editar un coste por BD directa.
+- **Esperado**: el UPDATE se rechaza (trigger). El borrado de un asiento no se expone por la
+  API (+ RLS); el borrado en cascada del proyecto entero sí es legítimo.
 
 ### 3. Avance físico (US2)
 - Login constructor → "Actualizar avance" 40% → luego 60%.
