@@ -18,6 +18,12 @@ import {
 } from '../projects/budget.ts';
 import { createProject } from '../projects/create-project.ts';
 import { getPromoterPrivateCosts } from '../projects/promoter-private-costs.ts';
+import {
+  addRealCost,
+  getBudgetLineDetail,
+  reverseRealCost,
+  updateProgress,
+} from '../projects/real-costs.ts';
 
 const createProjectSchema = z.object({
   name: z.string().trim().min(1),
@@ -67,6 +73,20 @@ const updateBudgetLineSchema = budgetLineSchema.partial().refine(
   { message: 'Indica al menos un campo a actualizar.' },
 );
 
+const addRealCostSchema = z.object({
+  amountCents: z.number().int().positive(),
+  incurredOn: z.iso.date('Fecha inválida (YYYY-MM-DD).'),
+  description: z.string().trim().min(1),
+});
+
+const reverseRealCostSchema = z.object({
+  reason: z.string().trim().min(1),
+});
+
+const updateProgressSchema = z.object({
+  progressPercent: z.number().int().min(0).max(100),
+});
+
 /**
  * `true` si el error es una violación de unicidad: P2002 del ORM o el SQLSTATE 23505
  * de Postgres (que es como aflora desde un `$executeRaw`, usado al crear el proyecto).
@@ -113,6 +133,7 @@ export function createProjectsRouter(prisma: DbClient): Router {
       res.json({
         budget: await getProjectBudget(prisma, userId, projectId),
         canManageBudget: hasPermission(req.projectAgent.role, 'budget.upload'),
+        canRecordRealCost: hasPermission(req.projectAgent.role, 'realCost.create'),
       });
     },
   );
@@ -176,6 +197,76 @@ export function createProjectsRouter(prisma: DbClient): Router {
       if (typeof projectId !== 'string' || projectId.length === 0) throw ApiError.notFound();
 
       res.json(await approveBudget(prisma, userId, projectId));
+    },
+  );
+
+  // Detalle de una partida: asientos, acumulado y avance (cualquier participante).
+  router.get(
+    '/projects/:projectId/budget/lines/:lineId',
+    requireAuth,
+    requireProjectPermission(prisma, 'project.view'),
+    async (req, res) => {
+      const { projectId, lineId } = req.params;
+      const userId = req.session.userId;
+      if (typeof userId !== 'string') throw ApiError.unauthenticated();
+      if (typeof projectId !== 'string' || projectId.length === 0) throw ApiError.notFound();
+      if (typeof lineId !== 'string' || lineId.length === 0) throw ApiError.notFound();
+
+      res.json(await getBudgetLineDetail(prisma, userId, projectId, lineId));
+    },
+  );
+
+  // Imputar un coste real a una partida (constructor o PM).
+  router.post(
+    '/projects/:projectId/budget/lines/:lineId/costs',
+    requireAuth,
+    requireProjectPermission(prisma, 'realCost.create'),
+    validate({ body: addRealCostSchema }),
+    async (req, res) => {
+      const userId = req.session.userId;
+      const { projectId, lineId } = req.params;
+      if (typeof userId !== 'string') throw ApiError.unauthenticated();
+      if (typeof projectId !== 'string' || projectId.length === 0) throw ApiError.notFound();
+      if (typeof lineId !== 'string' || lineId.length === 0) throw ApiError.notFound();
+
+      const input = addRealCostSchema.parse(req.body);
+      res.status(201).json(await addRealCost(prisma, userId, projectId, lineId, input));
+    },
+  );
+
+  // Anular un coste con un contra-asiento (solo PM).
+  router.post(
+    '/projects/:projectId/budget/costs/:costId/reversal',
+    requireAuth,
+    requireProjectPermission(prisma, 'realCost.reverse'),
+    validate({ body: reverseRealCostSchema }),
+    async (req, res) => {
+      const userId = req.session.userId;
+      const { projectId, costId } = req.params;
+      if (typeof userId !== 'string') throw ApiError.unauthenticated();
+      if (typeof projectId !== 'string' || projectId.length === 0) throw ApiError.notFound();
+      if (typeof costId !== 'string' || costId.length === 0) throw ApiError.notFound();
+
+      const input = reverseRealCostSchema.parse(req.body);
+      res.status(201).json(await reverseRealCost(prisma, userId, projectId, costId, input));
+    },
+  );
+
+  // Registrar el avance físico de una partida (constructor o PM).
+  router.patch(
+    '/projects/:projectId/budget/lines/:lineId/progress',
+    requireAuth,
+    requireProjectPermission(prisma, 'progress.update'),
+    validate({ body: updateProgressSchema }),
+    async (req, res) => {
+      const userId = req.session.userId;
+      const { projectId, lineId } = req.params;
+      if (typeof userId !== 'string') throw ApiError.unauthenticated();
+      if (typeof projectId !== 'string' || projectId.length === 0) throw ApiError.notFound();
+      if (typeof lineId !== 'string' || lineId.length === 0) throw ApiError.notFound();
+
+      const input = updateProgressSchema.parse(req.body);
+      res.json(await updateProgress(prisma, userId, projectId, lineId, input));
     },
   );
 

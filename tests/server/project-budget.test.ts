@@ -136,6 +136,7 @@ describe('presupuesto objetivo (S13)', () => {
     expect((await pmRes.json()) as ProjectBudgetResponse).toEqual({
       budget: null,
       canManageBudget: true,
+      canRecordRealCost: true,
     });
 
     const constructorRes = await getBudget(projectId, constructorCookie);
@@ -143,6 +144,7 @@ describe('presupuesto objetivo (S13)', () => {
     expect((await constructorRes.json()) as ProjectBudgetResponse).toEqual({
       budget: null,
       canManageBudget: false,
+      canRecordRealCost: true,
     });
   });
 

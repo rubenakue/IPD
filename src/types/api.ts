@@ -140,7 +140,10 @@ export interface BudgetView {
 
 export interface ProjectBudgetResponse {
   budget: BudgetView | null;
+  /** `budget.upload` (PM): cargar/editar/aprobar el presupuesto y anular costes. */
   canManageBudget: boolean;
+  /** `realCost.create`/`progress.update` (constructor + PM): imputar costes y avance. */
+  canRecordRealCost: boolean;
 }
 
 export interface BudgetLineInput {
@@ -152,3 +155,55 @@ export interface BudgetLineInput {
 }
 
 export type UpdateBudgetLineRequest = Partial<BudgetLineInput>;
+
+// -- S14: costes reales, contra-asientos y avance fisico (flujo C) --
+// Importes en CENTIMOS con signo (un REVERSAL es negativo). La UI convierte a/desde euros.
+
+export type RealCostTypeCode = 'NORMAL' | 'REVERSAL';
+
+export interface RealCostView {
+  id: string;
+  amountCents: number;
+  type: RealCostTypeCode;
+  /** Descripcion del asiento. En un contra-asiento, refleja el motivo de la anulacion. */
+  description: string;
+  /** Motivo de la anulacion: solo en contra-asientos (REVERSAL); null en los normales. */
+  reason: string | null;
+  /** Fecha del coste (ISO YYYY-MM-DD). */
+  incurredOn: string;
+  recordedByName: string;
+  createdAt: string;
+  /** Derivado: un asiento NORMAL que tiene un contra-asiento vinculado. */
+  voided: boolean;
+  /** Id del asiento original que este contra-asiento anula (null en los normales). */
+  reversalOfId: string | null;
+}
+
+export interface BudgetLineDetailView {
+  id: string;
+  chapterCode: string;
+  chapterName: string;
+  code: string;
+  name: string;
+  baseAmountCents: number;
+  /** 0-100, o null si nadie ha registrado avance todavia (!= 0%). */
+  progressPercent: number | null;
+  progressUpdatedAt: string | null;
+  /** Derivado: suma de todos los asientos (los contra-asientos restan). */
+  accumulatedCostCents: number;
+  costs: RealCostView[];
+}
+
+export interface AddRealCostRequest {
+  amountCents: number;
+  incurredOn: string;
+  description: string;
+}
+
+export interface ReverseRealCostRequest {
+  reason: string;
+}
+
+export interface UpdateProgressRequest {
+  progressPercent: number;
+}

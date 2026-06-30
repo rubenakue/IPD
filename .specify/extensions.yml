@@ -1,9 +1,17 @@
 installed:
 - agent-context
 settings:
-  auto_execute_hooks: false
+  auto_execute_hooks: true
 hooks:
   after_specify:
+  - extension: speckit-clarify
+    command: speckit.clarify
+    enabled: true
+    optional: false
+    priority: 5
+    prompt: Run clarify right after the spec is written?
+    description: Chain clarify automatically after specify (SDD flow)
+    condition: null
   - extension: agent-context
     command: speckit.agent-context.update
     enabled: false
