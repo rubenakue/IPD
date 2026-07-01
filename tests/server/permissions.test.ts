@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import type { Server } from 'node:http';
 import argon2 from 'argon2';
-import { AgentRole } from '../../src/generated/prisma/client.ts';
+import { AgentRole, BudgetStatus, ChangeStatus, ChangeType } from '../../src/generated/prisma/client.ts';
 import type { PromoterPrivateCostsResponse } from '../../src/types/api.ts';
 import { withRlsContext } from '../../src/server/db/rls.ts';
 import type { SessionStore } from '../../src/server/middlewares/session.ts';
@@ -24,6 +24,8 @@ describe('project permissions and RLS (S10)', () => {
   let url: string;
   let projectAId: string;
   let projectBId: string;
+  let projectAChangeId: string;
+  let projectBLineId: string;
   let constructorUserId: string;
   let pmUserId: string;
   let outsiderUserId: string;
@@ -143,6 +145,35 @@ describe('project permissions and RLS (S10)', () => {
         },
       });
     });
+    const budgetB = await prisma.budget.create({
+      data: {
+        projectId: projectB.id,
+        lines: {
+          create: {
+            chapterCode: '01',
+            chapterName: 'Capitulo B',
+            code: '01.01',
+            name: 'Partida B',
+            baseAmount: 1_000_00n,
+          },
+        },
+      },
+      include: { lines: true },
+    });
+    await prisma.budget.update({
+      where: { id: budgetB.id },
+      data: { status: BudgetStatus.APPROVED, approvedAt: new Date() },
+    });
+    projectBLineId = budgetB.lines[0].id;
+    const changeA = await prisma.change.create({
+      data: {
+        projectId: projectA.id,
+        type: ChangeType.COST_IMPACT,
+        status: ChangeStatus.APPROVED,
+        title: 'Cambio proyecto A',
+      },
+    });
+    projectAChangeId = changeA.id;
 
     const { app, store } = createTestApp(prisma);
     sessionStore = store;
@@ -217,6 +248,21 @@ describe('project permissions and RLS (S10)', () => {
     );
     expect(pmAgents.length).toBeGreaterThan(0);
     expect(pmAgents.every((agent) => agent.projectId === projectAId || agent.projectId === projectBId)).toBe(true);
+  });
+
+  it('RLS rechaza ajustes de cambio sobre partidas de otro proyecto', async () => {
+    await expect(
+      withRlsContext(prisma, { userId: constructorUserId, projectId: projectAId }, (tx) =>
+        tx.changeAdjustment.create({
+          data: { changeId: projectAChangeId, budgetLineId: projectBLineId, delta: 100_00n },
+        }),
+      ),
+    ).rejects.toThrow();
+
+    const leakedAdjustment = await prisma.changeAdjustment.findFirst({
+      where: { changeId: projectAChangeId, budgetLineId: projectBLineId },
+    });
+    expect(leakedAdjustment).toBeNull();
   });
 
   it('un usuario con roles distintos recibe permisos por proyecto, no globales', async () => {

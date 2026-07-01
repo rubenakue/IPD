@@ -134,6 +134,21 @@ Una entrada por sesión de trabajo. Breve y honesto.
 - **Cómo lo resolví / qué usé de Claude Code:** migración correctiva que limita el trigger a **`BEFORE UPDATE`**; el borrado de asientos individuales queda cubierto por la ausencia de endpoint + RLS, y el cascade del proyecto vuelve a funcionar. Verifiqué además que actualizar el avance no dispara el trigger de inmutabilidad de la base de S13 (vigila campos base, no `progressPercent`). Reutilicé patrones de S12/S13 (`requireProjectPermission`, `withRlsContext`, Zod, tipos compartidos). Verificación: `pnpm typecheck` ✅, `pnpm lint` ✅, `pnpm test` **102/102** ✅, migración aplicada con `prisma migrate deploy`.
 - **Estado del sprint:** En camino. S14 implementado y validado en automático; **pendiente la validación manual en navegador** (T024) del flujo C.
 
+## 2026-06-29 (S15 — derivados económicos y alertas de desviación)
+
+- **Qué hice:** SDD completo de la spec **009-derived-metrics** (specify → clarify → plan → tasks; clarify encadenado por el hook `after_specify`). Implementado el flujo de derivados: presupuesto **vigente** (base + Σ ajustes), **coste real acumulado**, **previsión a cierre** (`max(coste, vigente)` o manual), **desviación** € y %, y **nivel de alerta** (constantes 5%/10%), todo derivado y **sin persistir** salvo la previsión manual. Lógica pura `src/lib/budget/derived.ts` (`deriveBudgetLine` + `summarizeEconomics`) en TDD. Backend `economics.ts` (`getProjectEconomics` + `setLineForecast`) bajo RLS; endpoints `GET /budget/economics` (cualquier agente) y `PATCH /budget/lines/:id/forecast` (`forecast.update`). Frontend: `ProjectBudgetPage` muestra la **tabla económica** con alertas cuando el presupuesto está aprobado (en borrador, la tabla de carga de S13), y un modal para fijar/quitar la previsión manual. **Sin migración** (modelo ya completo).
+- **Decisiones de clarify (29-jun):** (1) vigente = base + Σ ajustes (hoy 0; motor de cambios = H8); (2) previsión manual > 0, eliminar para volver al default; (3) umbrales de alerta constantes.
+- **Qué bloqueó:** un test de UI de S14 (`project-budget-detail`) se rompió: con el presupuesto APROBADO la página pasó a mostrar la tabla económica nueva, y su mock de fetch no respondía al `GET /budget/economics` → `chapters` undefined.
+- **Cómo lo resolví / qué usé de Claude Code:** añadí al mock de ese test la respuesta económica. Reutilicé `accumulatedCostCents` (S14) y `normalizeBudgetLineCode` (S13) para agrupar capítulos; endpoint de derivados **separado** del `GET /budget` de S13 (no rompe su contrato). Verificación: `pnpm typecheck` ✅, `pnpm lint` ✅, `pnpm test` **120/120** ✅.
+- **Estado del sprint:** En camino. S15 implementado y validado en automático; **pendiente la validación manual en navegador** (T016) de la tabla económica y el override.
+
+## 2026-06-30 (S15 review fixes + hardening previo a merge)
+
+- **Que hice:** Arreglados los dos hallazgos de review de S15: las mutaciones que cambian fuentes economicas invalidan tambien `project-economics`, y el vigente solo suma ajustes de cambios `APPROVED`. En el barrido adicional de `main`, endureci la integridad de `ChangeAdjustment`: un ajuste no puede enlazar un `Change` de un proyecto con una `BudgetLine` de otro, y la lectura defensiva de economia tambien filtra por `change.projectId`. Ademas, los eventos de auditoria con `projectId` se insertan bajo contexto RLS para no depender de un usuario de BD superuser.
+- **Que bloqueo:** El primer fixture de test intentaba crear una partida dentro de un presupuesto ya aprobado; el trigger de linea base lo rechazo correctamente. Ajuste el setup para crear la partida en borrador y aprobar despues.
+- **Como lo resolvi / que use de Claude Code:** migracion additiva `20260630123000_change_adjustment_project_integrity`, test RLS directo en `permissions.test.ts`, test de ajustes aprobados en `project-economics.test.ts` y regresion de cache en `project-economics.test.tsx`. Verificacion: `pnpm typecheck`, `pnpm lint`, `pnpm test` **123/123**, `pnpm prisma migrate deploy` y `pnpm prisma migrate status`.
+- **Estado del sprint:** En camino. Rama S15 endurecida para merge; pendiente solo revision humana/merge del PR.
+
 ## AAAA-MM-DD
 
 - **Horas trabajadas:**

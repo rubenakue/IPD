@@ -27,8 +27,18 @@ import { useProjectBudget } from '../hooks/useProjectBudget.ts';
 import { useReverseRealCost } from '../hooks/useReverseRealCost.ts';
 import { useUpdateBudgetLine } from '../hooks/useUpdateBudgetLine.ts';
 import { useUpdateProgress } from '../hooks/useUpdateProgress.ts';
+import { useProjectEconomics } from '../hooks/useProjectEconomics.ts';
+import { useSetForecast } from '../hooks/useSetForecast.ts';
 import { ApiError } from '../lib/api/client.ts';
-import type { BudgetLineInput, BudgetLineView, BudgetView, RealCostView } from '../types/api.ts';
+import type {
+  AlertLevel,
+  BudgetLineInput,
+  BudgetLineView,
+  BudgetView,
+  EconomicsLineView,
+  ProjectEconomicsResponse,
+  RealCostView,
+} from '../types/api.ts';
 
 interface LineFormValues {
   chapterCode: string;
@@ -418,6 +428,189 @@ function LineDetailModal({
   );
 }
 
+function formatPercent(value: number | null): string {
+  return value === null ? '—' : `${value.toFixed(1)}%`;
+}
+
+const ALERT_ROW_BG: Record<AlertLevel, string | undefined> = {
+  normal: undefined,
+  warning: 'yellow.1',
+  alert: 'red.1',
+};
+
+/** Tabla de control económico: derivados por partida/capítulo/total, con alertas. */
+function EconomicsTable({
+  economics,
+  onOpenDetail,
+  onOpenForecast,
+}: {
+  economics: ReturnType<typeof useProjectEconomics>;
+  onOpenDetail: (lineId: string) => void;
+  onOpenForecast: (line: EconomicsLineView) => void;
+}) {
+  if (economics.isPending) return <LoadingState />;
+  if (economics.isError) return <ErrorState onRetry={() => void economics.refetch()} />;
+
+  const data: ProjectEconomicsResponse = economics.data;
+  const canUpdateForecast = data.canUpdateForecast;
+
+  return (
+    <Paper withBorder radius="md">
+      <Table.ScrollContainer minWidth={900}>
+        <Table verticalSpacing="sm" horizontalSpacing="md">
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>Codigo</Table.Th>
+              <Table.Th>Partida</Table.Th>
+              <Table.Th ta="right">Vigente</Table.Th>
+              <Table.Th ta="right">Coste real</Table.Th>
+              <Table.Th ta="right">Avance</Table.Th>
+              <Table.Th ta="right">Prevision</Table.Th>
+              <Table.Th ta="right">Desv. €</Table.Th>
+              <Table.Th ta="right">Desv. %</Table.Th>
+              <Table.Th />
+            </Table.Tr>
+          </Table.Thead>
+          {data.chapters.map((chapter) => (
+            <Table.Tbody key={chapter.chapterCode}>
+              <Table.Tr bg="gray.0">
+                <Table.Td colSpan={2}>
+                  <Text fw={700}>
+                    {chapter.chapterCode} · {chapter.chapterName}
+                  </Text>
+                </Table.Td>
+                <Table.Td ta="right">{formatEuros(chapter.currentBudgetCents)}</Table.Td>
+                <Table.Td ta="right">{formatEuros(chapter.accumulatedCostCents)}</Table.Td>
+                <Table.Td />
+                <Table.Td ta="right">{formatEuros(chapter.forecastCents)}</Table.Td>
+                <Table.Td ta="right">{formatEuros(chapter.varianceCents)}</Table.Td>
+                <Table.Td ta="right">{formatPercent(chapter.variancePercent)}</Table.Td>
+                <Table.Td />
+              </Table.Tr>
+              {chapter.lines.map((line) => (
+                <Table.Tr key={line.id} bg={ALERT_ROW_BG[line.alertLevel]}>
+                  <Table.Td>{line.code}</Table.Td>
+                  <Table.Td>{line.name}</Table.Td>
+                  <Table.Td ta="right">{formatEuros(line.currentBudgetCents)}</Table.Td>
+                  <Table.Td ta="right">{formatEuros(line.accumulatedCostCents)}</Table.Td>
+                  <Table.Td ta="right">
+                    {line.progressPercent === null ? '—' : `${line.progressPercent}%`}
+                  </Table.Td>
+                  <Table.Td ta="right">
+                    {formatEuros(line.forecastCents)}
+                    {line.manualForecastCents !== null && (
+                      <Badge ml="xs" size="xs" color="blue" variant="light">
+                        manual
+                      </Badge>
+                    )}
+                  </Table.Td>
+                  <Table.Td ta="right">{formatEuros(line.varianceCents)}</Table.Td>
+                  <Table.Td ta="right">{formatPercent(line.variancePercent)}</Table.Td>
+                  <Table.Td>
+                    <Group justify="flex-end" gap="xs" wrap="nowrap">
+                      <Button size="xs" variant="light" onClick={() => onOpenDetail(line.id)}>
+                        Detalle
+                      </Button>
+                      {canUpdateForecast && (
+                        <Button size="xs" variant="default" onClick={() => onOpenForecast(line)}>
+                          Prevision
+                        </Button>
+                      )}
+                    </Group>
+                  </Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          ))}
+          <Table.Tfoot>
+            <Table.Tr>
+              <Table.Th colSpan={2}>Total proyecto</Table.Th>
+              <Table.Th ta="right">{formatEuros(data.totals.currentBudgetCents)}</Table.Th>
+              <Table.Th ta="right">{formatEuros(data.totals.accumulatedCostCents)}</Table.Th>
+              <Table.Th />
+              <Table.Th ta="right">{formatEuros(data.totals.forecastCents)}</Table.Th>
+              <Table.Th ta="right">{formatEuros(data.totals.varianceCents)}</Table.Th>
+              <Table.Th ta="right">{formatPercent(data.totals.variancePercent)}</Table.Th>
+              <Table.Th />
+            </Table.Tr>
+          </Table.Tfoot>
+        </Table>
+      </Table.ScrollContainer>
+    </Paper>
+  );
+}
+
+/** Fija o elimina la previsión a cierre manual de una partida (constructor/PM). */
+function ForecastModal({
+  projectId,
+  line,
+  onClose,
+}: {
+  projectId: string;
+  line: EconomicsLineView | null;
+  onClose: () => void;
+}) {
+  const setForecast = useSetForecast(projectId);
+  const [value, setValue] = useState<number | string>('');
+
+  useEffect(() => {
+    setValue(line?.manualForecastCents != null ? line.manualForecastCents / 100 : '');
+  }, [line]);
+
+  const error = errorMessage(setForecast.error);
+
+  const save = () => {
+    if (!line) return;
+    const euros = Number(value);
+    if (value === '' || !Number.isFinite(euros) || euros <= 0) return;
+    setForecast.mutate(
+      { lineId: line.id, manualForecastCents: Math.round(euros * 100) },
+      { onSuccess: onClose },
+    );
+  };
+
+  const clear = () => {
+    if (!line) return;
+    setForecast.mutate({ lineId: line.id, manualForecastCents: null }, { onSuccess: onClose });
+  };
+
+  return (
+    <Modal opened={line !== null} onClose={onClose} title="Prevision a cierre manual">
+      <Stack>
+        <Text size="sm">
+          Fija una prevision manual (mayor que 0) para {line?.code} {line?.name}, o quitala para
+          volver al calculo automatico (max del coste real y el vigente).
+        </Text>
+        <NumberInput
+          label="Prevision (EUR)"
+          min={0}
+          decimalScale={2}
+          value={value}
+          onChange={setValue}
+        />
+        {error && (
+          <Alert color="red" variant="light">
+            {error}
+          </Alert>
+        )}
+        <Group justify="space-between">
+          <Button variant="subtle" color="red" loading={setForecast.isPending} onClick={clear}>
+            Quitar prevision
+          </Button>
+          <Group>
+            <Button variant="default" onClick={onClose}>
+              Cancelar
+            </Button>
+            <Button loading={setForecast.isPending} onClick={save}>
+              Guardar
+            </Button>
+          </Group>
+        </Group>
+      </Stack>
+    </Modal>
+  );
+}
+
 export function ProjectBudgetPage() {
   const { projectId } = useParams();
   const id = projectId ?? '';
@@ -429,6 +622,8 @@ export function ProjectBudgetPage() {
   const [editingLine, setEditingLine] = useState<BudgetLineView | null>(null);
   const [deletingLineId, setDeletingLineId] = useState<string | null>(null);
   const [detailLineId, setDetailLineId] = useState<string | null>(null);
+  const [forecastTarget, setForecastTarget] = useState<EconomicsLineView | null>(null);
+  const economics = useProjectEconomics(id);
 
   const addForm = useForm<LineFormValues>({ initialValues: emptyLineForm, validate: lineValidation });
   const editForm = useForm<LineFormValues>({ initialValues: emptyLineForm, validate: lineValidation });
@@ -511,7 +706,13 @@ export function ProjectBudgetPage() {
         />
       )}
 
-      {budget && (
+      {budget && budget.status === 'APPROVED' ? (
+        <EconomicsTable
+          economics={economics}
+          onOpenDetail={setDetailLineId}
+          onOpenForecast={setForecastTarget}
+        />
+      ) : budget ? (
         <BudgetTable
           budget={budget}
           canEdit={canEdit}
@@ -520,7 +721,7 @@ export function ProjectBudgetPage() {
           onOpenDetail={setDetailLineId}
           deletingLineId={deletingLineId}
         />
-      )}
+      ) : null}
 
       {deleteError && (
         <Alert color="red" variant="light">
@@ -627,6 +828,12 @@ export function ProjectBudgetPage() {
         canRecordRealCost={data.canRecordRealCost}
         canReverse={data.canManageBudget}
         onClose={() => setDetailLineId(null)}
+      />
+
+      <ForecastModal
+        projectId={id}
+        line={forecastTarget}
+        onClose={() => setForecastTarget(null)}
       />
     </Stack>
   );

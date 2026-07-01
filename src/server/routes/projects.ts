@@ -24,6 +24,7 @@ import {
   reverseRealCost,
   updateProgress,
 } from '../projects/real-costs.ts';
+import { getProjectEconomics, setLineForecast } from '../projects/economics.ts';
 
 const createProjectSchema = z.object({
   name: z.string().trim().min(1),
@@ -85,6 +86,11 @@ const reverseRealCostSchema = z.object({
 
 const updateProgressSchema = z.object({
   progressPercent: z.number().int().min(0).max(100),
+});
+
+const setForecastSchema = z.object({
+  // > 0 para fijar la previsión manual, o null para volver a la regla por defecto.
+  manualForecastCents: z.number().int().positive().nullable(),
 });
 
 /**
@@ -267,6 +273,43 @@ export function createProjectsRouter(prisma: DbClient): Router {
 
       const input = updateProgressSchema.parse(req.body);
       res.json(await updateProgress(prisma, userId, projectId, lineId, input));
+    },
+  );
+
+  // Vista económica: derivados (vigente, previsión, desviación, alertas) (cualquier participante).
+  router.get(
+    '/projects/:projectId/budget/economics',
+    requireAuth,
+    requireProjectPermission(prisma, 'project.view'),
+    async (req, res) => {
+      const userId = req.session.userId;
+      const { projectId } = req.params;
+      if (typeof userId !== 'string') throw ApiError.unauthenticated();
+      if (typeof projectId !== 'string' || projectId.length === 0) throw ApiError.notFound();
+      if (!req.projectAgent) throw ApiError.notFound();
+
+      const data = await getProjectEconomics(prisma, userId, projectId);
+      res.json({ ...data, canUpdateForecast: hasPermission(req.projectAgent.role, 'forecast.update') });
+    },
+  );
+
+  // Fijar/eliminar la previsión a cierre manual de una partida (constructor o PM).
+  router.patch(
+    '/projects/:projectId/budget/lines/:lineId/forecast',
+    requireAuth,
+    requireProjectPermission(prisma, 'forecast.update'),
+    validate({ body: setForecastSchema }),
+    async (req, res) => {
+      const userId = req.session.userId;
+      const { projectId, lineId } = req.params;
+      if (typeof userId !== 'string') throw ApiError.unauthenticated();
+      if (typeof projectId !== 'string' || projectId.length === 0) throw ApiError.notFound();
+      if (typeof lineId !== 'string' || lineId.length === 0) throw ApiError.notFound();
+      if (!req.projectAgent) throw ApiError.notFound();
+
+      const input = setForecastSchema.parse(req.body);
+      const data = await setLineForecast(prisma, userId, projectId, lineId, input.manualForecastCents);
+      res.json({ ...data, canUpdateForecast: hasPermission(req.projectAgent.role, 'forecast.update') });
     },
   );
 
