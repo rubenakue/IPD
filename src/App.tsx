@@ -8,6 +8,7 @@ import { NewProjectPage } from './pages/NewProjectPage.tsx';
 import { ProjectAgentsPage } from './pages/ProjectAgentsPage.tsx';
 import { ProjectBudgetPage } from './pages/ProjectBudgetPage.tsx';
 import { ProjectDashboardPage } from './pages/ProjectDashboardPage.tsx';
+import { ProjectFrcPage } from './pages/ProjectFrcPage.tsx';
 import { ProjectsPage } from './pages/ProjectsPage.tsx';
 import { SectionPlaceholderPage } from './pages/SectionPlaceholderPage.tsx';
 
@@ -23,9 +24,13 @@ export function App() {
           <Route path="dashboard" element={<ProjectDashboardPage />} />
           <Route path="agents" element={<ProjectAgentsPage />} />
           <Route path="budget" element={<ProjectBudgetPage />} />
+          <Route path="frc" element={<ProjectFrcPage />} />
           {PROJECT_SECTIONS.filter(
             (section) =>
-              section.key !== 'dashboard' && section.key !== 'agents' && section.key !== 'budget',
+              section.key !== 'dashboard' &&
+              section.key !== 'agents' &&
+              section.key !== 'budget' &&
+              section.key !== 'frc',
           ).map((section) => (
             <Route
               key={section.key}

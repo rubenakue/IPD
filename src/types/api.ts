@@ -253,3 +253,58 @@ export interface SetForecastRequest {
   /** Céntimos > 0 para fijar la previsión manual, o null para volver al default. */
   manualForecastCents: number | null;
 }
+
+// -- S16: FRC servido por rol (flujo G parcial) --
+// El resultado del FRC es DERIVADO (no se persiste) y se calcula al consultar. La respuesta es
+// una UNIÓN DISCRIMINADA por `visibility`: el servidor solo serializa lo que el rol puede ver
+// (§9.5). Importes en CÉNTIMOS enteros.
+
+/** Estado agregado del fondo, derivado de la desviación total. */
+export type FrcFundStatus = 'bonus' | 'neutral' | 'malus';
+
+/** Qué porción del FRC ve el solicitante (discriminante de la respuesta). */
+export type FrcVisibility = 'global' | 'own' | 'aggregate';
+
+/** Resultado de un agente en el reparto (solo presente en `global`/`own`). */
+export interface FrcAgentRow {
+  agentId: string;
+  /** Nombre del usuario, para presentación. */
+  displayName: string;
+  /** Rol expuesto por la API (no el AgentRole de dominio del cálculo puro). */
+  role: ProjectRoleCode;
+  /** Reparto aplicado: + bonus (ahorro) / − malus (sobrecoste). */
+  bonusMalusCents: number;
+  guaranteedFeeCents: number;
+  /** guaranteedFee + bonusMalus. */
+  totalCents: number;
+}
+
+/** Común a las tres variantes de la respuesta del FRC. */
+interface FrcResponseBase {
+  /** null o no-APPROVED → sin datos de reparto (el FRC necesita base aprobada). */
+  budgetStatus: BudgetStatusCode | null;
+  fundStatus: FrcFundStatus;
+}
+
+/** Promotor / PM: cuadro completo del reparto. */
+export interface FrcGlobalResponse extends FrcResponseBase {
+  visibility: 'global';
+  deviationCents: number;
+  agents: FrcAgentRow[];
+}
+
+/** Constructor / proyectista que participa en el fondo: su fila + desviación total + estado. */
+export interface FrcOwnResponse extends FrcResponseBase {
+  visibility: 'own';
+  deviationCents: number;
+  /** `null` solo cuando no hay datos de reparto (presupuesto sin aprobar). */
+  own: FrcAgentRow | null;
+}
+
+/** Observador o agente al 0 %: solo el estado agregado, sin importes (FR-009/FR-011). */
+export interface FrcAggregateResponse extends FrcResponseBase {
+  visibility: 'aggregate';
+  // sin deviationCents, sin agents, sin own
+}
+
+export type ProjectFrcResponse = FrcGlobalResponse | FrcOwnResponse | FrcAggregateResponse;
