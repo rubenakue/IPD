@@ -13,7 +13,7 @@ Dinero en céntimos. **Sin migración** (el modelo `Agent` ya lleva `sharePercen
 
 ## Phase 1 — Setup (contratos compartidos)
 
-- [ ] T001 [P] Añadir a `src/types/api.ts`: `FrcFundStatus = 'bonus' | 'neutral' | 'malus'`;
+- [x] T001 [P] Añadir a `src/types/api.ts`: `FrcFundStatus = 'bonus' | 'neutral' | 'malus'`;
   `FrcVisibility = 'global' | 'own' | 'aggregate'`; `FrcAgentRow` (agentId, displayName,
   role: ProjectRoleCode, bonusMalusCents, guaranteedFeeCents, totalCents); base con
   `budgetStatus: BudgetStatusCode | null` y `fundStatus`; `FrcGlobalResponse` (visibility
@@ -27,14 +27,14 @@ Dinero en céntimos. **Sin migración** (el modelo `Agent` ya lleva `sharePercen
 
 **⚠️ Es el corazón del innegociable de seguridad (Principio V): el filtrado por rol.**
 
-- [ ] T002 [P] Escribir `tests/frc-visibility.test.ts` (rojo): `fundStatusFromDeviation` (>0
+- [x] T002 [P] Escribir `tests/frc-visibility.test.ts` (rojo): `fundStatusFromDeviation` (>0
   bonus, <0 malus, 0 neutral); `projectFrcForRole(result, requester, agents)` produce
   `visibility` correcta por rol — PROMOTER/PROJECT_MANAGER → `global` con todas las filas y
   `deviationCents`; DESIGNER/CONSTRUCTOR con fila propia → `own` con su fila + `deviationCents`;
   DESIGNER/CONSTRUCTOR al 0 % → `aggregate` (FR-011); OBSERVER → `aggregate` **sin** las claves
   `deviationCents`/`agents`/`own` (SC-004); la salida `own` **nunca** contiene la fila de otro agente (SC-003); en `global`,
   `Σ agents[].bonusMalusCents === deviationCents` (SC-002).
-- [ ] T003 Implementar `src/lib/frc/visibility.ts` (verde): `fundStatusFromDeviation(cents)`
+- [x] T003 Implementar `src/lib/frc/visibility.ts` (verde): `fundStatusFromDeviation(cents)`
   y `projectFrcForRole(result: FrcResult, requester: {role, agentId}, agents)` puros (sin I/O),
   que mapean la salida de `calculateFRC` a `ProjectFrcResponse` según la matriz
   (`hasPermission(role, 'frc.global.view'|'frc.own.view')`). Reutiliza `hasPermission` de
@@ -49,7 +49,7 @@ filtrado en el servidor. **Test independiente**: sobre un presupuesto aprobado c
 conocida, promotor/constructor/observador reciben `global`/`own`/`aggregate` coherentes con §9.5,
 verificable contra la API cruda.
 
-- [ ] T004 [US1] Crear `src/server/projects/frc.ts` con `getProjectFrc(prisma, userId, projectId,
+- [x] T004 [US1] Crear `src/server/projects/frc.ts` con `getProjectFrc(prisma, userId, projectId,
   requester)`: bajo `withRlsContext`, carga el presupuesto; si no está **APPROVED** → respuesta
   "sin datos" (`fundStatus: 'neutral'`, sin filas, `budgetStatus` real). Si aprobado: calcula
   **vigente total** y **previsión total** reutilizando `deriveBudgetLine` + `summarizeEconomics`
@@ -57,10 +57,10 @@ verificable contra la API cruda.
   (PROMOTER/CONSTRUCTOR/DESIGNER con `sharePercent > 0`), arma `AgentFrcTerms[]`, llama a
   `calculateFRC(...)`, y proyecta con `projectFrcForRole(result, requester, agents)` mapeando cada
   fila a `FrcAgentRow` (displayName + rol expuesto).
-- [ ] T005 [US1] En `src/server/routes/projects.ts`: `GET /projects/:projectId/frc` con
+- [x] T005 [US1] En `src/server/routes/projects.ts`: `GET /projects/:projectId/frc` con
   `requireAuth` + `requireProjectPermission(prisma, 'project.view')` (deja pasar al observador,
   deniega al no-agente → FR-004); pasa `req.projectAgent` (role + agentId) a `getProjectFrc`.
-- [ ] T006 [US1] `tests/server/project-frc.test.ts` (integración, RLS): con presupuesto aprobado y
+- [x] T006 [US1] `tests/server/project-frc.test.ts` (integración, RLS): con presupuesto aprobado y
   desviación conocida — promotor → `global` con todos los agentes y `Σ bonusMalus == deviationCents`
   (SC-002); constructor → `own` con su fila, **sin** `agents` y sin la fila de otros (SC-003);
   observador → `aggregate` **sin** `deviationCents`/`agents`/`own` (SC-004); no-agente → `NOT_FOUND`
@@ -77,18 +77,18 @@ verificable contra la API cruda.
 consumiendo el endpoint filtrado. **Test independiente**: por rol, la vista renderiza el
 contenido correcto y el estado del fondo.
 
-- [ ] T007 [P] [US2] Hook `src/hooks/useProjectFrc.ts` (TanStack Query, clave `['project-frc',
+- [x] T007 [P] [US2] Hook `src/hooks/useProjectFrc.ts` (TanStack Query, clave `['project-frc',
   projectId]`) que consume `GET /projects/:projectId/frc` y devuelve `ProjectFrcResponse`.
-- [ ] T008 [US2] Crear `src/pages/ProjectFrcPage.tsx`: render por `visibility` —
+- [x] T008 [US2] Crear `src/pages/ProjectFrcPage.tsx`: render por `visibility` —
   `global`: tabla de agentes (nombre, rol, bonus/malus, honorarios, total) + desviación total +
   badge de estado; `own`: tarjeta con su resultado + desviación + estado; `aggregate`: solo el
   badge de estado (bonus/neutro/malus) y, si aplica, aviso "no participas en el fondo".
   UI en español; céntimos → euros solo en presentación. Estados de carga/vacío (sin presupuesto
   aprobado → mensaje).
-- [ ] T009 [US2] Enrutar la sección: en `src/lib/sections.ts` marcar `frc` como `ready: true`; en
+- [x] T009 [US2] Enrutar la sección: en `src/lib/sections.ts` marcar `frc` como `ready: true`; en
   `src/App.tsx` excluir `'frc'` del filtro de placeholders y añadir la ruta real
   `path="frc"` → `<ProjectFrcPage/>`.
-- [ ] T010 [P] [US2] `tests/frontend/project-frc.test.tsx` (jsdom): mockeando cada forma de
+- [x] T010 [P] [US2] `tests/frontend/project-frc.test.tsx` (jsdom): mockeando cada forma de
   respuesta, la vista renderiza el cuadro completo (global), la tarjeta propia (own) y el badge
   agregado (aggregate), y muestra el estado del fondo.
 
@@ -98,12 +98,12 @@ contenido correcto y el estado del fondo.
 
 ## Phase 5 — Polish & cross-cutting
 
-- [ ] T011 [P] Sin `console.log` ni código muerto; `pnpm typecheck` + `pnpm lint` + `pnpm test`
+- [x] T011 [P] Sin `console.log` ni código muerto; `pnpm typecheck` + `pnpm lint` + `pnpm test`
   en verde.
-- [ ] T012 Validar en navegador según `quickstart.md`: login como promotor, constructor y
+- [x] T012 Validar en navegador según `quickstart.md`: login como promotor, constructor y
   observador sobre el proyecto demo (presupuesto aprobado con desviación) y comprobar las tres
   vistas; capturar evidencia.
-- [ ] T013 [P] Anotar la sesión S16 en `docs/diario.md`.
+- [x] T013 [P] Anotar la sesión S16 en `docs/diario.md`.
 
 ---
 

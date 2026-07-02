@@ -11,7 +11,7 @@ export const PROJECT_SECTIONS: ProjectSection[] = [
   { key: 'dashboard', label: 'Panel de control', ready: true },
   { key: 'budget', label: 'Presupuesto', ready: true },
   { key: 'real-costs', label: 'Costes' },
-  { key: 'frc', label: 'FRC' },
+  { key: 'frc', label: 'FRC', ready: true },
   { key: 'changes', label: 'Cambios' },
   { key: 'risks', label: 'Riesgos' },
   { key: 'incidents', label: 'Incidencias' },

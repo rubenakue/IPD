@@ -25,6 +25,7 @@ import {
   updateProgress,
 } from '../projects/real-costs.ts';
 import { getProjectEconomics, setLineForecast } from '../projects/economics.ts';
+import { getProjectFrc } from '../projects/frc.ts';
 
 const createProjectSchema = z.object({
   name: z.string().trim().min(1),
@@ -310,6 +311,23 @@ export function createProjectsRouter(prisma: DbClient): Router {
       const input = setForecastSchema.parse(req.body);
       const data = await setLineForecast(prisma, userId, projectId, lineId, input.manualForecastCents);
       res.json({ ...data, canUpdateForecast: hasPermission(req.projectAgent.role, 'forecast.update') });
+    },
+  );
+
+  // FRC servido por rol: el contenido se filtra en el servidor según el rol (§9.5). Puerta
+  // `project.view` (deja pasar a cualquier participante, deniega al no-agente → FR-004).
+  router.get(
+    '/projects/:projectId/frc',
+    requireAuth,
+    requireProjectPermission(prisma, 'project.view'),
+    async (req, res) => {
+      const userId = req.session.userId;
+      const { projectId } = req.params;
+      if (typeof userId !== 'string') throw ApiError.unauthenticated();
+      if (typeof projectId !== 'string' || projectId.length === 0) throw ApiError.notFound();
+      if (!req.projectAgent) throw ApiError.notFound();
+
+      res.json(await getProjectFrc(prisma, userId, projectId, req.projectAgent));
     },
   );
 
